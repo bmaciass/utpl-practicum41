@@ -1,0 +1,7 @@
+packages:
+  - packages/auth
+  - packages/api
+  - packages/db
+  - packages/ui
+  - packages/shared
+  - packages/shared/seeders

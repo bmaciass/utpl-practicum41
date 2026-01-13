@@ -1,0 +1,31 @@
+import type { Client, Db } from '@sigep/db'
+import type { JWTAccessTokenPayload } from '~/helpers/session/types'
+import type { createInstitutionLoader } from '../dataloaders/institutionLoader'
+import type { createPersonLoader } from '../dataloaders/personLoader'
+import type { createProgramLoader } from '../dataloaders/programLoader'
+import type { createProjectGoalsByProjectLoader } from '../dataloaders/projectGoalsByProjectLoader'
+import type { createProjectLoader } from '../dataloaders/projectLoader'
+import type { createProjectByProgramLoader } from '../dataloaders/projectsByProgram'
+import type { createUserLoader } from '../dataloaders/userLoader'
+
+export type AppDataloaders = {
+  institution: ReturnType<typeof createInstitutionLoader>
+  user: ReturnType<typeof createUserLoader>
+  person: ReturnType<typeof createPersonLoader>
+  program: ReturnType<typeof createProgramLoader>
+  project: ReturnType<typeof createProjectLoader>
+  projectGoalsByProject: ReturnType<typeof createProjectGoalsByProjectLoader>
+  projectByProgramId: ReturnType<typeof createProjectByProgramLoader>
+}
+
+export type AppContext = {
+  db: Db
+  client: Client
+  authenticated: boolean
+  user: {
+    uid: string
+  }
+  token: JWTAccessTokenPayload
+  // DataLoaders for batching and caching entity fetches
+  loaders: AppDataloaders
+}

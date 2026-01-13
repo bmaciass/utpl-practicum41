@@ -1,0 +1,6 @@
+#!/bin/sh
+
+sudo docker exec -it local-pg-1 psql -U root -d postgres -c "DROP DATABASE IF EXISTS utpl_practicum;"
+sudo docker exec -it local-pg-1 psql -U root -d postgres -c "CREATE DATABASE utpl_practicum;"
+
+pnpm --filter db migrate

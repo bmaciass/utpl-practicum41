@@ -1,0 +1,43 @@
+{
+  "name": "@sigep/api",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "scripts": {
+    "check": "tsc --noEmit",
+    "codegen": "./scripts/generate",
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "start": "wrangler dev",
+    "test": "vitest",
+    "cf-typegen": "wrangler types"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.8.19",
+    "@types/cookie-signature": "^1.1.2",
+    "@types/node": "^24.0.3",
+    "tsx": "^4.20.1",
+    "type-fest": "^4.41.0",
+    "typescript": "^5.5.2",
+    "vitest": "~3.2.0",
+    "wrangler": "4.21.2"
+  },
+  "dependencies": {
+    "@pothos/core": "^4.7.0",
+    "@pothos/plugin-scope-auth": "^4.1.5",
+    "@remix-run/cloudflare": "^2.16.8",
+    "@sigep/db": "workspace:*",
+    "@sigep/shared": "workspace:*",
+    "@types/lodash-es": "^4.17.12",
+    "@whatwg-node/server-plugin-cookies": "^1.0.5",
+    "cookie-signature": "^1.2.2",
+    "dataloader": "^2.2.3",
+    "decimal.js": "^10.5.0",
+    "drizzle-orm": "^0.44.2",
+    "graphql": "^16.11.0",
+    "graphql-scalars": "^1.24.2",
+    "graphql-yoga": "^5.13.5",
+    "jose": "^6.0.11",
+    "lodash-es": "^4.17.21"
+  }
+}

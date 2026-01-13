@@ -1,0 +1,15 @@
+{
+  "name": "@sigep/shared",
+  "version": "1.0.0",
+  "description": "Shared domain and application layer for SIPeIP",
+  "main": "src/index.ts",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.6.1",
+  "devDependencies": {
+    "@types/node": "^24.0.1",
+    "typescript": "^5.8.3"
+  }
+}

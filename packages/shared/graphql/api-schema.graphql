@@ -1,0 +1,360 @@
+input CreateInstitutionDataInput {
+  area: InstitutionArea!
+  level: InstitutionLevel!
+  name: String!
+}
+
+input CreateInstitutionalPlanDataInput {
+  institutionId: String!
+  name: String!
+  url: String!
+  version: Int!
+  year: Int!
+}
+
+input CreateProgramDataInput {
+  description: String!
+  endDate: Date
+  name: String!
+  responsibleId: String!
+  startDate: Date
+}
+
+input CreateProjectDataInput {
+  description: String!
+  endDate: Date
+  name: String!
+  programUid: String!
+  responsibleUid: String!
+  startDate: Date
+  status: ProjectStatus!
+}
+
+input CreateProjectGoalDataInput {
+  endDate: Date
+  name: String!
+  projectUid: String!
+  startDate: Date
+  status: ProjectGoalStatus!
+}
+
+input CreateUserDataInput {
+  dni: String!
+  firstName: String!
+  lastName: String!
+  name: String!
+  password: String!
+}
+
+"""
+A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar Date
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format.
+"""
+scalar DateTime
+
+"""An arbitrary-precision Decimal type."""
+scalar Decimal
+
+type Institution {
+  active: Boolean!
+  area: InstitutionArea!
+  deletedAt: Date
+  level: InstitutionLevel!
+  name: String!
+  uid: ID!
+}
+
+enum InstitutionArea {
+  educacion
+}
+
+type InstitutionEstraticObjetive {
+  active: Boolean!
+  endDate: Date
+  name: String!
+  startDate: Date
+  uid: ID!
+}
+
+enum InstitutionLevel {
+  nacional
+}
+
+"""Institution mutations"""
+type InstitutionMutations {
+  create(data: CreateInstitutionDataInput!): Institution!
+  update(data: UpdateInstitutionDataInput!, where: UpdateInstitutionWhereInput!): Institution!
+}
+
+type InstitutionPlan {
+  active: Boolean!
+  deletedAt: Date
+  institution: Institution!
+  name: String!
+  uid: ID!
+  version: Int!
+  year: Int!
+}
+
+"""Institution queries"""
+type InstitutionQueries {
+  list(active: Boolean, name: StringFilter): InstitutionsQueryResponse!
+  one(id: String!): Institution
+}
+
+"""Institution Plan mutations"""
+type InstitutionalPlanMutations {
+  create(data: CreateInstitutionalPlanDataInput!): InstitutionPlan!
+  update(data: UpdateInstitutionalPlanDataInput!, where: UpdateInstitutionalPlanWhereInput!): InstitutionPlan!
+}
+
+"""Institutional Plan queries"""
+type InstitutionalPlanQueries {
+  list(active: Boolean, name: StringFilter): InstitutionalPlansQueryResponse!
+  one(id: String!): InstitutionPlan
+}
+
+type InstitutionalPlansQueryResponse {
+  records: [InstitutionPlan!]!
+}
+
+type InstitutionsQueryResponse {
+  records: [Institution!]!
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+type Mutation {
+  institution: InstitutionMutations!
+  institutionalPlan: InstitutionalPlanMutations!
+  program: ProgramMutations!
+  project: ProjectMutations!
+  projectGoal: ProjectGoalMutations!
+  user: UserMutations!
+}
+
+type Person {
+  active: Boolean!
+  dni: String!
+  firstName: String!
+  lastName: String!
+  uid: ID!
+}
+
+type Program {
+  active: Boolean!
+  deletedAt: Date
+  description: String
+  endDate: Date
+  name: String!
+  projects: [Project!]!
+  responsible: User!
+  startDate: Date
+  uid: ID!
+}
+
+"""Program mutations"""
+type ProgramMutations {
+  create(data: CreateProgramDataInput!): Program!
+  update(data: UpdateProgramDataInput!, where: UpdateProgramWhereInput!): Program!
+}
+
+"""Program queries"""
+type ProgramQueries {
+  list(active: Boolean, name: StringFilter): ProgramsQueryResponse!
+  one(id: String!): Program
+}
+
+type ProgramsQueryResponse {
+  records: [Program!]!
+}
+
+type Project {
+  active: Boolean!
+  deletedAt: Date
+  description: String
+  endDate: Date
+  goals: [ProjectGoal!]!
+  name: String!
+  program: Program
+  responsible: User!
+  startDate: Date
+  status: ProjectStatus!
+  uid: ID!
+}
+
+type ProjectGoal {
+  active: Boolean!
+  deletedAt: Date
+  endDate: Date
+  name: String!
+  startDate: Date
+  status: ProjectGoalStatus!
+  uid: ID!
+}
+
+"""ProjectGoal mutations"""
+type ProjectGoalMutations {
+  create(data: CreateProjectGoalDataInput!): ProjectGoal!
+  update(data: UpdateProjectGoalDataInput!, where: UpdateProjectGoalWhereInput!): ProjectGoal!
+}
+
+"""ProjectGoal queries"""
+type ProjectGoalQueries {
+  list(projectUid: String!): ProjectGoalsQueryResponse!
+  one(id: String!): ProjectGoal
+}
+
+enum ProjectGoalStatus {
+  cancelled
+  done
+  in_progress
+  pending
+  reviewing
+}
+
+type ProjectGoalsQueryResponse {
+  records: [ProjectGoal!]!
+}
+
+"""Project mutations"""
+type ProjectMutations {
+  create(data: CreateProjectDataInput!): Project!
+  update(data: UpdateProjectDataInput!, where: UpdateProjectWhereInput!): Project!
+}
+
+"""Project queries"""
+type ProjectQueries {
+  list(active: Boolean, programId: String!): ProjectsQueryResponse!
+  one(id: String!): Project
+}
+
+enum ProjectStatus {
+  cancelled
+  done
+  in_progress
+  pending
+}
+
+type ProjectsQueryResponse {
+  records: [Project!]!
+}
+
+type Query {
+  institution: InstitutionQueries!
+  institutionalPlan: InstitutionalPlanQueries!
+  program: ProgramQueries!
+  project: ProjectQueries!
+  projectGoal: ProjectGoalQueries!
+  user: UserQueries!
+}
+
+input StringFilter {
+  contains: String!
+  endsWith: String!
+  equals: String!
+  startsWith: String!
+}
+
+input UpdateInstitutionDataInput {
+  active: Boolean
+  area: InstitutionArea
+  level: InstitutionLevel
+  name: String
+}
+
+input UpdateInstitutionWhereInput {
+  id: String!
+}
+
+input UpdateInstitutionalPlanDataInput {
+  active: Boolean!
+  name: String!
+  year: Int!
+}
+
+input UpdateInstitutionalPlanWhereInput {
+  id: String!
+}
+
+input UpdateProgramDataInput {
+  active: Boolean
+  description: String
+  endDate: Date
+  name: String
+  responsibleId: String
+  startDate: Date
+}
+
+input UpdateProgramWhereInput {
+  id: String!
+}
+
+input UpdateProjectDataInput {
+  active: Boolean
+  description: String
+  endDate: Date
+  name: String
+  responsibleUid: String
+  startDate: Date
+  status: ProjectStatus
+}
+
+input UpdateProjectGoalDataInput {
+  active: Boolean
+  endDate: Date
+  name: String
+  startDate: Date
+  status: ProjectGoalStatus
+}
+
+input UpdateProjectGoalWhereInput {
+  id: String!
+}
+
+input UpdateProjectWhereInput {
+  id: String!
+}
+
+input UpdateUserDataInput {
+  active: Boolean
+  dni: String
+  firstName: String
+  lastName: String
+  name: String
+  password: String
+}
+
+input UpdateUserWhereInput {
+  id: String!
+}
+
+type User {
+  active: Boolean!
+  name: String!
+  person: Person!
+  uid: ID!
+}
+
+"""User mutations"""
+type UserMutations {
+  create(data: CreateUserDataInput!): User!
+  update(data: UpdateUserDataInput!, where: UpdateUserWhereInput!): User!
+}
+
+"""User queries"""
+type UserQueries {
+  list(active: Boolean, name: StringFilter): UsersQueryResponse!
+  one(id: String!): User
+}
+
+type UsersQueryResponse {
+  records: [User!]!
+}
