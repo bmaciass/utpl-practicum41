@@ -45,8 +45,19 @@ export const navigationConfig: NavItem[] = [
   },
   {
     title: 'Objetivos',
-    href: '/ods',
     icon: Target,
+    children: [
+      {
+        title: 'Objetivos PND',
+        href: '/pnd',
+        icon: Target,
+      },
+      {
+        title: 'Objetivos ODS',
+        href: '/ods',
+        icon: Target,
+      },
+    ],
   },
   {
     title: 'Reportes',

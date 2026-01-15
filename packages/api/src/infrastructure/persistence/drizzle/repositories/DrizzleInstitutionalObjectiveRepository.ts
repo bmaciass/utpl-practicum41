@@ -1,8 +1,8 @@
 import type { Db } from '@sigep/db'
 import { InstitutionalEstrategicObjetive as InstitutionalObjectiveTable } from '@sigep/db'
 import { NotFoundError } from '@sigep/shared'
-import { type SQL, and, eq, isNull, like } from 'drizzle-orm'
-import { compact, isNil } from 'lodash-es'
+import { type SQL, and, eq, inArray, isNull, like } from 'drizzle-orm'
+import { compact, isEmpty, isNil } from 'lodash-es'
 import type { InstitutionalObjective } from '~/domain/entities/InstitutionalObjective'
 import type {
   FindManyInstitutionalObjectivesOptions,
@@ -112,6 +112,9 @@ export class DrizzleInstitutionalObjectiveRepository
         : null,
       where.institutionId
         ? eq(InstitutionalObjectiveTable.institutionId, where.institutionId)
+        : null,
+      where.id && !isEmpty(where.id)
+        ? inArray(InstitutionalObjectiveTable.id, where.id)
         : null,
     ])
   }

@@ -14,6 +14,12 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
+    "\n  query Alignment_useInstitutionalAlignments(\n    $institutionalObjectiveUid: String!\n  ) {\n    institutionalObjective {\n      one(uid: $institutionalObjectiveUid) {\n        uid\n        alignments {\n          id\n          institutionalObjectiveUid\n          pndObjectiveUid\n          createdAt\n        }\n      }\n    }\n  }\n": typeof types.Alignment_UseInstitutionalAlignmentsDocument,
+    "\n  query Alignment_usePndAlignments($pndObjectiveUid: String!) {\n    objectivePND {\n      one(uid: $pndObjectiveUid) {\n        uid\n        alignmentsToODS {\n          id\n          pndObjectiveUid\n          odsObjectiveUid\n          createdAt\n        }\n      }\n    }\n  }\n": typeof types.Alignment_UsePndAlignmentsDocument,
+    "\n  mutation Alignment_useCreateInstitutionalToPND(\n    $input: CreateAlignmentInstitutionalToPNDInput!\n  ) {\n    alignment {\n      createInstitutionalToPND(input: $input) {\n        id\n        institutionalObjectiveUid\n        pndObjectiveUid\n        createdAt\n      }\n    }\n  }\n": typeof types.Alignment_UseCreateInstitutionalToPndDocument,
+    "\n  mutation Alignment_useDeleteInstitutionalToPND(\n    $input: DeleteAlignmentInstitutionalToPNDInput!\n  ) {\n    alignment {\n      deleteInstitutionalToPND(input: $input)\n    }\n  }\n": typeof types.Alignment_UseDeleteInstitutionalToPndDocument,
+    "\n  mutation Alignment_useCreatePNDToODS(\n    $input: CreateAlignmentPNDToODSInput!\n  ) {\n    alignment {\n      createPNDToODS(input: $input) {\n        id\n        pndObjectiveUid\n        odsObjectiveUid\n        createdAt\n      }\n    }\n  }\n": typeof types.Alignment_UseCreatePndToOdsDocument,
+    "\n  mutation Alignment_useDeletePNDToODS(\n    $input: DeleteAlignmentPNDToODSInput!\n  ) {\n    alignment {\n      deletePNDToODS(input: $input)\n    }\n  }\n": typeof types.Alignment_UseDeletePndToOdsDocument,
     "\n  mutation CreateInstitution_useSaveInstitution ($data: CreateInstitutionDataInput!) {\n    institution {\n      create (data: $data) {\n        uid\n        name\n        area\n        level\n        active\n      }\n    }\n  }\n": typeof types.CreateInstitution_UseSaveInstitutionDocument,
     "\n  query GetInstitutions_useGetInstitution ($id: String!) {\n    institution {\n      one (id: $id) {\n        uid\n        name\n        area\n        level\n        active\n      }\n    }\n  }\n": typeof types.GetInstitutions_UseGetInstitutionDocument,
     "\n  query GetInstitutions_useInstitutionList {\n    institution {\n      list {\n        records {\n          uid\n          name\n        }\n      }\n    }\n  }\n": typeof types.GetInstitutions_UseInstitutionListDocument,
@@ -29,6 +35,11 @@ type Documents = {
     "\n  query GetInstitutionalPlan_useInstitutionalPlanList ($institutionUid: String!) {\n    institutionalPlan {\n      list (institutionUid: $institutionUid) {\n        records {\n          uid\n          name\n        }\n      }\n    }\n  }\n": typeof types.GetInstitutionalPlan_UseInstitutionalPlanListDocument,
     "\n  mutation UpdateInstitutionalPlan_useSaveInstitutionalPlan ($data: UpdateInstitutionalPlanDataInput!, $where: UpdateInstitutionalPlanWhereInput!) {\n    institutionalPlan {\n      update (data: $data, where: $where) {\n        uid\n        name\n      }\n    }\n  }\n": typeof types.UpdateInstitutionalPlan_UseSaveInstitutionalPlanDocument,
     "\n  query ObjectiveODS_useODSList {\n    objectiveODS {\n      list {\n        records {\n          uid\n          name\n          description\n          active\n        }\n      }\n    }\n  }\n": typeof types.ObjectiveOds_UseOdsListDocument,
+    "\n  mutation ObjectivePND_usePNDCreate($data: CreateObjectivePNDDataInput!) {\n    objectivePND {\n      create(data: $data) {\n        uid\n        name\n        description\n        active\n      }\n    }\n  }\n": typeof types.ObjectivePnd_UsePndCreateDocument,
+    "\n  mutation ObjectivePND_usePNDDelete($input: DeleteObjectivePNDInput!) {\n    objectivePND {\n      delete(input: $input)\n    }\n  }\n": typeof types.ObjectivePnd_UsePndDeleteDocument,
+    "\n  query ObjectivePND_usePNDList {\n    objectivePND {\n      list {\n        records {\n          uid\n          name\n          description\n          active\n          deletedAt\n        }\n      }\n    }\n  }\n": typeof types.ObjectivePnd_UsePndListDocument,
+    "\n  query ObjectivePND_usePNDOne($uid: String!) {\n    objectivePND {\n      one(uid: $uid) {\n        uid\n        name\n        description\n        active\n        deletedAt\n      }\n    }\n  }\n": typeof types.ObjectivePnd_UsePndOneDocument,
+    "\n  mutation ObjectivePND_usePNDUpdate(\n    $where: UpdateObjectivePNDWhereInput!\n    $data: UpdateObjectivePNDDataInput!\n  ) {\n    objectivePND {\n      update(where: $where, data: $data) {\n        uid\n        name\n        description\n        active\n      }\n    }\n  }\n": typeof types.ObjectivePnd_UsePndUpdateDocument,
     "\n  mutation CreateProgram_useCreateProgram ($data: CreateProgramDataInput!) {\n    program {\n      create (data: $data) {\n        uid\n        name\n        active\n      }\n    }\n  }\n": typeof types.CreateProgram_UseCreateProgramDocument,
     "\n  query GetPrograms_useGetProgram ($id: String!) {\n    program {\n      one (id: $id) {\n        uid\n        name\n        description\n        responsible {\n          uid\n        }\n        active\n      }\n    }\n  }\n": typeof types.GetPrograms_UseGetProgramDocument,
     "\n  query GetProgramList_useProgramList {\n    program {\n      list {\n        records {\n          uid\n          name\n        }\n      }\n    }\n  }\n": typeof types.GetProgramList_UseProgramListDocument,
@@ -47,6 +58,12 @@ type Documents = {
     "\n  query GetUsers_useUserList {\n    user {\n      list {\n        records {\n          uid\n          name\n          person {\n            firstName\n            lastName\n          }\n          active\n        }\n      }\n    }\n  }\n": typeof types.GetUsers_UseUserListDocument,
 };
 const documents: Documents = {
+    "\n  query Alignment_useInstitutionalAlignments(\n    $institutionalObjectiveUid: String!\n  ) {\n    institutionalObjective {\n      one(uid: $institutionalObjectiveUid) {\n        uid\n        alignments {\n          id\n          institutionalObjectiveUid\n          pndObjectiveUid\n          createdAt\n        }\n      }\n    }\n  }\n": types.Alignment_UseInstitutionalAlignmentsDocument,
+    "\n  query Alignment_usePndAlignments($pndObjectiveUid: String!) {\n    objectivePND {\n      one(uid: $pndObjectiveUid) {\n        uid\n        alignmentsToODS {\n          id\n          pndObjectiveUid\n          odsObjectiveUid\n          createdAt\n        }\n      }\n    }\n  }\n": types.Alignment_UsePndAlignmentsDocument,
+    "\n  mutation Alignment_useCreateInstitutionalToPND(\n    $input: CreateAlignmentInstitutionalToPNDInput!\n  ) {\n    alignment {\n      createInstitutionalToPND(input: $input) {\n        id\n        institutionalObjectiveUid\n        pndObjectiveUid\n        createdAt\n      }\n    }\n  }\n": types.Alignment_UseCreateInstitutionalToPndDocument,
+    "\n  mutation Alignment_useDeleteInstitutionalToPND(\n    $input: DeleteAlignmentInstitutionalToPNDInput!\n  ) {\n    alignment {\n      deleteInstitutionalToPND(input: $input)\n    }\n  }\n": types.Alignment_UseDeleteInstitutionalToPndDocument,
+    "\n  mutation Alignment_useCreatePNDToODS(\n    $input: CreateAlignmentPNDToODSInput!\n  ) {\n    alignment {\n      createPNDToODS(input: $input) {\n        id\n        pndObjectiveUid\n        odsObjectiveUid\n        createdAt\n      }\n    }\n  }\n": types.Alignment_UseCreatePndToOdsDocument,
+    "\n  mutation Alignment_useDeletePNDToODS(\n    $input: DeleteAlignmentPNDToODSInput!\n  ) {\n    alignment {\n      deletePNDToODS(input: $input)\n    }\n  }\n": types.Alignment_UseDeletePndToOdsDocument,
     "\n  mutation CreateInstitution_useSaveInstitution ($data: CreateInstitutionDataInput!) {\n    institution {\n      create (data: $data) {\n        uid\n        name\n        area\n        level\n        active\n      }\n    }\n  }\n": types.CreateInstitution_UseSaveInstitutionDocument,
     "\n  query GetInstitutions_useGetInstitution ($id: String!) {\n    institution {\n      one (id: $id) {\n        uid\n        name\n        area\n        level\n        active\n      }\n    }\n  }\n": types.GetInstitutions_UseGetInstitutionDocument,
     "\n  query GetInstitutions_useInstitutionList {\n    institution {\n      list {\n        records {\n          uid\n          name\n        }\n      }\n    }\n  }\n": types.GetInstitutions_UseInstitutionListDocument,
@@ -62,6 +79,11 @@ const documents: Documents = {
     "\n  query GetInstitutionalPlan_useInstitutionalPlanList ($institutionUid: String!) {\n    institutionalPlan {\n      list (institutionUid: $institutionUid) {\n        records {\n          uid\n          name\n        }\n      }\n    }\n  }\n": types.GetInstitutionalPlan_UseInstitutionalPlanListDocument,
     "\n  mutation UpdateInstitutionalPlan_useSaveInstitutionalPlan ($data: UpdateInstitutionalPlanDataInput!, $where: UpdateInstitutionalPlanWhereInput!) {\n    institutionalPlan {\n      update (data: $data, where: $where) {\n        uid\n        name\n      }\n    }\n  }\n": types.UpdateInstitutionalPlan_UseSaveInstitutionalPlanDocument,
     "\n  query ObjectiveODS_useODSList {\n    objectiveODS {\n      list {\n        records {\n          uid\n          name\n          description\n          active\n        }\n      }\n    }\n  }\n": types.ObjectiveOds_UseOdsListDocument,
+    "\n  mutation ObjectivePND_usePNDCreate($data: CreateObjectivePNDDataInput!) {\n    objectivePND {\n      create(data: $data) {\n        uid\n        name\n        description\n        active\n      }\n    }\n  }\n": types.ObjectivePnd_UsePndCreateDocument,
+    "\n  mutation ObjectivePND_usePNDDelete($input: DeleteObjectivePNDInput!) {\n    objectivePND {\n      delete(input: $input)\n    }\n  }\n": types.ObjectivePnd_UsePndDeleteDocument,
+    "\n  query ObjectivePND_usePNDList {\n    objectivePND {\n      list {\n        records {\n          uid\n          name\n          description\n          active\n          deletedAt\n        }\n      }\n    }\n  }\n": types.ObjectivePnd_UsePndListDocument,
+    "\n  query ObjectivePND_usePNDOne($uid: String!) {\n    objectivePND {\n      one(uid: $uid) {\n        uid\n        name\n        description\n        active\n        deletedAt\n      }\n    }\n  }\n": types.ObjectivePnd_UsePndOneDocument,
+    "\n  mutation ObjectivePND_usePNDUpdate(\n    $where: UpdateObjectivePNDWhereInput!\n    $data: UpdateObjectivePNDDataInput!\n  ) {\n    objectivePND {\n      update(where: $where, data: $data) {\n        uid\n        name\n        description\n        active\n      }\n    }\n  }\n": types.ObjectivePnd_UsePndUpdateDocument,
     "\n  mutation CreateProgram_useCreateProgram ($data: CreateProgramDataInput!) {\n    program {\n      create (data: $data) {\n        uid\n        name\n        active\n      }\n    }\n  }\n": types.CreateProgram_UseCreateProgramDocument,
     "\n  query GetPrograms_useGetProgram ($id: String!) {\n    program {\n      one (id: $id) {\n        uid\n        name\n        description\n        responsible {\n          uid\n        }\n        active\n      }\n    }\n  }\n": types.GetPrograms_UseGetProgramDocument,
     "\n  query GetProgramList_useProgramList {\n    program {\n      list {\n        records {\n          uid\n          name\n        }\n      }\n    }\n  }\n": types.GetProgramList_UseProgramListDocument,
@@ -94,6 +116,30 @@ const documents: Documents = {
  */
 export function graphql(source: string): unknown;
 
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query Alignment_useInstitutionalAlignments(\n    $institutionalObjectiveUid: String!\n  ) {\n    institutionalObjective {\n      one(uid: $institutionalObjectiveUid) {\n        uid\n        alignments {\n          id\n          institutionalObjectiveUid\n          pndObjectiveUid\n          createdAt\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query Alignment_useInstitutionalAlignments(\n    $institutionalObjectiveUid: String!\n  ) {\n    institutionalObjective {\n      one(uid: $institutionalObjectiveUid) {\n        uid\n        alignments {\n          id\n          institutionalObjectiveUid\n          pndObjectiveUid\n          createdAt\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query Alignment_usePndAlignments($pndObjectiveUid: String!) {\n    objectivePND {\n      one(uid: $pndObjectiveUid) {\n        uid\n        alignmentsToODS {\n          id\n          pndObjectiveUid\n          odsObjectiveUid\n          createdAt\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query Alignment_usePndAlignments($pndObjectiveUid: String!) {\n    objectivePND {\n      one(uid: $pndObjectiveUid) {\n        uid\n        alignmentsToODS {\n          id\n          pndObjectiveUid\n          odsObjectiveUid\n          createdAt\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation Alignment_useCreateInstitutionalToPND(\n    $input: CreateAlignmentInstitutionalToPNDInput!\n  ) {\n    alignment {\n      createInstitutionalToPND(input: $input) {\n        id\n        institutionalObjectiveUid\n        pndObjectiveUid\n        createdAt\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation Alignment_useCreateInstitutionalToPND(\n    $input: CreateAlignmentInstitutionalToPNDInput!\n  ) {\n    alignment {\n      createInstitutionalToPND(input: $input) {\n        id\n        institutionalObjectiveUid\n        pndObjectiveUid\n        createdAt\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation Alignment_useDeleteInstitutionalToPND(\n    $input: DeleteAlignmentInstitutionalToPNDInput!\n  ) {\n    alignment {\n      deleteInstitutionalToPND(input: $input)\n    }\n  }\n"): (typeof documents)["\n  mutation Alignment_useDeleteInstitutionalToPND(\n    $input: DeleteAlignmentInstitutionalToPNDInput!\n  ) {\n    alignment {\n      deleteInstitutionalToPND(input: $input)\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation Alignment_useCreatePNDToODS(\n    $input: CreateAlignmentPNDToODSInput!\n  ) {\n    alignment {\n      createPNDToODS(input: $input) {\n        id\n        pndObjectiveUid\n        odsObjectiveUid\n        createdAt\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation Alignment_useCreatePNDToODS(\n    $input: CreateAlignmentPNDToODSInput!\n  ) {\n    alignment {\n      createPNDToODS(input: $input) {\n        id\n        pndObjectiveUid\n        odsObjectiveUid\n        createdAt\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation Alignment_useDeletePNDToODS(\n    $input: DeleteAlignmentPNDToODSInput!\n  ) {\n    alignment {\n      deletePNDToODS(input: $input)\n    }\n  }\n"): (typeof documents)["\n  mutation Alignment_useDeletePNDToODS(\n    $input: DeleteAlignmentPNDToODSInput!\n  ) {\n    alignment {\n      deletePNDToODS(input: $input)\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -154,6 +200,26 @@ export function graphql(source: "\n  mutation UpdateInstitutionalPlan_useSaveIns
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query ObjectiveODS_useODSList {\n    objectiveODS {\n      list {\n        records {\n          uid\n          name\n          description\n          active\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query ObjectiveODS_useODSList {\n    objectiveODS {\n      list {\n        records {\n          uid\n          name\n          description\n          active\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation ObjectivePND_usePNDCreate($data: CreateObjectivePNDDataInput!) {\n    objectivePND {\n      create(data: $data) {\n        uid\n        name\n        description\n        active\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation ObjectivePND_usePNDCreate($data: CreateObjectivePNDDataInput!) {\n    objectivePND {\n      create(data: $data) {\n        uid\n        name\n        description\n        active\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation ObjectivePND_usePNDDelete($input: DeleteObjectivePNDInput!) {\n    objectivePND {\n      delete(input: $input)\n    }\n  }\n"): (typeof documents)["\n  mutation ObjectivePND_usePNDDelete($input: DeleteObjectivePNDInput!) {\n    objectivePND {\n      delete(input: $input)\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query ObjectivePND_usePNDList {\n    objectivePND {\n      list {\n        records {\n          uid\n          name\n          description\n          active\n          deletedAt\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query ObjectivePND_usePNDList {\n    objectivePND {\n      list {\n        records {\n          uid\n          name\n          description\n          active\n          deletedAt\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query ObjectivePND_usePNDOne($uid: String!) {\n    objectivePND {\n      one(uid: $uid) {\n        uid\n        name\n        description\n        active\n        deletedAt\n      }\n    }\n  }\n"): (typeof documents)["\n  query ObjectivePND_usePNDOne($uid: String!) {\n    objectivePND {\n      one(uid: $uid) {\n        uid\n        name\n        description\n        active\n        deletedAt\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation ObjectivePND_usePNDUpdate(\n    $where: UpdateObjectivePNDWhereInput!\n    $data: UpdateObjectivePNDDataInput!\n  ) {\n    objectivePND {\n      update(where: $where, data: $data) {\n        uid\n        name\n        description\n        active\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation ObjectivePND_usePNDUpdate(\n    $where: UpdateObjectivePNDWhereInput!\n    $data: UpdateObjectivePNDDataInput!\n  ) {\n    objectivePND {\n      update(where: $where, data: $data) {\n        uid\n        name\n        description\n        active\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

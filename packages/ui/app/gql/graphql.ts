@@ -24,6 +24,55 @@ export type Scalars = {
   JSON: { input: any; output: any; }
 };
 
+export type AlignmentInstitutionalToPnd = {
+  __typename?: 'AlignmentInstitutionalToPND';
+  createdAt: Scalars['Date']['output'];
+  id: Scalars['ID']['output'];
+  institutionalObjectiveUid: Scalars['String']['output'];
+  pndObjectiveUid: Scalars['String']['output'];
+};
+
+/** Alignment mutations */
+export type AlignmentMutations = {
+  __typename?: 'AlignmentMutations';
+  createInstitutionalToPND: AlignmentInstitutionalToPnd;
+  createPNDToODS: AlignmentPndToOds;
+  deleteInstitutionalToPND: Scalars['Boolean']['output'];
+  deletePNDToODS: Scalars['Boolean']['output'];
+};
+
+
+/** Alignment mutations */
+export type AlignmentMutationsCreateInstitutionalToPndArgs = {
+  input: CreateAlignmentInstitutionalToPndInput;
+};
+
+
+/** Alignment mutations */
+export type AlignmentMutationsCreatePndToOdsArgs = {
+  input: CreateAlignmentPndToOdsInput;
+};
+
+
+/** Alignment mutations */
+export type AlignmentMutationsDeleteInstitutionalToPndArgs = {
+  input: DeleteAlignmentInstitutionalToPndInput;
+};
+
+
+/** Alignment mutations */
+export type AlignmentMutationsDeletePndToOdsArgs = {
+  input: DeleteAlignmentPndToOdsInput;
+};
+
+export type AlignmentPndToOds = {
+  __typename?: 'AlignmentPNDToODS';
+  createdAt: Scalars['Date']['output'];
+  id: Scalars['ID']['output'];
+  odsObjectiveUid: Scalars['String']['output'];
+  pndObjectiveUid: Scalars['String']['output'];
+};
+
 export type AuthLoginInput = {
   password: Scalars['String']['input'];
   username: Scalars['String']['input'];
@@ -64,6 +113,16 @@ export type AuthRefreshResponse = {
   refreshToken?: Maybe<Scalars['String']['output']>;
 };
 
+export type CreateAlignmentInstitutionalToPndInput = {
+  institutionalObjectiveUid: Scalars['String']['input'];
+  pndObjectiveUid: Scalars['String']['input'];
+};
+
+export type CreateAlignmentPndToOdsInput = {
+  odsObjectiveUid: Scalars['String']['input'];
+  pndObjectiveUid: Scalars['String']['input'];
+};
+
 export type CreateInstitutionDataInput = {
   area: InstitutionArea;
   level: InstitutionLevel;
@@ -81,6 +140,11 @@ export type CreateInstitutionalPlanDataInput = {
   name: Scalars['String']['input'];
   url: Scalars['String']['input'];
   year: Scalars['Int']['input'];
+};
+
+export type CreateObjectivePndDataInput = {
+  description: Scalars['String']['input'];
+  name: Scalars['String']['input'];
 };
 
 export type CreateProgramDataInput = {
@@ -117,6 +181,20 @@ export type CreateUserDataInput = {
   lastName: Scalars['String']['input'];
   name: Scalars['String']['input'];
   password: Scalars['String']['input'];
+};
+
+export type DeleteAlignmentInstitutionalToPndInput = {
+  institutionalObjectiveUid: Scalars['String']['input'];
+  pndObjectiveUid: Scalars['String']['input'];
+};
+
+export type DeleteAlignmentPndToOdsInput = {
+  odsObjectiveUid: Scalars['String']['input'];
+  pndObjectiveUid: Scalars['String']['input'];
+};
+
+export type DeleteObjectivePndInput = {
+  uid: Scalars['String']['input'];
 };
 
 export type Institution = {
@@ -191,6 +269,7 @@ export type InstitutionQueriesOneArgs = {
 export type InstitutionalObjective = {
   __typename?: 'InstitutionalObjective';
   active: Scalars['Boolean']['output'];
+  alignments: Array<AlignmentInstitutionalToPnd>;
   deletedAt?: Maybe<Scalars['Date']['output']>;
   description: Scalars['String']['output'];
   institution: Institution;
@@ -297,10 +376,12 @@ export type InstitutionsQueryResponse = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  alignment: AlignmentMutations;
   auth?: Maybe<AuthMutations>;
   institution: InstitutionMutations;
   institutionalObjective: InstitutionalObjectiveMutations;
   institutionalPlan: InstitutionalPlanMutations;
+  objectivePND: ObjectivePndMutations;
   program: ProgramMutations;
   project: ProjectMutations;
   projectTask: ProjectTaskMutations;
@@ -310,6 +391,7 @@ export type Mutation = {
 export type ObjectiveOds = {
   __typename?: 'ObjectiveODS';
   active: Scalars['Boolean']['output'];
+  alignmentsFromPND: Array<AlignmentPndToOds>;
   deletedAt?: Maybe<Scalars['Date']['output']>;
   description: Scalars['String']['output'];
   name: Scalars['String']['output'];
@@ -332,6 +414,69 @@ export type ObjectiveOdsQueriesListArgs = {
 export type ObjectiveOdsQueryResponse = {
   __typename?: 'ObjectiveODSQueryResponse';
   records: Array<ObjectiveOds>;
+};
+
+export type ObjectivePnd = {
+  __typename?: 'ObjectivePND';
+  active: Scalars['Boolean']['output'];
+  alignmentsFromInstitutional: Array<AlignmentInstitutionalToPnd>;
+  alignmentsToODS: Array<AlignmentPndToOds>;
+  deletedAt?: Maybe<Scalars['Date']['output']>;
+  description: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  uid: Scalars['ID']['output'];
+};
+
+/** ObjectivePND mutations */
+export type ObjectivePndMutations = {
+  __typename?: 'ObjectivePNDMutations';
+  create: ObjectivePnd;
+  delete: Scalars['Boolean']['output'];
+  update: ObjectivePnd;
+};
+
+
+/** ObjectivePND mutations */
+export type ObjectivePndMutationsCreateArgs = {
+  data: CreateObjectivePndDataInput;
+};
+
+
+/** ObjectivePND mutations */
+export type ObjectivePndMutationsDeleteArgs = {
+  input: DeleteObjectivePndInput;
+};
+
+
+/** ObjectivePND mutations */
+export type ObjectivePndMutationsUpdateArgs = {
+  data: UpdateObjectivePndDataInput;
+  where: UpdateObjectivePndWhereInput;
+};
+
+/** ObjectivePND queries */
+export type ObjectivePndQueries = {
+  __typename?: 'ObjectivePNDQueries';
+  list: ObjectivePndQueryResponse;
+  one: ObjectivePnd;
+};
+
+
+/** ObjectivePND queries */
+export type ObjectivePndQueriesListArgs = {
+  active?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<StringFilter>;
+};
+
+
+/** ObjectivePND queries */
+export type ObjectivePndQueriesOneArgs = {
+  uid: Scalars['String']['input'];
+};
+
+export type ObjectivePndQueryResponse = {
+  __typename?: 'ObjectivePNDQueryResponse';
+  records: Array<ObjectivePnd>;
 };
 
 export type Person = {
@@ -541,6 +686,7 @@ export type Query = {
   institutionalObjective: InstitutionalObjectiveQueries;
   institutionalPlan: InstitutionalPlanQueries;
   objectiveODS: ObjectiveOdsQueries;
+  objectivePND: ObjectivePndQueries;
   program: ProgramQueries;
   project: ProjectQueries;
   projectTask: ProjectTaskQueries;
@@ -584,6 +730,16 @@ export type UpdateInstitutionalPlanDataInput = {
 };
 
 export type UpdateInstitutionalPlanWhereInput = {
+  uid: Scalars['String']['input'];
+};
+
+export type UpdateObjectivePndDataInput = {
+  active?: InputMaybe<Scalars['Boolean']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateObjectivePndWhereInput = {
   uid: Scalars['String']['input'];
 };
 
@@ -694,6 +850,48 @@ export type UsersQueryResponse = {
   records: Array<User>;
 };
 
+export type Alignment_UseInstitutionalAlignmentsQueryVariables = Exact<{
+  institutionalObjectiveUid: Scalars['String']['input'];
+}>;
+
+
+export type Alignment_UseInstitutionalAlignmentsQuery = { __typename?: 'Query', institutionalObjective: { __typename?: 'InstitutionalObjectiveQueries', one: { __typename?: 'InstitutionalObjective', uid: string, alignments: Array<{ __typename?: 'AlignmentInstitutionalToPND', id: string, institutionalObjectiveUid: string, pndObjectiveUid: string, createdAt: any }> } } };
+
+export type Alignment_UsePndAlignmentsQueryVariables = Exact<{
+  pndObjectiveUid: Scalars['String']['input'];
+}>;
+
+
+export type Alignment_UsePndAlignmentsQuery = { __typename?: 'Query', objectivePND: { __typename?: 'ObjectivePNDQueries', one: { __typename?: 'ObjectivePND', uid: string, alignmentsToODS: Array<{ __typename?: 'AlignmentPNDToODS', id: string, pndObjectiveUid: string, odsObjectiveUid: string, createdAt: any }> } } };
+
+export type Alignment_UseCreateInstitutionalToPndMutationVariables = Exact<{
+  input: CreateAlignmentInstitutionalToPndInput;
+}>;
+
+
+export type Alignment_UseCreateInstitutionalToPndMutation = { __typename?: 'Mutation', alignment: { __typename?: 'AlignmentMutations', createInstitutionalToPND: { __typename?: 'AlignmentInstitutionalToPND', id: string, institutionalObjectiveUid: string, pndObjectiveUid: string, createdAt: any } } };
+
+export type Alignment_UseDeleteInstitutionalToPndMutationVariables = Exact<{
+  input: DeleteAlignmentInstitutionalToPndInput;
+}>;
+
+
+export type Alignment_UseDeleteInstitutionalToPndMutation = { __typename?: 'Mutation', alignment: { __typename?: 'AlignmentMutations', deleteInstitutionalToPND: boolean } };
+
+export type Alignment_UseCreatePndToOdsMutationVariables = Exact<{
+  input: CreateAlignmentPndToOdsInput;
+}>;
+
+
+export type Alignment_UseCreatePndToOdsMutation = { __typename?: 'Mutation', alignment: { __typename?: 'AlignmentMutations', createPNDToODS: { __typename?: 'AlignmentPNDToODS', id: string, pndObjectiveUid: string, odsObjectiveUid: string, createdAt: any } } };
+
+export type Alignment_UseDeletePndToOdsMutationVariables = Exact<{
+  input: DeleteAlignmentPndToOdsInput;
+}>;
+
+
+export type Alignment_UseDeletePndToOdsMutation = { __typename?: 'Mutation', alignment: { __typename?: 'AlignmentMutations', deletePNDToODS: boolean } };
+
 export type CreateInstitution_UseSaveInstitutionMutationVariables = Exact<{
   data: CreateInstitutionDataInput;
 }>;
@@ -800,6 +998,40 @@ export type ObjectiveOds_UseOdsListQueryVariables = Exact<{ [key: string]: never
 
 
 export type ObjectiveOds_UseOdsListQuery = { __typename?: 'Query', objectiveODS: { __typename?: 'ObjectiveODSQueries', list: { __typename?: 'ObjectiveODSQueryResponse', records: Array<{ __typename?: 'ObjectiveODS', uid: string, name: string, description: string, active: boolean }> } } };
+
+export type ObjectivePnd_UsePndCreateMutationVariables = Exact<{
+  data: CreateObjectivePndDataInput;
+}>;
+
+
+export type ObjectivePnd_UsePndCreateMutation = { __typename?: 'Mutation', objectivePND: { __typename?: 'ObjectivePNDMutations', create: { __typename?: 'ObjectivePND', uid: string, name: string, description: string, active: boolean } } };
+
+export type ObjectivePnd_UsePndDeleteMutationVariables = Exact<{
+  input: DeleteObjectivePndInput;
+}>;
+
+
+export type ObjectivePnd_UsePndDeleteMutation = { __typename?: 'Mutation', objectivePND: { __typename?: 'ObjectivePNDMutations', delete: boolean } };
+
+export type ObjectivePnd_UsePndListQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ObjectivePnd_UsePndListQuery = { __typename?: 'Query', objectivePND: { __typename?: 'ObjectivePNDQueries', list: { __typename?: 'ObjectivePNDQueryResponse', records: Array<{ __typename?: 'ObjectivePND', uid: string, name: string, description: string, active: boolean, deletedAt?: any | null }> } } };
+
+export type ObjectivePnd_UsePndOneQueryVariables = Exact<{
+  uid: Scalars['String']['input'];
+}>;
+
+
+export type ObjectivePnd_UsePndOneQuery = { __typename?: 'Query', objectivePND: { __typename?: 'ObjectivePNDQueries', one: { __typename?: 'ObjectivePND', uid: string, name: string, description: string, active: boolean, deletedAt?: any | null } } };
+
+export type ObjectivePnd_UsePndUpdateMutationVariables = Exact<{
+  where: UpdateObjectivePndWhereInput;
+  data: UpdateObjectivePndDataInput;
+}>;
+
+
+export type ObjectivePnd_UsePndUpdateMutation = { __typename?: 'Mutation', objectivePND: { __typename?: 'ObjectivePNDMutations', update: { __typename?: 'ObjectivePND', uid: string, name: string, description: string, active: boolean } } };
 
 export type CreateProgram_UseCreateProgramMutationVariables = Exact<{
   data: CreateProgramDataInput;
@@ -914,6 +1146,12 @@ export type GetUsers_UseUserListQueryVariables = Exact<{ [key: string]: never; }
 export type GetUsers_UseUserListQuery = { __typename?: 'Query', user: { __typename?: 'UserQueries', list: { __typename?: 'UsersQueryResponse', records: Array<{ __typename?: 'User', uid: string, name: string, active: boolean, person: { __typename?: 'Person', firstName: string, lastName: string } }> } } };
 
 
+export const Alignment_UseInstitutionalAlignmentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Alignment_useInstitutionalAlignments"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"institutionalObjectiveUid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institutionalObjective"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"one"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"institutionalObjectiveUid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"alignments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"institutionalObjectiveUid"}},{"kind":"Field","name":{"kind":"Name","value":"pndObjectiveUid"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Alignment_UseInstitutionalAlignmentsQuery, Alignment_UseInstitutionalAlignmentsQueryVariables>;
+export const Alignment_UsePndAlignmentsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Alignment_usePndAlignments"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pndObjectiveUid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"objectivePND"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"one"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pndObjectiveUid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"alignmentsToODS"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"pndObjectiveUid"}},{"kind":"Field","name":{"kind":"Name","value":"odsObjectiveUid"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Alignment_UsePndAlignmentsQuery, Alignment_UsePndAlignmentsQueryVariables>;
+export const Alignment_UseCreateInstitutionalToPndDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Alignment_useCreateInstitutionalToPND"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateAlignmentInstitutionalToPNDInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"alignment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createInstitutionalToPND"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"institutionalObjectiveUid"}},{"kind":"Field","name":{"kind":"Name","value":"pndObjectiveUid"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]}}]} as unknown as DocumentNode<Alignment_UseCreateInstitutionalToPndMutation, Alignment_UseCreateInstitutionalToPndMutationVariables>;
+export const Alignment_UseDeleteInstitutionalToPndDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Alignment_useDeleteInstitutionalToPND"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteAlignmentInstitutionalToPNDInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"alignment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteInstitutionalToPND"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]}}]} as unknown as DocumentNode<Alignment_UseDeleteInstitutionalToPndMutation, Alignment_UseDeleteInstitutionalToPndMutationVariables>;
+export const Alignment_UseCreatePndToOdsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Alignment_useCreatePNDToODS"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateAlignmentPNDToODSInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"alignment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createPNDToODS"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"pndObjectiveUid"}},{"kind":"Field","name":{"kind":"Name","value":"odsObjectiveUid"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]}}]} as unknown as DocumentNode<Alignment_UseCreatePndToOdsMutation, Alignment_UseCreatePndToOdsMutationVariables>;
+export const Alignment_UseDeletePndToOdsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Alignment_useDeletePNDToODS"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteAlignmentPNDToODSInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"alignment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deletePNDToODS"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]}}]} as unknown as DocumentNode<Alignment_UseDeletePndToOdsMutation, Alignment_UseDeletePndToOdsMutationVariables>;
 export const CreateInstitution_UseSaveInstitutionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateInstitution_useSaveInstitution"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateInstitutionDataInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"create"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"area"}},{"kind":"Field","name":{"kind":"Name","value":"level"}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]}}]}}]} as unknown as DocumentNode<CreateInstitution_UseSaveInstitutionMutation, CreateInstitution_UseSaveInstitutionMutationVariables>;
 export const GetInstitutions_UseGetInstitutionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetInstitutions_useGetInstitution"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"one"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"area"}},{"kind":"Field","name":{"kind":"Name","value":"level"}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]}}]}}]} as unknown as DocumentNode<GetInstitutions_UseGetInstitutionQuery, GetInstitutions_UseGetInstitutionQueryVariables>;
 export const GetInstitutions_UseInstitutionListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetInstitutions_useInstitutionList"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"list"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"records"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetInstitutions_UseInstitutionListQuery, GetInstitutions_UseInstitutionListQueryVariables>;
@@ -929,6 +1167,11 @@ export const GetInstitutionalPlan_UseGetInstitutionalPlanDocument = {"kind":"Doc
 export const GetInstitutionalPlan_UseInstitutionalPlanListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetInstitutionalPlan_useInstitutionalPlanList"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"institutionUid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institutionalPlan"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"list"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"institutionUid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"institutionUid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"records"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetInstitutionalPlan_UseInstitutionalPlanListQuery, GetInstitutionalPlan_UseInstitutionalPlanListQueryVariables>;
 export const UpdateInstitutionalPlan_UseSaveInstitutionalPlanDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateInstitutionalPlan_useSaveInstitutionalPlan"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateInstitutionalPlanDataInput"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateInstitutionalPlanWhereInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"institutionalPlan"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"update"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}},{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateInstitutionalPlan_UseSaveInstitutionalPlanMutation, UpdateInstitutionalPlan_UseSaveInstitutionalPlanMutationVariables>;
 export const ObjectiveOds_UseOdsListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ObjectiveODS_useODSList"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"objectiveODS"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"list"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"records"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]}}]}}]}}]} as unknown as DocumentNode<ObjectiveOds_UseOdsListQuery, ObjectiveOds_UseOdsListQueryVariables>;
+export const ObjectivePnd_UsePndCreateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ObjectivePND_usePNDCreate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateObjectivePNDDataInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"objectivePND"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"create"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]}}]}}]} as unknown as DocumentNode<ObjectivePnd_UsePndCreateMutation, ObjectivePnd_UsePndCreateMutationVariables>;
+export const ObjectivePnd_UsePndDeleteDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ObjectivePND_usePNDDelete"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteObjectivePNDInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"objectivePND"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"delete"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]}}]} as unknown as DocumentNode<ObjectivePnd_UsePndDeleteMutation, ObjectivePnd_UsePndDeleteMutationVariables>;
+export const ObjectivePnd_UsePndListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ObjectivePND_usePNDList"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"objectivePND"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"list"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"records"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"deletedAt"}}]}}]}}]}}]}}]} as unknown as DocumentNode<ObjectivePnd_UsePndListQuery, ObjectivePnd_UsePndListQueryVariables>;
+export const ObjectivePnd_UsePndOneDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ObjectivePND_usePNDOne"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"objectivePND"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"one"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"active"}},{"kind":"Field","name":{"kind":"Name","value":"deletedAt"}}]}}]}}]}}]} as unknown as DocumentNode<ObjectivePnd_UsePndOneQuery, ObjectivePnd_UsePndOneQueryVariables>;
+export const ObjectivePnd_UsePndUpdateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ObjectivePND_usePNDUpdate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateObjectivePNDWhereInput"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateObjectivePNDDataInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"objectivePND"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"update"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}},{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]}}]}}]} as unknown as DocumentNode<ObjectivePnd_UsePndUpdateMutation, ObjectivePnd_UsePndUpdateMutationVariables>;
 export const CreateProgram_UseCreateProgramDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateProgram_useCreateProgram"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateProgramDataInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"program"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"create"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]}}]}}]} as unknown as DocumentNode<CreateProgram_UseCreateProgramMutation, CreateProgram_UseCreateProgramMutationVariables>;
 export const GetPrograms_UseGetProgramDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPrograms_useGetProgram"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"program"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"one"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"responsible"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}}]}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]}}]}}]} as unknown as DocumentNode<GetPrograms_UseGetProgramQuery, GetPrograms_UseGetProgramQueryVariables>;
 export const GetProgramList_UseProgramListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetProgramList_useProgramList"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"program"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"list"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"records"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetProgramList_UseProgramListQuery, GetProgramList_UseProgramListQueryVariables>;

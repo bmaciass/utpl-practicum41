@@ -5,6 +5,7 @@ export interface InstitutionalObjectiveFilters {
   name?: string
   active?: boolean
   institutionId?: number
+  id?: number[]
 }
 
 export interface FindManyInstitutionalObjectivesOptions {

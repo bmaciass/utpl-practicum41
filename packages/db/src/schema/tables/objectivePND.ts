@@ -15,3 +15,6 @@ export const ObjectivePND = pgTable('ObjectivePND', {
   ...byColumns,
   ...timestampColumns,
 })
+
+export type ObjectivePNDRecord = typeof ObjectivePND.$inferSelect
+export type ObjectivePNDPayload = typeof ObjectivePND.$inferInsert

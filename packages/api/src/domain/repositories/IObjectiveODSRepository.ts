@@ -5,6 +5,7 @@ import type { ObjectiveODS } from '../entities/ObjectiveODS'
 export interface ObjectiveODSFilters {
   name?: TStringFilter
   active?: boolean
+  id?: number[]
 }
 
 export interface FindManyObjectiveODSOptions {

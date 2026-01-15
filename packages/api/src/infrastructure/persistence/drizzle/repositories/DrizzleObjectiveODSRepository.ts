@@ -1,8 +1,16 @@
 import type { Db } from '@sigep/db'
 import { ObjectiveODS as ObjectiveODSTable } from '@sigep/db'
 import { NotFoundError } from '@sigep/shared'
-import { type SQL, and, count, isNotNull, isNull, like } from 'drizzle-orm'
-import { compact, isNil } from 'lodash-es'
+import {
+  type SQL,
+  and,
+  count,
+  inArray,
+  isNotNull,
+  isNull,
+  like,
+} from 'drizzle-orm'
+import { compact, isEmpty, isNil } from 'lodash-es'
 import type { ObjectiveODS } from '~/domain/entities/ObjectiveODS'
 import type {
   FindManyObjectiveODSOptions,
@@ -72,6 +80,9 @@ export class DrizzleObjectiveODSRepository implements IObjectiveODSRepository {
           : isNotNull(ObjectiveODSTable.deletedAt)
         : null,
       where.name ? like(ObjectiveODSTable.name, `%${where.name}%`) : null,
+      where.id && !isEmpty(where.id)
+        ? inArray(ObjectiveODSTable.id, where.id)
+        : null,
     ])
   }
 }

@@ -21,3 +21,8 @@ export const AlignmentObjectivePNDWithODS = pgTable(
     ...timestampColumns,
   },
 )
+
+export type AlignmentObjectivePNDWithODSRecord =
+  typeof AlignmentObjectivePNDWithODS.$inferSelect
+export type AlignmentObjectivePNDWithODSPayload =
+  typeof AlignmentObjectivePNDWithODS.$inferInsert

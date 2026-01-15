@@ -1,3 +1,41 @@
+type AlignmentInstitutionalToPND {
+  createdAt: Date!
+  id: ID!
+  institutionalObjectiveUid: String!
+  pndObjectiveUid: String!
+}
+
+"""
+Alignment mutations
+"""
+type AlignmentMutations {
+  createInstitutionalToPND(
+    input: CreateAlignmentInstitutionalToPNDInput!
+  ): AlignmentInstitutionalToPND!
+  createPNDToODS(input: CreateAlignmentPNDToODSInput!): AlignmentPNDToODS!
+  deleteInstitutionalToPND(
+    input: DeleteAlignmentInstitutionalToPNDInput!
+  ): Boolean!
+  deletePNDToODS(input: DeleteAlignmentPNDToODSInput!): Boolean!
+}
+
+type AlignmentPNDToODS {
+  createdAt: Date!
+  id: ID!
+  odsObjectiveUid: String!
+  pndObjectiveUid: String!
+}
+
+input CreateAlignmentInstitutionalToPNDInput {
+  institutionalObjectiveUid: String!
+  pndObjectiveUid: String!
+}
+
+input CreateAlignmentPNDToODSInput {
+  odsObjectiveUid: String!
+  pndObjectiveUid: String!
+}
+
 input CreateInstitutionDataInput {
   area: InstitutionArea!
   level: InstitutionLevel!
@@ -15,6 +53,11 @@ input CreateInstitutionalPlanDataInput {
   name: String!
   url: String!
   year: Int!
+}
+
+input CreateObjectivePNDDataInput {
+  description: String!
+  name: String!
 }
 
 input CreateProgramDataInput {
@@ -68,6 +111,20 @@ An arbitrary-precision Decimal type.
 """
 scalar Decimal
 
+input DeleteAlignmentInstitutionalToPNDInput {
+  institutionalObjectiveUid: String!
+  pndObjectiveUid: String!
+}
+
+input DeleteAlignmentPNDToODSInput {
+  odsObjectiveUid: String!
+  pndObjectiveUid: String!
+}
+
+input DeleteObjectivePNDInput {
+  uid: String!
+}
+
 type Institution {
   active: Boolean!
   area: InstitutionArea!
@@ -116,6 +173,7 @@ type InstitutionQueries {
 
 type InstitutionalObjective {
   active: Boolean!
+  alignments: [AlignmentInstitutionalToPND!]!
   deletedAt: Date
   description: String!
   institution: Institution!
@@ -187,9 +245,11 @@ The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://
 scalar JSON
 
 type Mutation {
+  alignment: AlignmentMutations!
   institution: InstitutionMutations!
   institutionalObjective: InstitutionalObjectiveMutations!
   institutionalPlan: InstitutionalPlanMutations!
+  objectivePND: ObjectivePNDMutations!
   program: ProgramMutations!
   project: ProjectMutations!
   projectTask: ProjectTaskMutations!
@@ -198,6 +258,7 @@ type Mutation {
 
 type ObjectiveODS {
   active: Boolean!
+  alignmentsFromPND: [AlignmentPNDToODS!]!
   deletedAt: Date
   description: String!
   name: String!
@@ -213,6 +274,40 @@ type ObjectiveODSQueries {
 
 type ObjectiveODSQueryResponse {
   records: [ObjectiveODS!]!
+}
+
+type ObjectivePND {
+  active: Boolean!
+  alignmentsFromInstitutional: [AlignmentInstitutionalToPND!]!
+  alignmentsToODS: [AlignmentPNDToODS!]!
+  deletedAt: Date
+  description: String!
+  name: String!
+  uid: ID!
+}
+
+"""
+ObjectivePND mutations
+"""
+type ObjectivePNDMutations {
+  create(data: CreateObjectivePNDDataInput!): ObjectivePND!
+  delete(input: DeleteObjectivePNDInput!): Boolean!
+  update(
+    data: UpdateObjectivePNDDataInput!
+    where: UpdateObjectivePNDWhereInput!
+  ): ObjectivePND!
+}
+
+"""
+ObjectivePND queries
+"""
+type ObjectivePNDQueries {
+  list(active: Boolean, name: StringFilter): ObjectivePNDQueryResponse!
+  one(uid: String!): ObjectivePND!
+}
+
+type ObjectivePNDQueryResponse {
+  records: [ObjectivePND!]!
 }
 
 type Person {
@@ -350,6 +445,7 @@ type Query {
   institutionalObjective: InstitutionalObjectiveQueries!
   institutionalPlan: InstitutionalPlanQueries!
   objectiveODS: ObjectiveODSQueries!
+  objectivePND: ObjectivePNDQueries!
   program: ProgramQueries!
   project: ProjectQueries!
   projectTask: ProjectTaskQueries!
@@ -393,6 +489,16 @@ input UpdateInstitutionalPlanDataInput {
 }
 
 input UpdateInstitutionalPlanWhereInput {
+  uid: String!
+}
+
+input UpdateObjectivePNDDataInput {
+  active: Boolean
+  description: String
+  name: String
+}
+
+input UpdateObjectivePNDWhereInput {
   uid: String!
 }
 
