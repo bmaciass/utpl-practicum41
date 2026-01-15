@@ -1,11 +1,10 @@
-import { SignJWT, createLocalJWKSet, jwtVerify, type JWK } from 'jose'
+import { type JWK, SignJWT, createLocalJWKSet, jwtVerify } from 'jose'
 import { webcrypto } from 'node:crypto'
 import type {
   IJWTService,
-  TokenPayload,
   TokenPair,
+  TokenPayload,
 } from '~/domain/services/IJWTService'
-import { getJWKS } from '~/config/env'
 
 const ISSUER = 'auth.utpl-practicum.com'
 const ACCESS_TOKEN_EXP = '10m'
@@ -18,28 +17,19 @@ const REFRESH_TOKEN_EXP = '1w'
  * Nota: La inicialización del signer es lazy debido a requerimientos
  * de Cloudflare Workers (las claves se obtienen de env variables).
  */
-export class JWTService implements IJWTService {
-  private privateJWKString: string | null = null
-  private publicJWKString: string | null = null
+class JWTService implements IJWTService {
   private privateJWK: CryptoKey | null = null
-  private publicJWK: CryptoKey | null = null
-  private initialized = false
 
-  private async ensureInitialized(): Promise<void> {
-    if (this.initialized) return
-
-    const { privateJWK, publicJWK } = await getJWKS()
-    this.privateJWKString = privateJWK
-    this.publicJWKString = publicJWK
-    this.initialized = true
-  }
+  constructor(
+    private privateJWKString: string,
+    private publicJWKString: string,
+  ) {}
 
   private async getPrivateKey(): Promise<CryptoKey> {
-    await this.ensureInitialized()
     if (!this.privateJWK) {
       this.privateJWK = await webcrypto.subtle.importKey(
         'jwk',
-        JSON.parse(this.privateJWKString!),
+        JSON.parse(this.privateJWKString),
         'Ed25519',
         true,
         ['sign'],
@@ -49,9 +39,8 @@ export class JWTService implements IJWTService {
   }
 
   private async getPublicJWKSet() {
-    await this.ensureInitialized()
     return createLocalJWKSet({
-      keys: [JSON.parse(this.publicJWKString!) as JWK],
+      keys: [JSON.parse(this.publicJWKString) as JWK],
     })
   }
 
@@ -120,4 +109,10 @@ export class JWTService implements IJWTService {
 
     return this.createTokens(result.payload.sub)
   }
+}
+
+export async function getDefaultJWTService() {
+  const { getJWKS } = await import('~/config/env')
+  const { privateJWK, publicJWK } = await getJWKS()
+  return new JWTService(privateJWK, publicJWK)
 }

@@ -44,7 +44,7 @@ export function ProjectForm(props: {
 }) {
   const { project } = props
   const params = useParams()
-  const programId = params.programId as string
+  const programUid = params.programUid as string
   const shouldUpdate = !isNil(project)
 
   const {
@@ -57,7 +57,7 @@ export function ProjectForm(props: {
     updateProject,
     error: errorUpdate,
     loading: loadingUpdate,
-  } = useUpdateProject(programId)
+  } = useUpdateProject(programUid)
 
   const error = errorCreate ?? errorUpdate
   const loading = loadingCreate ?? loadingUpdate
@@ -87,9 +87,9 @@ export function ProjectForm(props: {
 
   useEffect(() => {
     if (proyectCreated) {
-      navigate(`/programs/${programId}/projects/${proyectCreated.id}`)
+      navigate(`/programs/${programUid}/projects/${proyectCreated.id}`)
     }
-  }, [proyectCreated, programId, navigate])
+  }, [proyectCreated, programUid, navigate])
 
   const onCancel = () => {
     navigate('/programs')
@@ -101,7 +101,7 @@ export function ProjectForm(props: {
       return
     }
     createProject({
-      variables: { data: { ...omit(values, ['active']), programId } },
+      variables: { data: { ...omit(values, ['active']), programUid } },
     })
   }
 

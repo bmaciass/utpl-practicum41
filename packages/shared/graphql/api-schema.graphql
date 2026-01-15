@@ -8,7 +8,6 @@ input CreateInstitutionalPlanDataInput {
   institutionId: String!
   name: String!
   url: String!
-  version: Int!
   year: Int!
 }
 
@@ -16,7 +15,7 @@ input CreateProgramDataInput {
   description: String!
   endDate: Date
   name: String!
-  responsibleId: String!
+  responsibleUid: String!
   startDate: Date
 }
 
@@ -30,12 +29,14 @@ input CreateProjectDataInput {
   status: ProjectStatus!
 }
 
-input CreateProjectGoalDataInput {
+input CreateProjectTaskDataInput {
+  description: String
   endDate: Date
   name: String!
   projectUid: String!
+  responsibleUid: String!
   startDate: Date
-  status: ProjectGoalStatus!
+  status: ProjectTaskStatus!
 }
 
 input CreateUserDataInput {
@@ -56,7 +57,9 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTime
 
-"""An arbitrary-precision Decimal type."""
+"""
+An arbitrary-precision Decimal type.
+"""
 scalar Decimal
 
 type Institution {
@@ -84,10 +87,15 @@ enum InstitutionLevel {
   nacional
 }
 
-"""Institution mutations"""
+"""
+Institution mutations
+"""
 type InstitutionMutations {
   create(data: CreateInstitutionDataInput!): Institution!
-  update(data: UpdateInstitutionDataInput!, where: UpdateInstitutionWhereInput!): Institution!
+  update(
+    data: UpdateInstitutionDataInput!
+    where: UpdateInstitutionWhereInput!
+  ): Institution!
 }
 
 type InstitutionPlan {
@@ -96,26 +104,39 @@ type InstitutionPlan {
   institution: Institution!
   name: String!
   uid: ID!
-  version: Int!
+  url: String!
   year: Int!
 }
 
-"""Institution queries"""
+"""
+Institution queries
+"""
 type InstitutionQueries {
   list(active: Boolean, name: StringFilter): InstitutionsQueryResponse!
   one(id: String!): Institution
 }
 
-"""Institution Plan mutations"""
+"""
+Institution Plan mutations
+"""
 type InstitutionalPlanMutations {
   create(data: CreateInstitutionalPlanDataInput!): InstitutionPlan!
-  update(data: UpdateInstitutionalPlanDataInput!, where: UpdateInstitutionalPlanWhereInput!): InstitutionPlan!
+  update(
+    data: UpdateInstitutionalPlanDataInput!
+    where: UpdateInstitutionalPlanWhereInput!
+  ): InstitutionPlan!
 }
 
-"""Institutional Plan queries"""
+"""
+Institutional Plan queries
+"""
 type InstitutionalPlanQueries {
-  list(active: Boolean, name: StringFilter): InstitutionalPlansQueryResponse!
-  one(id: String!): InstitutionPlan
+  list(
+    active: Boolean
+    institutionUid: String!
+    name: StringFilter
+  ): InstitutionalPlansQueryResponse!
+  one(uid: String!): InstitutionPlan
 }
 
 type InstitutionalPlansQueryResponse {
@@ -136,8 +157,27 @@ type Mutation {
   institutionalPlan: InstitutionalPlanMutations!
   program: ProgramMutations!
   project: ProjectMutations!
-  projectGoal: ProjectGoalMutations!
+  projectTask: ProjectTaskMutations!
   user: UserMutations!
+}
+
+type ObjectiveODS {
+  active: Boolean!
+  deletedAt: Date
+  description: String!
+  name: String!
+  uid: ID!
+}
+
+"""
+ObjectiveODS queries
+"""
+type ObjectiveODSQueries {
+  list(active: Boolean, name: StringFilter): ObjectiveODSQueryResponse!
+}
+
+type ObjectiveODSQueryResponse {
+  records: [ObjectiveODS!]!
 }
 
 type Person {
@@ -160,13 +200,20 @@ type Program {
   uid: ID!
 }
 
-"""Program mutations"""
+"""
+Program mutations
+"""
 type ProgramMutations {
   create(data: CreateProgramDataInput!): Program!
-  update(data: UpdateProgramDataInput!, where: UpdateProgramWhereInput!): Program!
+  update(
+    data: UpdateProgramDataInput!
+    where: UpdateProgramWhereInput!
+  ): Program!
 }
 
-"""Program queries"""
+"""
+Program queries
+"""
 type ProgramQueries {
   list(active: Boolean, name: StringFilter): ProgramsQueryResponse!
   one(id: String!): Program
@@ -181,56 +228,29 @@ type Project {
   deletedAt: Date
   description: String
   endDate: Date
-  goals: [ProjectGoal!]!
   name: String!
-  program: Program
+  program: Program!
   responsible: User!
   startDate: Date
   status: ProjectStatus!
+  tasks: [ProjectTask!]!
   uid: ID!
 }
 
-type ProjectGoal {
-  active: Boolean!
-  deletedAt: Date
-  endDate: Date
-  name: String!
-  startDate: Date
-  status: ProjectGoalStatus!
-  uid: ID!
-}
-
-"""ProjectGoal mutations"""
-type ProjectGoalMutations {
-  create(data: CreateProjectGoalDataInput!): ProjectGoal!
-  update(data: UpdateProjectGoalDataInput!, where: UpdateProjectGoalWhereInput!): ProjectGoal!
-}
-
-"""ProjectGoal queries"""
-type ProjectGoalQueries {
-  list(projectUid: String!): ProjectGoalsQueryResponse!
-  one(id: String!): ProjectGoal
-}
-
-enum ProjectGoalStatus {
-  cancelled
-  done
-  in_progress
-  pending
-  reviewing
-}
-
-type ProjectGoalsQueryResponse {
-  records: [ProjectGoal!]!
-}
-
-"""Project mutations"""
+"""
+Project mutations
+"""
 type ProjectMutations {
   create(data: CreateProjectDataInput!): Project!
-  update(data: UpdateProjectDataInput!, where: UpdateProjectWhereInput!): Project!
+  update(
+    data: UpdateProjectDataInput!
+    where: UpdateProjectWhereInput!
+  ): Project!
 }
 
-"""Project queries"""
+"""
+Project queries
+"""
 type ProjectQueries {
   list(active: Boolean, programId: String!): ProjectsQueryResponse!
   one(id: String!): Project
@@ -243,6 +263,49 @@ enum ProjectStatus {
   pending
 }
 
+type ProjectTask {
+  active: Boolean!
+  deletedAt: Date
+  description: String
+  endDate: Date
+  name: String!
+  responsible: User!
+  startDate: Date
+  status: ProjectTaskStatus!
+  uid: ID!
+}
+
+"""
+ProjectTask mutations
+"""
+type ProjectTaskMutations {
+  create(data: CreateProjectTaskDataInput!): ProjectTask!
+  update(
+    data: UpdateProjectTaskDataInput!
+    where: UpdateProjectTaskWhereInput!
+  ): ProjectTask!
+}
+
+"""
+ProjectTask queries
+"""
+type ProjectTaskQueries {
+  list(projectUid: String!, responsibleUid: String): ProjectTasksQueryResponse!
+  one(uid: String!): ProjectTask!
+}
+
+enum ProjectTaskStatus {
+  cancelled
+  done
+  in_progress
+  pending
+  reviewing
+}
+
+type ProjectTasksQueryResponse {
+  records: [ProjectTask!]!
+}
+
 type ProjectsQueryResponse {
   records: [Project!]!
 }
@@ -250,9 +313,10 @@ type ProjectsQueryResponse {
 type Query {
   institution: InstitutionQueries!
   institutionalPlan: InstitutionalPlanQueries!
+  objectiveODS: ObjectiveODSQueries!
   program: ProgramQueries!
   project: ProjectQueries!
-  projectGoal: ProjectGoalQueries!
+  projectTask: ProjectTaskQueries!
   user: UserQueries!
 }
 
@@ -275,13 +339,14 @@ input UpdateInstitutionWhereInput {
 }
 
 input UpdateInstitutionalPlanDataInput {
-  active: Boolean!
-  name: String!
-  year: Int!
+  active: Boolean
+  name: String
+  url: String
+  year: Int
 }
 
 input UpdateInstitutionalPlanWhereInput {
-  id: String!
+  uid: String!
 }
 
 input UpdateProgramDataInput {
@@ -307,16 +372,18 @@ input UpdateProjectDataInput {
   status: ProjectStatus
 }
 
-input UpdateProjectGoalDataInput {
+input UpdateProjectTaskDataInput {
   active: Boolean
+  description: String
   endDate: Date
   name: String
+  responsibleUid: String
   startDate: Date
-  status: ProjectGoalStatus
+  status: ProjectTaskStatus
 }
 
-input UpdateProjectGoalWhereInput {
-  id: String!
+input UpdateProjectTaskWhereInput {
+  uid: String!
 }
 
 input UpdateProjectWhereInput {
@@ -343,13 +410,17 @@ type User {
   uid: ID!
 }
 
-"""User mutations"""
+"""
+User mutations
+"""
 type UserMutations {
   create(data: CreateUserDataInput!): User!
   update(data: UpdateUserDataInput!, where: UpdateUserWhereInput!): User!
 }
 
-"""User queries"""
+"""
+User queries
+"""
 type UserQueries {
   list(active: Boolean, name: StringFilter): UsersQueryResponse!
   one(id: String!): User

@@ -1,0 +1,1 @@
+ALTER TABLE "InstitutionalPlan" DROP COLUMN "version";

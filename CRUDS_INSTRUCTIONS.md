@@ -14,7 +14,7 @@ Create CRUD pages for each domain listed.
 - Institution
 - Program
 - Project
-- ProjectGoal
+- ProjectTask
 
 Domains are located at packages/api/src/domain
 
@@ -22,9 +22,14 @@ In order to know how they are related in terms of data, you can check packages/d
 
 From now on, the word domain can also be used as resource.
 
+## General considerations
+
+- Avoid writing the return types for any function unless explicitly asked
+- The only field that identifies uniquely a resource is uid and that's the field name that should be used across the frontend. This is not only included to variables and graphql fields but also to the parameters inside the route file name.
+
 ## Manipulating data
 
-Each resource should have its own hook that uses apollo graphql to fetch the information. You can check the schema at `packages/shared/graphql/api-schema.graphql`. So, there must exist an individual hook for getting the list of resources, another hook for getting an unique element and a hook to update a resource. There are some hooks already created at `packages/ui/app/hooks/`.
+Each resource should have its own hook that uses apollo graphql to fetch the information. You must check the schema at `packages/shared/graphql/api-schema.graphql` in order to create the right query or mutation with the right parameters and fields to return taking in consideration that the name of a query or mutation must be unique. So, there must exist an individual hook for getting the list of resources, another hook for getting an unique element and a hook to update a resource. A query hook must return an object with: `{ error: ApolloError | undefined, loading: boolean, resourceName: Resource | undefined | null }`, where resource and ResourceName must be a coherent name related to the hook. A mutation hook must return an object with: `{ error: ApolloError | undefined, loading: boolean, resourceName: Resource | undefined | null, actionFunction: any }`, where resource and ResourceName must be a coherent name related to the hook and the action function should be named after the action applied over the resource name. There are some hooks already created at `packages/ui/app/hooks/`.
 
 ## Functionality
 
@@ -95,10 +100,88 @@ Forms will be used when it comes to showing detailed information about a resourc
 This page must be inside a container with a flex display with column direction. This page must include a button `New` located at the right that will open the detailed resource page with an empty form (it will navigate to `/<resource>/new`). Below the button,  it should render the list of resources.
 
 
-#### Resource page structure
+#### General Resource page structure
 
 The page for the resource's details must have a delete button at the top right. The delete button will open a dialog in order to confirm the soft-deletion. After the operation is completed, the page should navigate back to the list. This operation should be done by their corresponding update hook. Below the button it should render the form component.
 If the resource has nested components; for instance, a single project can have multiple goals; then, a button with a text `View Goals` must appear at the top left of the page. When the user clicks `View Goals` the page must redirect them to `project/xyz/goals`.
+
+
+#### Other pages
+
+##### Project page
+
+This page must focus on visualizing and managing project details and project tasks.
+
+Core requirements:
+- Tasks belong to a single project.
+- Tasks have the following attributes:
+  - name
+  - description
+  - start date
+  - end date
+  - assigned to (user)
+  - status
+
+You can check the tables to see how they relate.
+
+The Project Page must be composed of two main components:
+- ProjectDetailsSection
+- ProjectTasksSection
+
+Those will be shown one after another in that order in column direction.
+
+Project Detail visualization:
+- Details will be shown on top of the page.
+- Details will contain an Edit button
+- Details will contain the following fields on its form:
+  - Name
+  - Description
+  - Start date
+  - End date
+  - Responsible User (using the select component)
+  - At the end of the form, it will these buttons:
+    - Delete
+    - Save
+    - Cancel
+
+Project Detail interaction:
+- Clicking Edit will open a Dialog with a Form will all fields enabled.
+- Clicking Delete will ask for confirmation and after confirmation will call the update mutation to set active: false
+- Clicking Delete will ask for confirmation and after confirmation will call the update mutation
+- Clicking Cancel will close the Dialog
+
+Task visualization:
+- Tasks section will be shown after the Project Details
+- Display tasks in a list grouped by status (e.g. To Do, In Progress, Blocked, Done).
+- Each task should appear as a compact card showing:
+  - task name
+  - assigned user
+  - start–end date range
+  - Hamburger icon button that will show a menu with a delete option when clicked.
+- A ProjectTaskStatusSelect component should be created, similar to the UserSelect component. This component will be rendered in the form only.
+- Start and end dates should use a TextInput that will be coerced to Date.
+
+Task Interaction:
+- Clicking a task opens a task detail view using the AlertDialog.
+- Clicking the menu icon will show a delete option.
+- Clicking delete will ask for confirmation and call the update mutation to set active: false
+- The task detail view must show:
+  - name
+  - full description
+  - start date
+  - end date
+  - assigned to
+  - current status
+
+Constraints:
+- The UI should feel enterprise-grade and restrained (no playful or flashy elements).
+- The design must work well even with many tasks.
+
+Goal:
+- Make it easy to understand project execution status at a glance.
+- Prioritize readability and low implementation complexity
+
+
 
 
 #### Actions

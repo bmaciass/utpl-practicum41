@@ -1,19 +1,19 @@
 import { relations } from 'drizzle-orm/relations'
 import { Project } from '../tables/project'
-import { ProjectGoal } from '../tables/projectGoal'
+import { ProjectTask } from '../tables/projectTask'
 import { User } from '../tables/user'
 
-export const projectGoalsRelations = relations(ProjectGoal, ({ one }) => ({
+export const projectGoalsRelations = relations(ProjectTask, ({ one }) => ({
   project: one(Project, {
-    fields: [ProjectGoal.projectId],
+    fields: [ProjectTask.projectId],
     references: [Project.id],
   }),
   createdBy: one(User, {
-    fields: [ProjectGoal.createdBy],
+    fields: [ProjectTask.createdBy],
     references: [User.id],
   }),
   updatedBy: one(User, {
-    fields: [ProjectGoal.updatedBy],
+    fields: [ProjectTask.updatedBy],
     references: [User.id],
   }),
 }))

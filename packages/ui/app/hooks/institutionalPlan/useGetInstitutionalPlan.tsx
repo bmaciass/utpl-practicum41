@@ -2,23 +2,27 @@ import { useQuery } from '@apollo/client/react/index.js'
 import { graphql } from '~/gql'
 
 const query = graphql(`
-  query GetInstitutions_useGetInstitution ($id: String!) {
-    institution {
-      one (id: $id) {
+  query GetInstitutionalPlan_useGetInstitutionalPlan ($uid: String!) {
+    institutionalPlan {
+      one (uid: $uid) {
         uid
         name
-        area
-        level
-        active
+        year
+        url
       }
     }
   }
 `)
 
-export const useGetInstitution = (id: string) => {
+export const useGetInstitutionalPlan = (uid: string) => {
   const { called, loading, data, error } = useQuery(query, {
-    variables: { id },
+    variables: { uid },
   })
 
-  return { called, loading, institution: data?.institution.one, error }
+  return {
+    called,
+    loading,
+    institutionalPlan: data?.institutionalPlan.one,
+    error,
+  }
 }

@@ -5,18 +5,21 @@ import {
   Person,
   Program,
   Project,
-  ProjectGoal,
+  ProjectTask,
   User,
   executeMigration,
   getDBConnection,
 } from '@sigep/db'
 import { nanoid } from 'nanoid/non-secure'
+import { seedODSObjectives } from './seedODSObjectives'
+import { seedPNDObjectives } from './seedPNDObjectives'
+import { seedPNDODSAlignment } from './seedPNDODSAlignment'
 
 async function recreatePublicSchema(db: Db) {
   await db.execute('DROP SCHEMA "public" CASCADE; CREATE SCHEMA "public";')
 }
 
-async function seedOrganizationData(db: Db) {
+async function seedOrganizationData(db: Db): Promise<{ adminUserId: number }> {
   const [adminPerson, opPerson] = await db
     .insert(Person)
     .values([
@@ -92,13 +95,16 @@ async function seedOrganizationData(db: Db) {
     })
     .returning()
 
-  await db.insert(ProjectGoal).values({
+  await db.insert(ProjectTask).values({
     name: 'terminar el proyecto',
     createdBy: userAdmin.id,
     status: 'in_progress',
     projectId: project.id,
+    responsibleId: userOperative.id,
     uid: nanoid(),
   })
+
+  return { adminUserId: userAdmin.id }
 }
 
 async function main() {
@@ -111,7 +117,10 @@ async function main() {
   await db.transaction(async (tx) => {
     await recreatePublicSchema(tx)
     await executeMigration(tx)
-    await seedOrganizationData(tx)
+    const { adminUserId } = await seedOrganizationData(tx)
+    await seedODSObjectives(tx, adminUserId)
+    await seedPNDObjectives(tx, adminUserId)
+    await seedPNDODSAlignment(tx, adminUserId)
   })
   await client.end()
 }

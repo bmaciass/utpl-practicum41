@@ -10,13 +10,15 @@ export const InstitutionalPlanDetailPage = () => {
   const { uid, institutionUid } = useParams()
   const navigate = useNavigate()
 
+  if (!uid || !institutionUid) throw new Error('Invalid parameters')
+
   const {
     updateInstitutionalPlan,
     loading: loadingDelete,
     error: errorDelete,
   } = useUpdateInstitutionalPlan()
 
-  const { error, loading, institutionalPlan } = useGetInstitutionalPlan(uid!)
+  const { error, loading, institutionalPlan } = useGetInstitutionalPlan(uid)
 
   const handleDelete = () => {
     const confirmed = window.confirm(
@@ -27,10 +29,8 @@ export const InstitutionalPlanDetailPage = () => {
         variables: {
           data: {
             active: false,
-            name: institutionalPlan.name,
-            year: institutionalPlan.year,
           },
-          where: { id: uid! },
+          where: { uid: uid },
         },
         onCompleted: () => {
           navigate(`/institutions/${institutionUid}/plans?deleted=success`)
@@ -68,7 +68,7 @@ export const InstitutionalPlanDetailPage = () => {
           </div>
           <InstitutionalPlanForm
             institutionalPlan={institutionalPlan}
-            institutionUid={institutionUid!}
+            institutionUid={institutionUid}
           />
         </div>
       )}

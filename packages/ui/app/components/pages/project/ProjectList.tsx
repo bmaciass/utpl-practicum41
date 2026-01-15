@@ -14,14 +14,14 @@ export const ProjectList = (props: {
   const projectList = shallowClonedList.map((record) => {
     return (
       <>
-        <Separator key={`separator-${record.id}`} />
-        <ProjectCard key={`${record.id}`} project={record} />
+        <Separator key={`separator-${record.uid}`} />
+        <ProjectCard key={`${record.uid}`} project={record} />
       </>
     )
   })
 
   projectList.unshift(
-    <ProjectCard key={firstRecord.id} project={firstRecord} />,
+    <ProjectCard key={firstRecord.uid} project={firstRecord} />,
   )
 
   return <>{projectList}</>

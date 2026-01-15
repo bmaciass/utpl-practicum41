@@ -10,15 +10,15 @@ builder.objectField(InstitutionalPlanQueries, 'one', (t) =>
     nullable: true,
     authScopes: { protected: true },
     args: {
-      id: t.arg.string({ required: true }),
+      uid: t.arg.string({ required: true }),
     },
-    resolve: async (_, { id }, { db }) => {
+    resolve: async (_, { uid }, { db }) => {
       const institutionalPlanRepository = getInstitutionalPlanRepository(db)
       const getPlanById = new GetInstitutionalPlanById({
         institutionalPlanRepository,
       })
 
-      const plan = await getPlanById.execute(id)
+      const plan = await getPlanById.execute(uid)
       if (!plan) return null
 
       return {
@@ -26,7 +26,6 @@ builder.objectField(InstitutionalPlanQueries, 'one', (t) =>
         name: plan.name,
         active: plan.active,
         url: plan.url,
-        version: plan.version,
         year: plan.year,
         deletedAt: plan.deletedAt,
         institutionId: plan.institutionId,

@@ -8,6 +8,48 @@
       "when": 1768062295031,
       "tag": "0000_init",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1768362805798,
+      "tag": "0001_remove_version_plan",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1768404037936,
+      "tag": "0002_rename-project-goal-task",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1768435364433,
+      "tag": "0003_add-ods-description",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1768436220114,
+      "tag": "0004_add-pnd-description",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1768442897430,
+      "tag": "0005_add-ods-deletedAt",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1768445958570,
+      "tag": "0006_add-pnd-deleted-at",
+      "breakpoints": true
     }
   ]
 }

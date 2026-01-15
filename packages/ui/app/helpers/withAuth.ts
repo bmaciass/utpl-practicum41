@@ -4,7 +4,7 @@ import {
   type LoaderFunctionArgs,
   redirect,
 } from '@remix-run/cloudflare'
-import { JWTService } from '@sigep/api'
+import { getDefaultJWTService } from '@sigep/api'
 import { getAccessTokenCookie } from '~/cookies/access-token.server'
 
 type ProtectedLoader<LR = unknown> = (
@@ -33,7 +33,7 @@ export function withAuth<LR>(
       return redirect('/login')
     }
 
-    const jwtService = new JWTService()
+    const jwtService = await getDefaultJWTService()
     const payload = await jwtService.verifyAccessToken(token)
 
     if (!payload) {

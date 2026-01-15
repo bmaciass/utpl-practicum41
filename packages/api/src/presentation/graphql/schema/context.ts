@@ -3,8 +3,8 @@ import type { JWTAccessTokenPayload } from '~/helpers/session/types'
 import type { createInstitutionLoader } from '../dataloaders/institutionLoader'
 import type { createPersonLoader } from '../dataloaders/personLoader'
 import type { createProgramLoader } from '../dataloaders/programLoader'
-import type { createProjectGoalsByProjectLoader } from '../dataloaders/projectGoalsByProjectLoader'
 import type { createProjectLoader } from '../dataloaders/projectLoader'
+import type { createProjectTasksByProjectLoader } from '../dataloaders/projectTasksByProjectLoader'
 import type { createProjectByProgramLoader } from '../dataloaders/projectsByProgram'
 import type { createUserLoader } from '../dataloaders/userLoader'
 
@@ -14,7 +14,7 @@ export type AppDataloaders = {
   person: ReturnType<typeof createPersonLoader>
   program: ReturnType<typeof createProgramLoader>
   project: ReturnType<typeof createProjectLoader>
-  projectGoalsByProject: ReturnType<typeof createProjectGoalsByProjectLoader>
+  projectGoalsByProject: ReturnType<typeof createProjectTasksByProjectLoader>
   projectByProgramId: ReturnType<typeof createProjectByProgramLoader>
 }
 

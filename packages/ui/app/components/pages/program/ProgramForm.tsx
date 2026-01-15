@@ -30,7 +30,7 @@ const formSchema = z.object({
   description: z.string(),
   // startDate: z.date(),
   // endDate: z.date(),
-  responsibleId: z.string().nonoptional(),
+  responsibleUid: z.string().nonoptional(),
   active: z.boolean(),
 })
 
@@ -63,7 +63,7 @@ export function ProgramForm(props: {
       description: '',
       // startDate: new Date(),
       // endDate: new Date(),
-      responsibleId: '',
+      responsibleUid: '',
       active: true,
     },
   })
@@ -72,6 +72,7 @@ export function ProgramForm(props: {
     if (program) {
       form.reset({
         ...program,
+        responsibleUid: program.responsible.uid,
         description: program.description ?? undefined,
       })
     }
@@ -79,7 +80,7 @@ export function ProgramForm(props: {
 
   useEffect(() => {
     if (programCreated) {
-      navigate(`/programs/${programCreated.id}`)
+      navigate(`/programs/${programCreated.uid}`)
     }
   }, [programCreated, navigate])
 
@@ -89,7 +90,7 @@ export function ProgramForm(props: {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     if (shouldUpdate) {
-      updateProgram({ variables: { data: values, where: { id: program.id } } })
+      updateProgram({ variables: { data: values, where: { id: program.uid } } })
       return
     }
     createProgram({ variables: { data: omit(values, ['active']) } })
@@ -134,7 +135,7 @@ export function ProgramForm(props: {
           />
           <FormField
             control={form.control}
-            name='responsibleId'
+            name='responsibleUid'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Responsable</FormLabel>

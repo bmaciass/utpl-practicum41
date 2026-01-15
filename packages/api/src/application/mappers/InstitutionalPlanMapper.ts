@@ -8,7 +8,6 @@ export class InstitutionalPlanMapper {
       uid: entity.uid,
       name: entity.name,
       year: entity.year,
-      version: entity.version,
       url: entity.url,
       active: entity.active,
       deletedAt: entity.deletedAt,

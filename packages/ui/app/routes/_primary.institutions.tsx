@@ -40,8 +40,8 @@ const InstitutionsSection = () => {
 
 const InstitutionsPage = () => {
   return (
-    <div className='grid grid-cols-6 gap-4'>
-      <div className='col-span-3 col-start-1 p-4'>
+    <div className='grid grid-cols-8 gap-4'>
+      <div className='col-span-2 col-start-1 p-4'>
         <div className='flex'>
           <div className='grow'>
             <Title variant='h4'>Instituciones</Title>
@@ -54,7 +54,7 @@ const InstitutionsPage = () => {
         </div>
         <InstitutionsSection />
       </div>
-      <div className='col-span-3 col-start-4 p-4'>
+      <div className='col-span-6 col-start-3 p-4'>
         <Outlet />
       </div>
     </div>

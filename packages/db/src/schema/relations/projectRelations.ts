@@ -1,11 +1,11 @@
 import { relations } from 'drizzle-orm/relations'
 import { Program } from '../tables/program'
 import { Project } from '../tables/project'
-import { ProjectGoal } from '../tables/projectGoal'
+import { ProjectTask } from '../tables/projectTask'
 import { User } from '../tables/user'
 
 export const projectRelations = relations(Project, ({ one, many }) => ({
-  goals: many(ProjectGoal),
+  goals: many(ProjectTask),
   program: one(Program, {
     fields: [Project.programId],
     references: [Program.id],

@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useNavigate, useSubmit } from '@remix-run/react'
+import { useNavigate } from '@remix-run/react'
 import { isNil } from 'lodash-es'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
@@ -20,9 +20,7 @@ import { Input } from '~/components/ui/input'
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select'
@@ -85,7 +83,7 @@ export function InstitutionForm(props: {
 
   useEffect(() => {
     if (institutionCreated) {
-      navigate(`/institutions/${institutionCreated.id}`)
+      navigate(`/institutions/${institutionCreated.uid}`)
     }
   }, [institutionCreated, navigate])
 
@@ -103,7 +101,7 @@ export function InstitutionForm(props: {
             name: values.name,
             active: values.active,
           },
-          where: { id: institution.id },
+          where: { id: institution.uid },
         },
       })
       return

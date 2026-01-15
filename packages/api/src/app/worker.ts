@@ -3,13 +3,12 @@ import { getDBConnection } from '@sigep/db'
 import { useCookies } from '@whatwg-node/server-plugin-cookies'
 import { env } from 'cloudflare:workers'
 import { createYoga } from 'graphql-yoga'
-import { JWTService } from '~/infrastructure/services/JWTService'
-import { PasswordService } from '~/infrastructure/services/PasswordService'
+import { getDefaultJWTService } from '~/infrastructure/services/JWTService'
 import { createInstitutionLoader } from '~/presentation/graphql/dataloaders/institutionLoader'
 import { createPersonLoader } from '~/presentation/graphql/dataloaders/personLoader'
 import { createProgramLoader } from '~/presentation/graphql/dataloaders/programLoader'
-import { createProjectGoalsByProjectLoader } from '~/presentation/graphql/dataloaders/projectGoalsByProjectLoader'
 import { createProjectLoader } from '~/presentation/graphql/dataloaders/projectLoader'
+import { createProjectTasksByProjectLoader } from '~/presentation/graphql/dataloaders/projectTasksByProjectLoader'
 import { createProjectByProgramLoader } from '~/presentation/graphql/dataloaders/projectsByProgram'
 import { createUserLoader } from '~/presentation/graphql/dataloaders/userLoader'
 import { useResponse } from '~/presentation/graphql/plugins/onResponse'
@@ -18,10 +17,6 @@ import type {
   AppContext,
   AppDataloaders,
 } from '~/presentation/graphql/schema/context'
-
-// Services are stateless, create once
-const jwtService = new JWTService()
-const passwordService = new PasswordService()
 
 export const getAccessTokenCookie = (secret: string) =>
   createCookie('access-token-cookie', {
@@ -47,7 +42,9 @@ async function createContext(request: Request, env: Env): Promise<AppContext> {
   )
   if (!tokenString) throw new Error('token not found')
 
-  const payload = await jwtService.verifyAccessToken(tokenString)
+  const payload = await (await getDefaultJWTService()).verifyAccessToken(
+    tokenString,
+  )
   if (!payload) throw new Error('invalid token')
 
   const token = {
@@ -66,7 +63,7 @@ async function createContext(request: Request, env: Env): Promise<AppContext> {
     person: createPersonLoader(db),
     program: createProgramLoader(db),
     project: createProjectLoader(db),
-    projectGoalsByProject: createProjectGoalsByProjectLoader(db),
+    projectGoalsByProject: createProjectTasksByProjectLoader(db),
     projectByProgramId: createProjectByProgramLoader(db),
   } satisfies AppDataloaders
 

@@ -4,7 +4,7 @@ import { Institution } from './Institution'
 
 export type TInstitutionalPlan = Pick<
   InstitutionalPlanRecord,
-  'uid' | 'deletedAt' | 'name' | 'url' | 'version' | 'year' | 'institutionId'
+  'uid' | 'deletedAt' | 'name' | 'url' | 'year' | 'institutionId'
 > & {
   active: boolean
 }
@@ -20,8 +20,8 @@ export const InstitutionalPlan = builder
         type: 'Boolean',
         resolve: (institutionalPlan) => institutionalPlan.deletedAt === null,
       }),
-      version: t.exposeInt('version'),
       year: t.exposeInt('year'),
+      url: t.exposeString('url'),
       institution: t.field({
         type: Institution,
         resolve: (institutionalPlan, _, { loaders }) => {

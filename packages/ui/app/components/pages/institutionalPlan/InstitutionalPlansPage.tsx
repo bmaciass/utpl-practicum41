@@ -1,5 +1,6 @@
 import { Link, Outlet, useParams } from '@remix-run/react'
 import { isEmpty } from 'lodash-es'
+import { ArrowLeft } from 'lucide-react'
 import { Alert } from '~/components/globals/Alert'
 import { Title } from '~/components/typography/Headers'
 import { Paragraph } from '~/components/typography/Paragraph'
@@ -53,7 +54,14 @@ export const InstitutionalPlansPage = () => {
   return (
     <div className='grid grid-cols-6 gap-4'>
       <div className='col-span-3 col-start-1 p-4'>
-        <div className='flex'>
+        <div className='flex items-center gap-2'>
+          <div className='flex-none'>
+            <Link to={`/institutions/${institutionUid}`}>
+              <Button variant='ghost' size='icon'>
+                <ArrowLeft className='h-4 w-4' />
+              </Button>
+            </Link>
+          </div>
           <div className='grow'>
             <Title variant='h4'>Planes Institucionales</Title>
           </div>

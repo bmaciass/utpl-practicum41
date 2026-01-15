@@ -6,19 +6,19 @@ import type { GetProjectList_UseProjectListQuery } from '~/gql/graphql'
 export const ProjectCard = (data: {
   project: GetProjectList_UseProjectListQuery['project']['list']['records'][number]
 }) => {
-  const { id, name, programId } = data.project
+  const { uid, name, program } = data.project
   const navigate = useNavigate()
 
   const handleOnClick = (id: string) => {
-    navigate(`/programs/${programId}/projects/${id}`)
+    navigate(`/programs/${program.uid}/projects/${uid}`)
   }
 
   return (
     <Card
       className='cursor-pointer'
-      key={`project-${id}`}
+      key={`project-${uid}`}
       onClick={() => {
-        handleOnClick(id)
+        handleOnClick(uid)
       }}
     >
       <CardHeader>

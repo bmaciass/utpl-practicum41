@@ -6,23 +6,24 @@ export const ProgramList = (props: {
   list: GetProgramList_UseProgramListQuery['program']['list']['records']
 }) => {
   const { list } = props
-  const shallowClonedList = [...list]
 
-  const firstRecord = shallowClonedList.shift()
+  const shallowList = [...list]
+
+  const firstRecord = shallowList.shift()
   if (!firstRecord) return null
 
-  const institutionList = shallowClonedList.map((record) => {
+  const programList = shallowList.map((program) => {
     return (
       <>
-        <Separator key={`separator-${record.id}`} />
-        <ProgramCard key={`${record.id}`} program={record} />
+        <Separator key={`separator-${program.uid}`} />
+        <ProgramCard key={`${program.uid}`} program={program} />
       </>
     )
   })
 
-  institutionList.unshift(
-    <ProgramCard key={firstRecord.id} program={firstRecord} />,
+  programList.unshift(
+    <ProgramCard key={firstRecord.uid} program={firstRecord} />,
   )
 
-  return <>{institutionList}</>
+  return <>{programList}</>
 }

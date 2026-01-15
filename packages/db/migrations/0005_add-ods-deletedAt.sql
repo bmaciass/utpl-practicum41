@@ -1,0 +1,1 @@
+ALTER TABLE "ObjectivePND" ADD COLUMN "deletedAt" timestamp;

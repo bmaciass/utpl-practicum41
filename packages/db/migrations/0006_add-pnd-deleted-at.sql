@@ -1,0 +1,1 @@
+ALTER TABLE "ObjectiveODS" ADD COLUMN "deletedAt" timestamp;

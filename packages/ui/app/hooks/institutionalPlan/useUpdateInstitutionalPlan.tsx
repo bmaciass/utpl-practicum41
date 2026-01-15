@@ -3,25 +3,28 @@ import { graphql } from '~/gql'
 import { query } from './useInstitutionalPlanList'
 
 const updateMutation = graphql(`
-  mutation UpdateInstitution_useSaveInstitution ($data: UpdateInstitutionDataInput!, $where: UpdateInstitutionWhereInput!) {
-    institution {
+  mutation UpdateInstitutionalPlan_useSaveInstitutionalPlan ($data: UpdateInstitutionalPlanDataInput!, $where: UpdateInstitutionalPlanWhereInput!) {
+    institutionalPlan {
       update (data: $data, where: $where) {
         uid
         name
-        area
-        level
-        active
       }
     }
   }
 `)
 
-export const useUpdateInstitution = () => {
+export const useUpdateInstitutionalPlan = () => {
   const [fn, { called, loading, error, data }] = useMutation(updateMutation, {
     refetchQueries: [{ query }],
   })
 
-  const institution = data?.institution.update
+  const institutionalPlan = data?.institutionalPlan.update
 
-  return { called, loading, error, institution, updateInstitution: fn }
+  return {
+    called,
+    loading,
+    error,
+    institutionalPlan,
+    updateInstitutionalPlan: fn,
+  }
 }

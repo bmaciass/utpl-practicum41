@@ -1,7 +1,7 @@
 import {
   type LoaderFunction,
   type MetaFunction,
-  redirect
+  redirect,
 } from '@remix-run/cloudflare'
 import { withAuth } from '~/helpers/withAuth'
 

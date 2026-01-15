@@ -1,4 +1,6 @@
 export { LoginUseCase } from './application/use-cases/auth/Login'
+export { RefreshTokenUseCase } from './application/use-cases/auth/RefreshToken'
+export { getJWKS } from './config/env'
 export { DrizzleRoleRepository } from './infrastructure/persistence/drizzle/repositories/DrizzleRoleRepository'
 export { DrizzleUserRepository } from './infrastructure/persistence/drizzle/repositories/DrizzleUserRepository'
-export { JWTService } from './infrastructure/services/JWTService'
+export { getDefaultJWTService } from './infrastructure/services/JWTService'

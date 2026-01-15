@@ -2,6 +2,7 @@ import { CreateInstitutionalPlan } from '~/application/use-cases/institutional-p
 import {
   getInstitutionRepository,
   getInstitutionalPlanRepository,
+  getUserRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
 import builder from '../../../schema/builder'
 import { InstitutionalPlan } from '../../objects/InstitutionalPlan'
@@ -11,7 +12,6 @@ type TCreateInstitutionalPlanDataInput = {
   name: string
   url: string
   year: number
-  version: number
   institutionId: string
 }
 
@@ -24,7 +24,6 @@ export const CreateInstitutionalPlanDataInput = builder
       name: t.string(),
       institutionId: t.string(),
       url: t.string(),
-      version: t.int(),
       year: t.int(),
     }),
   })
@@ -39,10 +38,12 @@ builder.objectField(InstitutionalPlanMutations, 'create', (t) =>
     resolve: async (_, { data }, { db, user }) => {
       const institutionalPlanRepository = getInstitutionalPlanRepository(db)
       const institutionRepository = getInstitutionRepository(db)
+      const userRepository = getUserRepository(db)
 
       const createPlan = new CreateInstitutionalPlan({
         institutionalPlanRepository,
         institutionRepository,
+        userRepository,
       })
 
       const plan = await createPlan.execute(
@@ -50,7 +51,6 @@ builder.objectField(InstitutionalPlanMutations, 'create', (t) =>
           name: data.name,
           url: data.url,
           year: data.year,
-          version: data.version,
           institutionUid: data.institutionId,
         },
         user.uid,
@@ -61,7 +61,6 @@ builder.objectField(InstitutionalPlanMutations, 'create', (t) =>
         name: plan.name,
         active: plan.active,
         url: plan.url,
-        version: plan.version,
         year: plan.year,
         deletedAt: plan.deletedAt,
         institutionId: plan.institutionId,

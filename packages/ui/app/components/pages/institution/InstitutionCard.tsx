@@ -6,19 +6,19 @@ import type { GetInstitutions_UseInstitutionListQuery } from '~/gql/graphql'
 export const InstitutionCard = (data: {
   institution: GetInstitutions_UseInstitutionListQuery['institution']['list']['records'][number]
 }) => {
-  const { id, name } = data.institution
+  const { uid, name } = data.institution
   const navigate = useNavigate()
 
   const handleOnClick = (id: string) => {
-    navigate(`/institutions/${id}`)
+    navigate(`/institutions/${uid}`)
   }
 
   return (
     <Card
       className='cursor-pointer'
-      key={`institution-${id}`}
+      key={`institution-${uid}`}
       onClick={() => {
-        handleOnClick(id)
+        handleOnClick(uid)
       }}
     >
       <CardHeader>

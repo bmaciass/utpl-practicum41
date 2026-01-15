@@ -34,14 +34,12 @@ export const UserSelect = (props: CustomSelectProps) => {
         <SelectValue placeholder={placeholder ?? 'Selecciona un usuario'} />
       </SelectTrigger>
       <SelectContent>
-        {users
-          .filter((user) => user.active)
-          .map((user) => (
-            <SelectItem
-              key={`user-select-${user.id}`}
-              value={user.id}
-            >{`${user.firstName} ${user.lastName}`}</SelectItem>
-          ))}
+        {users.map(({ uid, person }) => (
+          <SelectItem
+            key={`user-select-${uid}`}
+            value={uid}
+          >{`${person.firstName} ${person.lastName}`}</SelectItem>
+        ))}
       </SelectContent>
     </Select>
   )

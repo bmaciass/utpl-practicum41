@@ -7,7 +7,6 @@ import { z } from 'zod'
 import { Alert } from '~/components/globals/Alert'
 
 import { Button } from '~/components/ui/button'
-import { Checkbox } from '~/components/ui/checkbox'
 import {
   Form,
   FormControl,
@@ -17,28 +16,30 @@ import {
   FormMessage,
 } from '~/components/ui/form'
 import { Input } from '~/components/ui/input'
-import type { GetInstitutionalPlans_UseGetInstitutionalPlanQuery } from '~/gql/graphql'
+import type { GetInstitutionalPlan_UseGetInstitutionalPlanQuery } from '~/gql/graphql'
 import { useCreateInstitutionalPlan } from '~/hooks/institutionalPlan/useCreateInstitutionalPlan'
 import { useUpdateInstitutionalPlan } from '~/hooks/institutionalPlan/useUpdateInstitutionalPlan'
 
 const formSchema = z.object({
   name: z.string().min(2, {
-    message: 'Nombre debe tener al menos dos caracteres',
+    error: 'Nombre debe tener al menos dos caracteres',
   }),
-  year: z.coerce.number().min(1900, {
-    message: 'Año debe ser válido',
+  year: z.coerce
+    .number<number>()
+    .positive()
+    .min(2000, {
+      error: 'Año debe ser mayor o igual a 2000',
+    })
+    .max(new Date().getFullYear(), {
+      error: `Año debe ser menor o igual a ${new Date().getFullYear()}`,
+    }),
+  url: z.url({
+    error: 'URL debe ser válida',
   }),
-  version: z.coerce.number().min(1, {
-    message: 'Versión debe ser al menos 1',
-  }),
-  url: z.string().url({
-    message: 'URL debe ser válida',
-  }),
-  active: z.boolean(),
 })
 
 export function InstitutionalPlanForm(props: {
-  institutionalPlan?: GetInstitutionalPlans_UseGetInstitutionalPlanQuery['institutionalPlan']['one']
+  institutionalPlan?: GetInstitutionalPlan_UseGetInstitutionalPlanQuery['institutionalPlan']['one']
   institutionUid: string
 }) {
   const { institutionalPlan, institutionUid } = props
@@ -65,9 +66,7 @@ export function InstitutionalPlanForm(props: {
     defaultValues: {
       name: '',
       year: new Date().getFullYear(),
-      version: 1,
       url: '',
-      active: true,
     },
   })
 
@@ -76,16 +75,16 @@ export function InstitutionalPlanForm(props: {
       form.reset({
         name: institutionalPlan.name,
         year: institutionalPlan.year,
-        version: institutionalPlan.version,
-        url: institutionalPlan.institution.uid,
-        active: institutionalPlan.active,
+        url: institutionalPlan.url,
       })
     }
   }, [form, institutionalPlan])
 
   useEffect(() => {
     if (institutionalPlanCreated) {
-      navigate(`/institutions/${institutionUid}/plans/${institutionalPlanCreated.uid}`)
+      navigate(
+        `/institutions/${institutionUid}/plans/${institutionalPlanCreated.uid}`,
+      )
     }
   }, [institutionalPlanCreated, navigate, institutionUid])
 
@@ -100,9 +99,9 @@ export function InstitutionalPlanForm(props: {
           data: {
             name: values.name,
             year: values.year,
-            active: values.active,
+            url: values.url,
           },
-          where: { id: institutionalPlan.uid },
+          where: { uid: institutionalPlan.uid },
         },
       })
       return
@@ -112,7 +111,6 @@ export function InstitutionalPlanForm(props: {
         data: {
           name: values.name,
           year: values.year,
-          version: values.version,
           url: values.url,
           institutionId: institutionUid,
         },
@@ -151,25 +149,7 @@ export function InstitutionalPlanForm(props: {
               <FormItem>
                 <FormLabel>Año</FormLabel>
                 <FormControl>
-                  <Input type='number' className='w-1/2' {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name='version'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Versión</FormLabel>
-                <FormControl>
-                  <Input
-                    type='number'
-                    className='w-1/2'
-                    {...field}
-                    disabled={shouldUpdate}
-                  />
+                  <Input className='w-1/2' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -182,30 +162,7 @@ export function InstitutionalPlanForm(props: {
               <FormItem>
                 <FormLabel>URL</FormLabel>
                 <FormControl>
-                  <Input
-                    type='url'
-                    className='w-1/2'
-                    {...field}
-                    disabled={shouldUpdate}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name='active'
-            render={({ field }) => (
-              <FormItem className='flex flex-row items-center gap-2'>
-                <FormLabel>Activo</FormLabel>
-                <FormControl>
-                  <Checkbox
-                    name={field.name}
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    ref={field.ref}
-                  />
+                  <Input className='w-1/2' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

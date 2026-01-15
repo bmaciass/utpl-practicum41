@@ -1,0 +1,1774 @@
+{
+  "id": "ae7167fc-bce9-4d6e-b2eb-1dceae8181dd",
+  "prevId": "d56a6180-3e2e-4b61-82f1-a8897132d006",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.AlignmentObjectiveStrategicWithPND": {
+      "name": "AlignmentObjectiveStrategicWithPND",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "objectiveStrategicId": {
+          "name": "objectiveStrategicId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "objectivePNDId": {
+          "name": "objectivePNDId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updatedBy": {
+          "name": "updatedBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "AlignmentObjectiveStrategicWithPND_objectiveStrategicId_InstitutionalEstrategicObjetive_id_fk": {
+          "name": "AlignmentObjectiveStrategicWithPND_objectiveStrategicId_InstitutionalEstrategicObjetive_id_fk",
+          "tableFrom": "AlignmentObjectiveStrategicWithPND",
+          "tableTo": "InstitutionalEstrategicObjetive",
+          "columnsFrom": ["objectiveStrategicId"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "AlignmentObjectiveStrategicWithPND_objectivePNDId_ObjectivePND_id_fk": {
+          "name": "AlignmentObjectiveStrategicWithPND_objectivePNDId_ObjectivePND_id_fk",
+          "tableFrom": "AlignmentObjectiveStrategicWithPND",
+          "tableTo": "ObjectivePND",
+          "columnsFrom": ["objectivePNDId"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "AlignmentObjectiveStrategicWithPND_createdBy_User_id_fk": {
+          "name": "AlignmentObjectiveStrategicWithPND_createdBy_User_id_fk",
+          "tableFrom": "AlignmentObjectiveStrategicWithPND",
+          "tableTo": "User",
+          "columnsFrom": ["createdBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "AlignmentObjectiveStrategicWithPND_updatedBy_User_id_fk": {
+          "name": "AlignmentObjectiveStrategicWithPND_updatedBy_User_id_fk",
+          "tableFrom": "AlignmentObjectiveStrategicWithPND",
+          "tableTo": "User",
+          "columnsFrom": ["updatedBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.AlignmentObjectivePNDWithODS": {
+      "name": "AlignmentObjectivePNDWithODS",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "objectivePNDId": {
+          "name": "objectivePNDId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "objectiveODSId": {
+          "name": "objectiveODSId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updatedBy": {
+          "name": "updatedBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "AlignmentObjectivePNDWithODS_objectivePNDId_ObjectivePND_id_fk": {
+          "name": "AlignmentObjectivePNDWithODS_objectivePNDId_ObjectivePND_id_fk",
+          "tableFrom": "AlignmentObjectivePNDWithODS",
+          "tableTo": "ObjectivePND",
+          "columnsFrom": ["objectivePNDId"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "AlignmentObjectivePNDWithODS_objectiveODSId_ObjectiveODS_id_fk": {
+          "name": "AlignmentObjectivePNDWithODS_objectiveODSId_ObjectiveODS_id_fk",
+          "tableFrom": "AlignmentObjectivePNDWithODS",
+          "tableTo": "ObjectiveODS",
+          "columnsFrom": ["objectiveODSId"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "AlignmentObjectivePNDWithODS_createdBy_User_id_fk": {
+          "name": "AlignmentObjectivePNDWithODS_createdBy_User_id_fk",
+          "tableFrom": "AlignmentObjectivePNDWithODS",
+          "tableTo": "User",
+          "columnsFrom": ["createdBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "AlignmentObjectivePNDWithODS_updatedBy_User_id_fk": {
+          "name": "AlignmentObjectivePNDWithODS_updatedBy_User_id_fk",
+          "tableFrom": "AlignmentObjectivePNDWithODS",
+          "tableTo": "User",
+          "columnsFrom": ["updatedBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.Institution": {
+      "name": "Institution",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "uid": {
+          "name": "uid",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "area": {
+          "name": "area",
+          "type": "InstitutionArea",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "level": {
+          "name": "level",
+          "type": "InstitutionGovernanceLevel",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deletedAt": {
+          "name": "deletedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updatedBy": {
+          "name": "updatedBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Institution_createdBy_User_id_fk": {
+          "name": "Institution_createdBy_User_id_fk",
+          "tableFrom": "Institution",
+          "tableTo": "User",
+          "columnsFrom": ["createdBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Institution_updatedBy_User_id_fk": {
+          "name": "Institution_updatedBy_User_id_fk",
+          "tableFrom": "Institution",
+          "tableTo": "User",
+          "columnsFrom": ["updatedBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Institution_uid_unique": {
+          "name": "Institution_uid_unique",
+          "nullsNotDistinct": false,
+          "columns": ["uid"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.institutionalClassification": {
+      "name": "institutionalClassification",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "code": {
+          "name": "code",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "uid": {
+          "name": "uid",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parentId": {
+          "name": "parentId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updatedBy": {
+          "name": "updatedBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "institutionalClassification_parentId_institutionalClassification_id_fk": {
+          "name": "institutionalClassification_parentId_institutionalClassification_id_fk",
+          "tableFrom": "institutionalClassification",
+          "tableTo": "institutionalClassification",
+          "columnsFrom": ["parentId"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "institutionalClassification_createdBy_User_id_fk": {
+          "name": "institutionalClassification_createdBy_User_id_fk",
+          "tableFrom": "institutionalClassification",
+          "tableTo": "User",
+          "columnsFrom": ["createdBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "institutionalClassification_updatedBy_User_id_fk": {
+          "name": "institutionalClassification_updatedBy_User_id_fk",
+          "tableFrom": "institutionalClassification",
+          "tableTo": "User",
+          "columnsFrom": ["updatedBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "institutionalClassification_code_unique": {
+          "name": "institutionalClassification_code_unique",
+          "nullsNotDistinct": false,
+          "columns": ["code"]
+        },
+        "institutionalClassification_uid_unique": {
+          "name": "institutionalClassification_uid_unique",
+          "nullsNotDistinct": false,
+          "columns": ["uid"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.InstitutionalEstrategicObjetive": {
+      "name": "InstitutionalEstrategicObjetive",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "uid": {
+          "name": "uid",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "institutionId": {
+          "name": "institutionId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "startDate": {
+          "name": "startDate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "endDate": {
+          "name": "endDate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedAt": {
+          "name": "deletedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updatedBy": {
+          "name": "updatedBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "InstitutionalEstrategicObjetive_institutionId_Institution_id_fk": {
+          "name": "InstitutionalEstrategicObjetive_institutionId_Institution_id_fk",
+          "tableFrom": "InstitutionalEstrategicObjetive",
+          "tableTo": "Institution",
+          "columnsFrom": ["institutionId"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "InstitutionalEstrategicObjetive_createdBy_User_id_fk": {
+          "name": "InstitutionalEstrategicObjetive_createdBy_User_id_fk",
+          "tableFrom": "InstitutionalEstrategicObjetive",
+          "tableTo": "User",
+          "columnsFrom": ["createdBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "InstitutionalEstrategicObjetive_updatedBy_User_id_fk": {
+          "name": "InstitutionalEstrategicObjetive_updatedBy_User_id_fk",
+          "tableFrom": "InstitutionalEstrategicObjetive",
+          "tableTo": "User",
+          "columnsFrom": ["updatedBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "InstitutionalEstrategicObjetive_uid_unique": {
+          "name": "InstitutionalEstrategicObjetive_uid_unique",
+          "nullsNotDistinct": false,
+          "columns": ["uid"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.InstitutionalPlan": {
+      "name": "InstitutionalPlan",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "uid": {
+          "name": "uid",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "year": {
+          "name": "year",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "url": {
+          "name": "url",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "institutionId": {
+          "name": "institutionId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deletedAt": {
+          "name": "deletedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updatedBy": {
+          "name": "updatedBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "InstitutionalPlan_institutionId_Institution_id_fk": {
+          "name": "InstitutionalPlan_institutionId_Institution_id_fk",
+          "tableFrom": "InstitutionalPlan",
+          "tableTo": "Institution",
+          "columnsFrom": ["institutionId"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "InstitutionalPlan_createdBy_User_id_fk": {
+          "name": "InstitutionalPlan_createdBy_User_id_fk",
+          "tableFrom": "InstitutionalPlan",
+          "tableTo": "User",
+          "columnsFrom": ["createdBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "InstitutionalPlan_updatedBy_User_id_fk": {
+          "name": "InstitutionalPlan_updatedBy_User_id_fk",
+          "tableFrom": "InstitutionalPlan",
+          "tableTo": "User",
+          "columnsFrom": ["updatedBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "InstitutionalPlan_uid_unique": {
+          "name": "InstitutionalPlan_uid_unique",
+          "nullsNotDistinct": false,
+          "columns": ["uid"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.institutionalUnit": {
+      "name": "institutionalUnit",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "uid": {
+          "name": "uid",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "institutionId": {
+          "name": "institutionId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedAt": {
+          "name": "deletedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updatedBy": {
+          "name": "updatedBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "institutionalUnit_institutionId_Institution_id_fk": {
+          "name": "institutionalUnit_institutionId_Institution_id_fk",
+          "tableFrom": "institutionalUnit",
+          "tableTo": "Institution",
+          "columnsFrom": ["institutionId"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "institutionalUnit_createdBy_User_id_fk": {
+          "name": "institutionalUnit_createdBy_User_id_fk",
+          "tableFrom": "institutionalUnit",
+          "tableTo": "User",
+          "columnsFrom": ["createdBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "institutionalUnit_updatedBy_User_id_fk": {
+          "name": "institutionalUnit_updatedBy_User_id_fk",
+          "tableFrom": "institutionalUnit",
+          "tableTo": "User",
+          "columnsFrom": ["updatedBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "institutionalUnit_uid_unique": {
+          "name": "institutionalUnit_uid_unique",
+          "nullsNotDistinct": false,
+          "columns": ["uid"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.ObjectiveODS": {
+      "name": "ObjectiveODS",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "uid": {
+          "name": "uid",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updatedBy": {
+          "name": "updatedBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ObjectiveODS_createdBy_User_id_fk": {
+          "name": "ObjectiveODS_createdBy_User_id_fk",
+          "tableFrom": "ObjectiveODS",
+          "tableTo": "User",
+          "columnsFrom": ["createdBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ObjectiveODS_updatedBy_User_id_fk": {
+          "name": "ObjectiveODS_updatedBy_User_id_fk",
+          "tableFrom": "ObjectiveODS",
+          "tableTo": "User",
+          "columnsFrom": ["updatedBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "ObjectiveODS_uid_unique": {
+          "name": "ObjectiveODS_uid_unique",
+          "nullsNotDistinct": false,
+          "columns": ["uid"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.ObjectivePND": {
+      "name": "ObjectivePND",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "uid": {
+          "name": "uid",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updatedBy": {
+          "name": "updatedBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ObjectivePND_createdBy_User_id_fk": {
+          "name": "ObjectivePND_createdBy_User_id_fk",
+          "tableFrom": "ObjectivePND",
+          "tableTo": "User",
+          "columnsFrom": ["createdBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ObjectivePND_updatedBy_User_id_fk": {
+          "name": "ObjectivePND_updatedBy_User_id_fk",
+          "tableFrom": "ObjectivePND",
+          "tableTo": "User",
+          "columnsFrom": ["updatedBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "ObjectivePND_uid_unique": {
+          "name": "ObjectivePND_uid_unique",
+          "nullsNotDistinct": false,
+          "columns": ["uid"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.PermissionRole": {
+      "name": "PermissionRole",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uid": {
+          "name": "uid",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updatedBy": {
+          "name": "updatedBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "roleId": {
+          "name": "roleId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "action": {
+          "name": "action",
+          "type": "actionPermission",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "effect": {
+          "name": "effect",
+          "type": "effectPermission",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "scope": {
+          "name": "scope",
+          "type": "scopePermission",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "PermissionRole_createdBy_User_id_fk": {
+          "name": "PermissionRole_createdBy_User_id_fk",
+          "tableFrom": "PermissionRole",
+          "tableTo": "User",
+          "columnsFrom": ["createdBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "PermissionRole_updatedBy_User_id_fk": {
+          "name": "PermissionRole_updatedBy_User_id_fk",
+          "tableFrom": "PermissionRole",
+          "tableTo": "User",
+          "columnsFrom": ["updatedBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "PermissionRole_roleId_Role_id_fk": {
+          "name": "PermissionRole_roleId_Role_id_fk",
+          "tableFrom": "PermissionRole",
+          "tableTo": "Role",
+          "columnsFrom": ["roleId"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "PermissionRole_uid_unique": {
+          "name": "PermissionRole_uid_unique",
+          "nullsNotDistinct": false,
+          "columns": ["uid"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.Person": {
+      "name": "Person",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uid": {
+          "name": "uid",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "firstName": {
+          "name": "firstName",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lastName": {
+          "name": "lastName",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dni": {
+          "name": "dni",
+          "type": "varchar(15)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deletedAt": {
+          "name": "deletedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Person_uid_unique": {
+          "name": "Person_uid_unique",
+          "nullsNotDistinct": false,
+          "columns": ["uid"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.Program": {
+      "name": "Program",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "uid": {
+          "name": "uid",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "responsibleId": {
+          "name": "responsibleId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "startDate": {
+          "name": "startDate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "endDate": {
+          "name": "endDate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedAt": {
+          "name": "deletedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updatedBy": {
+          "name": "updatedBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Program_responsibleId_User_id_fk": {
+          "name": "Program_responsibleId_User_id_fk",
+          "tableFrom": "Program",
+          "tableTo": "User",
+          "columnsFrom": ["responsibleId"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Program_createdBy_User_id_fk": {
+          "name": "Program_createdBy_User_id_fk",
+          "tableFrom": "Program",
+          "tableTo": "User",
+          "columnsFrom": ["createdBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Program_updatedBy_User_id_fk": {
+          "name": "Program_updatedBy_User_id_fk",
+          "tableFrom": "Program",
+          "tableTo": "User",
+          "columnsFrom": ["updatedBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Program_uid_unique": {
+          "name": "Program_uid_unique",
+          "nullsNotDistinct": false,
+          "columns": ["uid"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.Project": {
+      "name": "Project",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "uid": {
+          "name": "uid",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "ProjectStatus",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "startDate": {
+          "name": "startDate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "endDate": {
+          "name": "endDate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "responsibleId": {
+          "name": "responsibleId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "programId": {
+          "name": "programId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deletedAt": {
+          "name": "deletedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updatedBy": {
+          "name": "updatedBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Project_responsibleId_User_id_fk": {
+          "name": "Project_responsibleId_User_id_fk",
+          "tableFrom": "Project",
+          "tableTo": "User",
+          "columnsFrom": ["responsibleId"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Project_programId_Program_id_fk": {
+          "name": "Project_programId_Program_id_fk",
+          "tableFrom": "Project",
+          "tableTo": "Program",
+          "columnsFrom": ["programId"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Project_createdBy_User_id_fk": {
+          "name": "Project_createdBy_User_id_fk",
+          "tableFrom": "Project",
+          "tableTo": "User",
+          "columnsFrom": ["createdBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Project_updatedBy_User_id_fk": {
+          "name": "Project_updatedBy_User_id_fk",
+          "tableFrom": "Project",
+          "tableTo": "User",
+          "columnsFrom": ["updatedBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Project_uid_unique": {
+          "name": "Project_uid_unique",
+          "nullsNotDistinct": false,
+          "columns": ["uid"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.ProjectGoal": {
+      "name": "ProjectGoal",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "uid": {
+          "name": "uid",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "projectId": {
+          "name": "projectId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "ProjectGoalStatus",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "startDate": {
+          "name": "startDate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "endDate": {
+          "name": "endDate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deletedAt": {
+          "name": "deletedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updatedBy": {
+          "name": "updatedBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ProjectGoal_projectId_Project_id_fk": {
+          "name": "ProjectGoal_projectId_Project_id_fk",
+          "tableFrom": "ProjectGoal",
+          "tableTo": "Project",
+          "columnsFrom": ["projectId"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ProjectGoal_createdBy_User_id_fk": {
+          "name": "ProjectGoal_createdBy_User_id_fk",
+          "tableFrom": "ProjectGoal",
+          "tableTo": "User",
+          "columnsFrom": ["createdBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ProjectGoal_updatedBy_User_id_fk": {
+          "name": "ProjectGoal_updatedBy_User_id_fk",
+          "tableFrom": "ProjectGoal",
+          "tableTo": "User",
+          "columnsFrom": ["updatedBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "ProjectGoal_uid_unique": {
+          "name": "ProjectGoal_uid_unique",
+          "nullsNotDistinct": false,
+          "columns": ["uid"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.Role": {
+      "name": "Role",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uid": {
+          "name": "uid",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deletedAt": {
+          "name": "deletedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updatedBy": {
+          "name": "updatedBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Role_createdBy_User_id_fk": {
+          "name": "Role_createdBy_User_id_fk",
+          "tableFrom": "Role",
+          "tableTo": "User",
+          "columnsFrom": ["createdBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "Role_updatedBy_User_id_fk": {
+          "name": "Role_updatedBy_User_id_fk",
+          "tableFrom": "Role",
+          "tableTo": "User",
+          "columnsFrom": ["updatedBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Role_uid_unique": {
+          "name": "Role_uid_unique",
+          "nullsNotDistinct": false,
+          "columns": ["uid"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.User": {
+      "name": "User",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uid": {
+          "name": "uid",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "personId": {
+          "name": "personId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "password": {
+          "name": "password",
+          "type": "varchar(512)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "salt": {
+          "name": "salt",
+          "type": "varchar(512)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deletedAt": {
+          "name": "deletedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "User_personId_Person_id_fk": {
+          "name": "User_personId_Person_id_fk",
+          "tableFrom": "User",
+          "tableTo": "Person",
+          "columnsFrom": ["personId"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "User_uid_unique": {
+          "name": "User_uid_unique",
+          "nullsNotDistinct": false,
+          "columns": ["uid"]
+        },
+        "User_name_unique": {
+          "name": "User_name_unique",
+          "nullsNotDistinct": false,
+          "columns": ["name"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.UserRole": {
+      "name": "UserRole",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updatedBy": {
+          "name": "updatedBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "userId": {
+          "name": "userId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "roleId": {
+          "name": "roleId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "UserRole_createdBy_User_id_fk": {
+          "name": "UserRole_createdBy_User_id_fk",
+          "tableFrom": "UserRole",
+          "tableTo": "User",
+          "columnsFrom": ["createdBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "UserRole_updatedBy_User_id_fk": {
+          "name": "UserRole_updatedBy_User_id_fk",
+          "tableFrom": "UserRole",
+          "tableTo": "User",
+          "columnsFrom": ["updatedBy"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "UserRole_userId_User_id_fk": {
+          "name": "UserRole_userId_User_id_fk",
+          "tableFrom": "UserRole",
+          "tableTo": "User",
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "UserRole_roleId_Role_id_fk": {
+          "name": "UserRole_roleId_Role_id_fk",
+          "tableFrom": "UserRole",
+          "tableTo": "Role",
+          "columnsFrom": ["roleId"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.InstitutionArea": {
+      "name": "InstitutionArea",
+      "schema": "public",
+      "values": ["educacion"]
+    },
+    "public.InstitutionGovernanceLevel": {
+      "name": "InstitutionGovernanceLevel",
+      "schema": "public",
+      "values": ["nacional"]
+    },
+    "public.actionPermission": {
+      "name": "actionPermission",
+      "schema": "public",
+      "values": ["create", "delete", "read", "update", "list", "approve"]
+    },
+    "public.effectPermission": {
+      "name": "effectPermission",
+      "schema": "public",
+      "values": ["deny", "allow"]
+    },
+    "public.scopePermission": {
+      "name": "scopePermission",
+      "schema": "public",
+      "values": ["module", "resource"]
+    },
+    "public.ProjectStatus": {
+      "name": "ProjectStatus",
+      "schema": "public",
+      "values": ["pending", "in_progress", "done", "cancelled"]
+    },
+    "public.ProjectGoalStatus": {
+      "name": "ProjectGoalStatus",
+      "schema": "public",
+      "values": ["pending", "in_progress", "reviewing", "done", "cancelled"]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

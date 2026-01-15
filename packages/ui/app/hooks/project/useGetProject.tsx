@@ -9,11 +9,14 @@ const query = graphql(`
         name
         description
         status
+        startDate
+        endDate
         program {
           uid
         }
         responsible {
           uid
+          name
         }
         active
       }

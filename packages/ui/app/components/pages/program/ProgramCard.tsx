@@ -6,7 +6,7 @@ import type { GetProgramList_UseProgramListQuery } from '~/gql/graphql'
 export const ProgramCard = (data: {
   program: GetProgramList_UseProgramListQuery['program']['list']['records'][number]
 }) => {
-  const { id, name } = data.program
+  const { uid, name } = data.program
   const navigate = useNavigate()
 
   const handleOnClick = (id: string) => {
@@ -16,9 +16,9 @@ export const ProgramCard = (data: {
   return (
     <Card
       className='cursor-pointer'
-      key={`program-${id}`}
+      key={`program-${uid}`}
       onClick={() => {
-        handleOnClick(id)
+        handleOnClick(uid)
       }}
     >
       <CardHeader>

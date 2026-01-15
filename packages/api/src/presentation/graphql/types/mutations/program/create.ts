@@ -12,7 +12,7 @@ type TCreateProgramDataInput = Pick<
   ProgramPayload,
   'name' | 'description' | 'startDate' | 'endDate'
 > & {
-  responsibleId: string
+  responsibleUid: string
 }
 
 export const CreateProgramDataInput = builder
@@ -23,7 +23,7 @@ export const CreateProgramDataInput = builder
       description: t.string(),
       startDate: t.field({ type: 'Date', required: false }),
       endDate: t.field({ type: 'Date', required: false }),
-      responsibleId: t.string(),
+      responsibleUid: t.string(),
     }),
   })
 
@@ -48,7 +48,7 @@ builder.objectField(ProgramMutations, 'create', (t) =>
           description: data.description,
           startDate: data.startDate,
           endDate: data.endDate,
-          responsibleUid: data.responsibleId,
+          responsibleUid: data.responsibleUid,
         },
         user.uid,
       )

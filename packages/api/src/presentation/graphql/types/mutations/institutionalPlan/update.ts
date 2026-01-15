@@ -1,11 +1,14 @@
 import { UpdateInstitutionalPlan } from '~/application/use-cases/institutional-plan'
-import { getInstitutionalPlanRepository } from '~/infrastructure/persistence/drizzle/repositories'
+import {
+  getInstitutionalPlanRepository,
+  getUserRepository,
+} from '~/infrastructure/persistence/drizzle/repositories'
 import builder from '../../../schema/builder'
 import { InstitutionalPlan } from '../../objects/InstitutionalPlan'
 import { InstitutionalPlanMutations } from './root'
 
 type TUpdateInstitutionalPlanWhereInput = {
-  id: string
+  uid: string
 }
 
 export const UpdateInstitutionalPlanWhereInput = builder
@@ -14,13 +17,14 @@ export const UpdateInstitutionalPlanWhereInput = builder
   )
   .implement({
     fields: (t) => ({
-      id: t.string({ required: true }),
+      uid: t.string({ required: true }),
     }),
   })
 
 type TUpdateInstitutionalPlanDataInput = {
   name?: string
   active?: boolean
+  url?: string
   year?: number
 }
 
@@ -30,9 +34,10 @@ export const UpdateInstitutionalPlanDataInput = builder
   )
   .implement({
     fields: (t) => ({
-      name: t.string(),
-      active: t.boolean(),
-      year: t.int(),
+      name: t.string({ required: false }),
+      active: t.boolean({ required: false }),
+      url: t.string({ required: false }),
+      year: t.int({ required: false }),
     }),
   })
 
@@ -46,17 +51,20 @@ builder.objectField(InstitutionalPlanMutations, 'update', (t) =>
     },
     resolve: async (_, { data, where }, { db, user }) => {
       const institutionalPlanRepository = getInstitutionalPlanRepository(db)
+      const userRepository = getUserRepository(db)
       const updatePlan = new UpdateInstitutionalPlan({
         institutionalPlanRepository,
+        userRepository,
       })
 
       const plan = await updatePlan.execute(
         {
-          uid: where.id,
+          uid: where.uid,
           data: {
             name: data.name ?? undefined,
             active: data.active ?? undefined,
             year: data.year ?? undefined,
+            url: data.url ?? undefined,
           },
         },
         user.uid,
@@ -67,7 +75,6 @@ builder.objectField(InstitutionalPlanMutations, 'update', (t) =>
         name: plan.name,
         active: plan.active,
         url: plan.url,
-        version: plan.version,
         year: plan.year,
         deletedAt: plan.deletedAt,
         institutionId: plan.institutionId,

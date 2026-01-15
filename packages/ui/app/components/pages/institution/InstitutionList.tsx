@@ -14,14 +14,14 @@ export const InstitutionList = (props: {
   const institutionList = shallowClonedList.map((record) => {
     return (
       <>
-        <Separator key={`separator-${record.id}`} />
-        <InstitutionCard key={`${record.id}`} institution={record} />
+        <Separator key={`separator-${record.uid}`} />
+        <InstitutionCard key={`${record.uid}`} institution={record} />
       </>
     )
   })
 
   institutionList.unshift(
-    <InstitutionCard key={firstRecord.id} institution={firstRecord} />,
+    <InstitutionCard key={firstRecord.uid} institution={firstRecord} />,
   )
 
   return <>{institutionList}</>

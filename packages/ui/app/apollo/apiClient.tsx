@@ -3,7 +3,7 @@ import { ApolloClient } from '@apollo/client/index.js'
 export const apiClient = new ApolloClient({
   uri: 'http://localhost:6002/graphql', // DO NOT USE 127.0.0.1
   cache: new InMemoryCache({
-    dataIdFromObject: () => 'uid',
+    dataIdFromObject: (object: any) => object.uid || null,
     typePolicies: {
       ProgramQueries: { merge: false },
     },

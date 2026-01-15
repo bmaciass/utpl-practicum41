@@ -1,5 +1,8 @@
 import { ListInstitutionalPlans } from '~/application/use-cases/institutional-plan'
-import { getInstitutionalPlanRepository } from '~/infrastructure/persistence/drizzle/repositories'
+import {
+  getInstitutionRepository,
+  getInstitutionalPlanRepository,
+} from '~/infrastructure/persistence/drizzle/repositories'
 import builder from '../../../schema/builder'
 import { StringFilter } from '../../inputs/FilterInputs'
 import {
@@ -29,14 +32,18 @@ builder.objectField(InstitutionalPlanQueries, 'list', (t) =>
     args: {
       active: t.arg.boolean({ required: false }),
       name: t.arg({ type: StringFilter, required: false }),
+      institutionUid: t.arg.string({ required: true }),
     },
     resolve: async (_, args, { db }) => {
+      const institutionRepository = getInstitutionRepository(db)
       const institutionalPlanRepository = getInstitutionalPlanRepository(db)
       const listPlans = new ListInstitutionalPlans({
+        institutionRepository,
         institutionalPlanRepository,
       })
 
       const plans = await listPlans.execute({
+        institutionUid: args.institutionUid,
         filters: {
           active: args.active ?? undefined,
         },
@@ -48,7 +55,6 @@ builder.objectField(InstitutionalPlanQueries, 'list', (t) =>
           name: plan.name,
           active: plan.active,
           url: plan.url,
-          version: plan.version,
           year: plan.year,
           deletedAt: plan.deletedAt,
           institutionId: plan.institutionId,

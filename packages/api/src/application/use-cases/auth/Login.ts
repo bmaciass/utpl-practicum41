@@ -2,7 +2,7 @@ import { type IPublicUseCase, NotFoundError } from '@sigep/shared'
 import { formatPermission } from '~/domain/entities/Permission'
 import type { IRoleRepository } from '~/domain/repositories/IRoleRepository'
 import type { IUserRepository } from '~/domain/repositories/IUserRepository'
-import { JWTService } from '~/infrastructure/services/JWTService'
+import { getDefaultJWTService } from '~/infrastructure/services/JWTService'
 import { PasswordService } from '~/infrastructure/services/PasswordService'
 import type {
   LoginUseCaseInputDTO,
@@ -33,7 +33,7 @@ export class LoginUseCase
     const roles = await this.deps.roleRepository.findByUserId(user.id)
     const permissions = roles.flatMap((role) => role.permissions)
 
-    const session = new JWTService()
+    const session = await getDefaultJWTService()
     const { accessToken, refreshToken } = await session.createTokens(user.uid, {
       roles: roles.map((role) => role.name),
       permissions: permissions.map((permission) =>

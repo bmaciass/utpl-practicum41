@@ -1,8 +1,9 @@
 import type { IUseCase } from '@sigep/shared'
 import type { IInstitutionalPlanRepository } from '~/domain/repositories/IInstitutionalPlanRepository'
+import type { IUserRepository } from '~/domain/repositories/IUserRepository'
 import type {
-  UpdateInstitutionalPlanDTO,
   InstitutionalPlanResponseDTO,
+  UpdateInstitutionalPlanDTO,
 } from '../../dto/institutional-plan'
 import { InstitutionalPlanMapper } from '../../mappers/InstitutionalPlanMapper'
 
@@ -13,6 +14,7 @@ export interface UpdateInstitutionalPlanInput {
 
 export interface UpdateInstitutionalPlanDeps {
   institutionalPlanRepository: IInstitutionalPlanRepository
+  userRepository: IUserRepository
 }
 
 export class UpdateInstitutionalPlan
@@ -23,21 +25,19 @@ export class UpdateInstitutionalPlan
 
   async execute(
     input: UpdateInstitutionalPlanInput,
-    actorId: string,
+    userUid: string,
   ): Promise<InstitutionalPlanResponseDTO> {
-    const plan = await this.deps.institutionalPlanRepository.findByUidOrThrow(
-      input.uid,
-    )
-    const updatedBy = Number(actorId)
+    const [plan, user] = await Promise.all([
+      this.deps.institutionalPlanRepository.findByUidOrThrow(input.uid),
+      this.deps.userRepository.findByUidOrThrow(userUid),
+    ])
+    const updatedBy = user.id
 
     if (input.data.name !== undefined) {
       plan.updateName(input.data.name, updatedBy)
     }
     if (input.data.year !== undefined) {
       plan.updateYear(input.data.year, updatedBy)
-    }
-    if (input.data.version !== undefined) {
-      plan.updateVersion(input.data.version, updatedBy)
     }
     if (input.data.url !== undefined) {
       plan.updateUrl(input.data.url, updatedBy)

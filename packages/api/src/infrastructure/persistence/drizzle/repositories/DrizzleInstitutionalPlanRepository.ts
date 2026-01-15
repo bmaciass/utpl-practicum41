@@ -1,7 +1,7 @@
 import type { Db } from '@sigep/db'
 import { InstitutionalPlan as InstitutionalPlanTable } from '@sigep/db'
 import { NotFoundError } from '@sigep/shared'
-import { isNull, isNotNull, type SQL, eq } from 'drizzle-orm'
+import { type SQL, eq, isNull } from 'drizzle-orm'
 import { compact, isNil } from 'lodash-es'
 import type { InstitutionalPlan } from '~/domain/entities/InstitutionalPlan'
 import type {

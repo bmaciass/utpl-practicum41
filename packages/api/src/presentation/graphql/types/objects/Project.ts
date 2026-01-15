@@ -1,9 +1,9 @@
 import type { ProjectRecord } from '@sigep/db'
-import type { ProjectGoal as ProjectGoalDomain } from '~/domain/entities/ProjectGoal'
+import type { ProjectTask as ProjectTaskDomain } from '~/domain/entities/ProjectTask'
 import builder from '../../schema/builder'
 import { ProjectStatusEnum } from '../enums/ProjectStatus'
 import { ProgramRef } from './Program'
-import { ProjectGoalRef } from './ProjectGoal'
+import { ProjectTaskRef } from './ProjectTask'
 import { User } from './User'
 
 export type TProject = Pick<
@@ -20,7 +20,6 @@ export type TProject = Pick<
   | 'programId'
 > & {
   active: boolean
-  // goalIds: number[]
 }
 
 // Export the ref for circular dependency resolution
@@ -34,8 +33,8 @@ export const Project = ProjectRef.implement({
     status: t.expose('status', { type: ProjectStatusEnum, nullable: false }),
     startDate: t.expose('startDate', { type: 'Date', nullable: true }),
     endDate: t.expose('endDate', { type: 'Date', nullable: true }),
-    goals: t.field({
-      type: [ProjectGoalRef],
+    tasks: t.field({
+      type: [ProjectTaskRef],
       resolve: async (project, _, { loaders }) => {
         const records = await loaders.projectGoalsByProject.loadMany([
           project.id,
@@ -43,7 +42,7 @@ export const Project = ProjectRef.implement({
 
         return records
           .flat()
-          .filter((record) => !(record instanceof Error)) as ProjectGoalDomain[]
+          .filter((record) => !(record instanceof Error)) as ProjectTaskDomain[]
       },
     }),
     responsible: t.field({
@@ -54,7 +53,6 @@ export const Project = ProjectRef.implement({
     }),
     program: t.field({
       type: ProgramRef,
-      nullable: true,
       resolve: (project, _, { loaders }) => {
         return loaders.program.load(project.programId)
       },

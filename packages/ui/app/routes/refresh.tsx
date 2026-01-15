@@ -2,8 +2,7 @@ import { type ActionFunction, redirect } from '@remix-run/cloudflare'
 import {
   DrizzleRoleRepository,
   DrizzleUserRepository,
-  formatPermission,
-  JWTService,
+  RefreshTokenUseCase,
 } from '@sigep/api'
 import { getDBConnection } from '@sigep/db'
 import { getAccessTokenCookie } from '~/cookies/access-token.server'
@@ -30,36 +29,16 @@ export const action: ActionFunction = async ({ context, request }) => {
   )
   await client.connect()
 
-  // Validate refresh token and generate NEW token pair (rotation)
-  const jwtService = new JWTService()
   try {
-    // Verify the refresh token to get userId
-    const payload = await jwtService.verifyRefreshToken(refreshToken)
+    const refreshTokenUseCase = new RefreshTokenUseCase({
+      userRepository: new DrizzleUserRepository(db),
+      roleRepository: new DrizzleRoleRepository(db),
+    })
 
-    if (!payload) {
-      throw new Error('Invalid refresh token')
-    }
-
-    // Fetch user from database
-    const userRepository = new DrizzleUserRepository(db)
-    const user = await userRepository.findByUid(payload.sub)
-
-    if (!user) {
-      throw new Error('User not found')
-    }
-
-    // Re-fetch roles and permissions from database
-    const roleRepository = new DrizzleRoleRepository(db)
-    const userRoles = await roleRepository.findByUserId(user.id)
-
-    const roles = userRoles.map((role) => role.name)
-    const permissions = userRoles.flatMap((role) =>
-      role.permissions.map((permission) => formatPermission(permission)),
-    )
-
-    // Create new tokens with fresh roles/permissions
     const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
-      await jwtService.createTokens(user.uid, { roles, permissions })
+      await refreshTokenUseCase.execute({
+        refreshToken,
+      })
 
     // Set BOTH new cookies (old tokens invalidated)
     const accessCookie = getAccessTokenCookie(secret)

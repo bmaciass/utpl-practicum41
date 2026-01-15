@@ -3,7 +3,6 @@ import { Entity, ValidationError } from '@sigep/shared'
 export interface CreateInstitutionalPlanProps {
   name: string
   year: number
-  version: number
   url: string
   institutionId: number
   createdBy: number
@@ -14,7 +13,6 @@ export interface InstitutionalPlanProps {
   uid: string
   name: string
   year: number
-  version: number
   url: string
   institutionId: number
   deletedAt: Date | null
@@ -28,7 +26,6 @@ export class InstitutionalPlan extends Entity {
   private _id: number
   private _name: string
   private _year: number
-  private _version: number
   private _url: string
   private _institutionId: number
   private _deletedAt: Date | null
@@ -40,7 +37,6 @@ export class InstitutionalPlan extends Entity {
     this._id = props.id
     this._name = props.name
     this._year = props.year
-    this._version = props.version
     this._url = props.url
     this._institutionId = props.institutionId
     this._deletedAt = props.deletedAt
@@ -60,7 +56,6 @@ export class InstitutionalPlan extends Entity {
       uid: crypto.randomUUID(),
       name: props.name,
       year: props.year,
-      version: props.version,
       url: props.url,
       institutionId: props.institutionId,
       deletedAt: null,
@@ -102,12 +97,6 @@ export class InstitutionalPlan extends Entity {
     this.markUpdated(updatedBy)
   }
 
-  updateVersion(version: number, updatedBy: number): void {
-    this._version = version
-    this._updatedByUserId = updatedBy
-    this.markUpdated(updatedBy)
-  }
-
   updateUrl(url: string, updatedBy: number): void {
     this._url = url
     this._updatedByUserId = updatedBy
@@ -134,9 +123,6 @@ export class InstitutionalPlan extends Entity {
   }
   get year(): number {
     return this._year
-  }
-  get version(): number {
-    return this._version
   }
   get url(): string {
     return this._url
