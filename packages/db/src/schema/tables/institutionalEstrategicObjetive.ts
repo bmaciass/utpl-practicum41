@@ -1,4 +1,4 @@
-import { date, integer, pgTable, varchar } from 'drizzle-orm/pg-core'
+import { integer, pgTable, text, varchar } from 'drizzle-orm/pg-core'
 import {
   byColumns,
   deletedAtColumn,
@@ -12,10 +12,11 @@ export const InstitutionalEstrategicObjetive = pgTable(
   {
     ...idColumn,
     name: varchar({ length: 128 }).notNull(),
+    description: text().notNull(),
     uid: varchar({ length: 64 }).unique().notNull(),
-    institutionId: integer().references(() => Institution.id),
-    startDate: date({ mode: 'date' }),
-    endDate: date({ mode: 'date' }),
+    institutionId: integer()
+      .references(() => Institution.id)
+      .notNull(),
     ...deletedAtColumn,
     ...byColumns,
     ...timestampColumns,

@@ -4,6 +4,12 @@ input CreateInstitutionDataInput {
   name: String!
 }
 
+input CreateInstitutionalObjectiveDataInput {
+  description: String!
+  institutionId: String!
+  name: String!
+}
+
 input CreateInstitutionalPlanDataInput {
   institutionId: String!
   name: String!
@@ -75,14 +81,6 @@ enum InstitutionArea {
   educacion
 }
 
-type InstitutionEstraticObjetive {
-  active: Boolean!
-  endDate: Date
-  name: String!
-  startDate: Date
-  uid: ID!
-}
-
 enum InstitutionLevel {
   nacional
 }
@@ -114,6 +112,42 @@ Institution queries
 type InstitutionQueries {
   list(active: Boolean, name: StringFilter): InstitutionsQueryResponse!
   one(id: String!): Institution
+}
+
+type InstitutionalObjective {
+  active: Boolean!
+  deletedAt: Date
+  description: String!
+  institution: Institution!
+  name: String!
+  uid: ID!
+}
+
+"""
+InstitutionalObjective mutations
+"""
+type InstitutionalObjectiveMutations {
+  create(data: CreateInstitutionalObjectiveDataInput!): InstitutionalObjective!
+  update(
+    data: UpdateInstitutionalObjectiveDataInput!
+    where: UpdateInstitutionalObjectiveWhereInput!
+  ): InstitutionalObjective!
+}
+
+"""
+InstitutionalObjective queries
+"""
+type InstitutionalObjectiveQueries {
+  list(
+    active: Boolean
+    institutionUid: String
+    name: StringFilter
+  ): InstitutionalObjectivesQueryResponse!
+  one(uid: String!): InstitutionalObjective!
+}
+
+type InstitutionalObjectivesQueryResponse {
+  records: [InstitutionalObjective!]!
 }
 
 """
@@ -154,6 +188,7 @@ scalar JSON
 
 type Mutation {
   institution: InstitutionMutations!
+  institutionalObjective: InstitutionalObjectiveMutations!
   institutionalPlan: InstitutionalPlanMutations!
   program: ProgramMutations!
   project: ProjectMutations!
@@ -312,6 +347,7 @@ type ProjectsQueryResponse {
 
 type Query {
   institution: InstitutionQueries!
+  institutionalObjective: InstitutionalObjectiveQueries!
   institutionalPlan: InstitutionalPlanQueries!
   objectiveODS: ObjectiveODSQueries!
   program: ProgramQueries!
@@ -336,6 +372,17 @@ input UpdateInstitutionDataInput {
 
 input UpdateInstitutionWhereInput {
   id: String!
+}
+
+input UpdateInstitutionalObjectiveDataInput {
+  active: Boolean
+  description: String
+  institutionId: String
+  name: String
+}
+
+input UpdateInstitutionalObjectiveWhereInput {
+  uid: String!
 }
 
 input UpdateInstitutionalPlanDataInput {

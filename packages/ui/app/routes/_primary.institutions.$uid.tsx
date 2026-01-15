@@ -29,7 +29,7 @@ export default function Index() {
               Ver Planificaciones
             </Button>
           </Link>
-          <Link to={`/institutions/${uid}/estrategicObjetives`}>
+          <Link to={`/institutions/${uid}/objectives`}>
             <Button type='button' variant={'secondary'}>
               Ver Objetivos Estrategicos
             </Button>

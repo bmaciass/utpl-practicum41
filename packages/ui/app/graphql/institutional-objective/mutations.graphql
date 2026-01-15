@@ -1,0 +1,35 @@
+mutation CreateInstitutionalObjective(
+  $data: CreateInstitutionalObjectiveDataInput!
+) {
+  institutionalObjective {
+    create(data: $data) {
+      uid
+      name
+      description
+      active
+      institution {
+        uid
+        name
+      }
+    }
+  }
+}
+
+mutation UpdateInstitutionalObjective(
+  $where: UpdateInstitutionalObjectiveWhereInput!
+  $data: UpdateInstitutionalObjectiveDataInput!
+) {
+  institutionalObjective {
+    update(where: $where, data: $data) {
+      uid
+      name
+      description
+      active
+      deletedAt
+      institution {
+        uid
+        name
+      }
+    }
+  }
+}

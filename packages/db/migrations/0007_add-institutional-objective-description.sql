@@ -1,0 +1,1 @@
+ALTER TABLE "InstitutionalEstrategicObjetive" ADD COLUMN "description" text NOT NULL;

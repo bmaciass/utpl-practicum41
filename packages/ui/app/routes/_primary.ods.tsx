@@ -49,7 +49,8 @@ const ODSPage = () => {
       <div className='mb-6'>
         <Title variant='h4'>Objetivos de Desarrollo Sostenible (ODS)</Title>
         <Paragraph className='mt-2 text-gray-600'>
-          Agenda 2030 de las Naciones Unidas - {odsList.length} Objetivos Globales
+          Agenda 2030 de las Naciones Unidas - {odsList.length} Objetivos
+          Globales
         </Paragraph>
       </div>
       <div className='py-4'>

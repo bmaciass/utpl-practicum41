@@ -11,6 +11,7 @@ import {
   getDBConnection,
 } from '@sigep/db'
 import { nanoid } from 'nanoid/non-secure'
+import { seedInstitutionalObjectives } from './seedInstitutionalObjectives'
 import { seedODSObjectives } from './seedODSObjectives'
 import { seedPNDObjectives } from './seedPNDObjectives'
 import { seedPNDODSAlignment } from './seedPNDODSAlignment'
@@ -19,7 +20,9 @@ async function recreatePublicSchema(db: Db) {
   await db.execute('DROP SCHEMA "public" CASCADE; CREATE SCHEMA "public";')
 }
 
-async function seedOrganizationData(db: Db): Promise<{ adminUserId: number }> {
+async function seedOrganizationData(
+  db: Db,
+): Promise<{ adminUserId: number; institutionId: number }> {
   const [adminPerson, opPerson] = await db
     .insert(Person)
     .values([
@@ -66,13 +69,16 @@ async function seedOrganizationData(db: Db): Promise<{ adminUserId: number }> {
     ])
     .returning()
 
-  await db.insert(Institution).values({
-    name: 'Institucion de prueba',
-    area: 'educacion',
-    level: 'nacional',
-    uid: '123123123',
-    createdBy: userAdmin.id,
-  })
+  const [institution] = await db
+    .insert(Institution)
+    .values({
+      name: 'Institucion de prueba',
+      area: 'educacion',
+      level: 'nacional',
+      uid: '123123123',
+      createdBy: userAdmin.id,
+    })
+    .returning()
 
   const [program] = await db
     .insert(Program)
@@ -104,7 +110,7 @@ async function seedOrganizationData(db: Db): Promise<{ adminUserId: number }> {
     uid: nanoid(),
   })
 
-  return { adminUserId: userAdmin.id }
+  return { adminUserId: userAdmin.id, institutionId: institution.id }
 }
 
 async function main() {
@@ -117,10 +123,11 @@ async function main() {
   await db.transaction(async (tx) => {
     await recreatePublicSchema(tx)
     await executeMigration(tx)
-    const { adminUserId } = await seedOrganizationData(tx)
+    const { adminUserId, institutionId } = await seedOrganizationData(tx)
     await seedODSObjectives(tx, adminUserId)
     await seedPNDObjectives(tx, adminUserId)
     await seedPNDODSAlignment(tx, adminUserId)
+    await seedInstitutionalObjectives(tx, adminUserId, institutionId)
   })
   await client.end()
 }

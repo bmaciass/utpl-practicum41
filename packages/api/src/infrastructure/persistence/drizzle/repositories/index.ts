@@ -1,5 +1,6 @@
 import type { Db } from '@sigep/db'
 import { DrizzleInstitutionRepository } from './DrizzleInstitutionRepository'
+import { DrizzleInstitutionalObjectiveRepository } from './DrizzleInstitutionalObjectiveRepository'
 import { DrizzleInstitutionalPlanRepository } from './DrizzleInstitutionalPlanRepository'
 import { DrizzleObjectiveODSRepository } from './DrizzleObjectiveODSRepository'
 import { DrizzlePersonRepository } from './DrizzlePersonRepository'
@@ -11,6 +12,9 @@ import { DrizzleUserRepository } from './DrizzleUserRepository'
 
 export const getInstitutionRepository = (db: Db) =>
   new DrizzleInstitutionRepository(db)
+
+export const getInstitutionalObjectiveRepository = (db: Db) =>
+  new DrizzleInstitutionalObjectiveRepository(db)
 
 export const getInstitutionalPlanRepository = (db: Db) =>
   new DrizzleInstitutionalPlanRepository(db)

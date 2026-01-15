@@ -1,0 +1,37 @@
+query InstitutionalObjectiveList(
+  $active: Boolean
+  $name: StringFilter
+  $institutionUid: String
+) {
+  institutionalObjective {
+    list(active: $active, name: $name, institutionUid: $institutionUid) {
+      records {
+        uid
+        name
+        description
+        active
+        deletedAt
+        institution {
+          uid
+          name
+        }
+      }
+    }
+  }
+}
+
+query GetInstitutionalObjective($uid: String!) {
+  institutionalObjective {
+    one(uid: $uid) {
+      uid
+      name
+      description
+      active
+      deletedAt
+      institution {
+        uid
+        name
+      }
+    }
+  }
+}
