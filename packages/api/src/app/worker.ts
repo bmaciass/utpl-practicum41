@@ -5,6 +5,7 @@ import { env } from 'cloudflare:workers'
 import { createYoga } from 'graphql-yoga'
 import { getDefaultJWTService } from '~/infrastructure/services/JWTService'
 import { createInstitutionLoader } from '~/presentation/graphql/dataloaders/institutionLoader'
+import { createInstitutionalObjectiveLoader } from '~/presentation/graphql/dataloaders/institutionalObjectiveLoader'
 import { createPersonLoader } from '~/presentation/graphql/dataloaders/personLoader'
 import { createProgramLoader } from '~/presentation/graphql/dataloaders/programLoader'
 import { createProjectLoader } from '~/presentation/graphql/dataloaders/projectLoader'
@@ -59,6 +60,7 @@ async function createContext(request: Request, env: Env): Promise<AppContext> {
   // Each request gets fresh loaders to ensure cache isolation
   const loaders = {
     institution: createInstitutionLoader(db),
+    institutionalObjective: createInstitutionalObjectiveLoader(db),
     user: createUserLoader(db),
     person: createPersonLoader(db),
     program: createProgramLoader(db),

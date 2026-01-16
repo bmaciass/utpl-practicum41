@@ -19,6 +19,7 @@ export interface IInstitutionalObjectiveRepository
     InstitutionalObjectiveFilters
   > {
   findById(id: number): Promise<InstitutionalObjective | null>
+  findByIds(ids: number[]): Promise<InstitutionalObjective[]>
   findByUid(uid: string): Promise<InstitutionalObjective | null>
   findByUidOrThrow(uid: string): Promise<InstitutionalObjective>
   findMany(

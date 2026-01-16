@@ -1,5 +1,7 @@
 import type { Db } from '@sigep/db'
-import { InstitutionalEstrategicObjetive as InstitutionalObjectiveTable } from '@sigep/db'
+import {
+  InstitutionalEstrategicObjetive as InstitutionalObjectiveTable
+} from '@sigep/db'
 import { NotFoundError } from '@sigep/shared'
 import { type SQL, and, eq, inArray, isNull, like } from 'drizzle-orm'
 import { compact, isEmpty, isNil } from 'lodash-es'
@@ -24,6 +26,14 @@ export class DrizzleInstitutionalObjectiveRepository
     return record
       ? InstitutionalObjectivePersistenceMapper.toDomain(record)
       : null
+  }
+
+  async findByIds(ids: number[]): Promise<InstitutionalObjective[]> {
+    const records =
+      await this.db.query.InstitutionalEstrategicObjetive.findMany({
+        where: (fields, operators) => operators.inArray(fields.id, ids),
+      })
+    return records.map(InstitutionalObjectivePersistenceMapper.toDomain)
   }
 
   async findByUid(uid: string): Promise<InstitutionalObjective | null> {

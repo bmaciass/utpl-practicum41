@@ -12,6 +12,7 @@ import {
 } from '@sigep/db'
 import { nanoid } from 'nanoid/non-secure'
 import { seedInstitutionalObjectives } from './seedInstitutionalObjectives'
+import { seedGoals } from './seedGoals'
 import { seedODSObjectives } from './seedODSObjectives'
 import { seedPNDObjectives } from './seedPNDObjectives'
 import { seedPNDODSAlignment } from './seedPNDODSAlignment'
@@ -128,6 +129,7 @@ async function main() {
     await seedPNDObjectives(tx, adminUserId)
     await seedPNDODSAlignment(tx, adminUserId)
     await seedInstitutionalObjectives(tx, adminUserId, institutionId)
+    await seedGoals(tx, adminUserId, institutionId)
   })
   await client.end()
 }

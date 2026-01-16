@@ -20,5 +20,4 @@ export interface IUserRepository extends IRepository<User> {
   findByPersonId(personId: number): Promise<User | null>
   findMany(options?: FindManyUsersOptions): Promise<User[]>
   save(user: User): Promise<User>
-  delete(uid: string): Promise<void>
 }

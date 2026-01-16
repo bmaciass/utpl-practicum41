@@ -12,6 +12,9 @@ import { DrizzleProjectRepository } from './DrizzleProjectRepository'
 import { DrizzleProjectTaskRepository } from './DrizzleProjectTaskRepository'
 import { DrizzleRoleRepository } from './DrizzleRoleRepository'
 import { DrizzleUserRepository } from './DrizzleUserRepository'
+import { GoalRepository } from './GoalRepository'
+
+export * from './GoalRepository'
 
 export const getInstitutionRepository = (db: Db) =>
   new DrizzleInstitutionRepository(db)
@@ -46,3 +49,7 @@ export const getAlignmentInstitutionalToPNDRepository = (db: Db) =>
 
 export const getAlignmentPNDToODSRepository = (db: Db) =>
   new DrizzleAlignmentPNDToODSRepository(db)
+
+export function getGoalRepository(db: Db) {
+  return new GoalRepository(db)
+}

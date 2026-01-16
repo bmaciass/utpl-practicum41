@@ -4,6 +4,7 @@
 // If you want to make changes, edit the file scripts/generate.ts
 
 // exporting tables
+export * from './tables/Goal'
 export * from './tables/alignmentObjectiveEstrategicWithPND'
 export * from './tables/alignmentObjectivePNDWithODS'
 export * from './tables/institution'

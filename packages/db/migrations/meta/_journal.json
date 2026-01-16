@@ -64,6 +64,13 @@
       "when": 1768451275530,
       "tag": "0008_institutional-objective-institution-not-null",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1768533516598,
+      "tag": "0009_add-goal",
+      "breakpoints": true
     }
   ]
 }
