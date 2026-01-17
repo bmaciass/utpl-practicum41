@@ -24,6 +24,7 @@ builder.objectField(InstitutionalPlanQueries, 'one', (t) =>
       return {
         uid: plan.uid,
         name: plan.name,
+        description: plan.description,
         active: plan.active,
         url: plan.url,
         year: plan.year,

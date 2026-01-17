@@ -45,7 +45,9 @@ export class Goal extends Entity {
     }
 
     if (!props.description || props.description.trim().length < 10) {
-      throw new ValidationError('Goal description must be at least 10 characters long')
+      throw new ValidationError(
+        'Goal description must be at least 10 characters long',
+      )
     }
 
     if (!props.institutionalObjectiveId) {
@@ -81,7 +83,9 @@ export class Goal extends Entity {
 
   updateDescription(description: string, updatedBy: number): void {
     if (!description || description.trim().length < 10) {
-      throw new ValidationError('Goal description must be at least 10 characters long')
+      throw new ValidationError(
+        'Goal description must be at least 10 characters long',
+      )
     }
 
     this._description = description.trim()

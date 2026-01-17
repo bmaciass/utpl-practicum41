@@ -16,7 +16,10 @@ export interface CreateGoalDeps {
 export class CreateGoal implements IUseCase<CreateGoalDTO, GoalResponseDTO> {
   constructor(private deps: CreateGoalDeps) {}
 
-  async execute(input: CreateGoalDTO, userUid: string): Promise<GoalResponseDTO> {
+  async execute(
+    input: CreateGoalDTO,
+    userUid: string,
+  ): Promise<GoalResponseDTO> {
     // 1. Find institutional objective
     const institutionalObjective =
       await this.deps.institutionalObjectiveRepository.findByUidOrThrow(

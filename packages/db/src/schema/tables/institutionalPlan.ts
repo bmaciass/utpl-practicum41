@@ -1,4 +1,4 @@
-import { integer, pgTable, smallint, varchar } from 'drizzle-orm/pg-core'
+import { integer, pgTable, smallint, text, varchar } from 'drizzle-orm/pg-core'
 import {
   byColumns,
   deletedAtColumn,
@@ -11,8 +11,9 @@ export const InstitutionalPlan = pgTable('InstitutionalPlan', {
   ...idColumn,
   name: varchar({ length: 128 }).notNull(),
   uid: varchar({ length: 64 }).unique().notNull(),
+  description: text().notNull(),
   year: smallint().notNull(),
-  url: varchar().notNull(),
+  url: varchar(),
   institutionId: integer()
     .references(() => Institution.id)
     .notNull(),

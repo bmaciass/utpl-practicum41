@@ -15,10 +15,7 @@ import {
 } from '~/components/ui/form'
 import { Input } from '~/components/ui/input'
 import { Textarea } from '~/components/ui/textarea'
-import type {
-  Goal_UseGetGoalQuery,
-  Goal_UseGoalListQuery,
-} from '~/gql/graphql'
+import type { Goal_UseGetGoalQuery, Goal_UseGoalListQuery } from '~/gql/graphql'
 import { useCreateGoal } from '~/hooks/goal/useCreateGoal'
 import { useDeleteGoal } from '~/hooks/goal/useDeleteGoal'
 import { useUpdateGoal } from '~/hooks/goal/useUpdateGoal'
@@ -29,7 +26,9 @@ type GoalRecord =
 
 const schema = z.object({
   name: z.string().min(2, 'Nombre debe tener al menos 2 caracteres'),
-  description: z.string().min(4, 'Descripción debe tener al menos 4 caracteres'),
+  description: z
+    .string()
+    .min(4, 'Descripción debe tener al menos 4 caracteres'),
 })
 
 export function GoalForm(props: {
@@ -41,21 +40,9 @@ export function GoalForm(props: {
   const shouldUpdate = Boolean(goal)
   const navigate = useNavigate()
 
-  const {
-    createGoal,
-    loading: creating,
-    error: createError,
-  } = useCreateGoal()
-  const {
-    updateGoal,
-    loading: updating,
-    error: updateError,
-  } = useUpdateGoal()
-  const {
-    deleteGoal,
-    loading: deleting,
-    error: deleteError,
-  } = useDeleteGoal()
+  const { createGoal, loading: creating, error: createError } = useCreateGoal()
+  const { updateGoal, loading: updating, error: updateError } = useUpdateGoal()
+  const { deleteGoal, loading: deleting, error: deleteError } = useDeleteGoal()
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),

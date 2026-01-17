@@ -1,6 +1,15 @@
 #!/bin/sh
 
-sudo docker exec -it local-pg-1 psql -U root -d postgres -c "DROP DATABASE IF EXISTS utpl_practicum;"
-sudo docker exec -it local-pg-1 psql -U root -d postgres -c "CREATE DATABASE utpl_practicum;"
+if docker ps &> /dev/null; then
+    # No permission error, sudo is not required
+    DOCKER_CMD="docker"
+else
+    # Permission error received, sudo is likely required
+    DOCKER_CMD="sudo docker"
+fi
+
+
+$DOCKER_CMD exec -it local-pg-1 psql -U root -d postgres -c "DROP DATABASE IF EXISTS utpl_practicum;"
+$DOCKER_CMD exec -it local-pg-1 psql -U root -d postgres -c "CREATE DATABASE utpl_practicum;"
 
 pnpm --filter db migrate

@@ -36,6 +36,16 @@ input CreateGoalDataInput {
   name: String!
 }
 
+input CreateIndicatorDataInput {
+  description: String
+  goalUid: String!
+  maxValue: Int
+  minValue: Int
+  name: String!
+  type: IndicatorType
+  unitType: String
+}
+
 input CreateInstitutionDataInput {
   area: InstitutionArea!
   level: InstitutionLevel!
@@ -49,9 +59,10 @@ input CreateInstitutionalObjectiveDataInput {
 }
 
 input CreateInstitutionalPlanDataInput {
+  description: String!
   institutionId: String!
   name: String!
-  url: String!
+  url: String
   year: Int!
 }
 
@@ -123,6 +134,10 @@ input DeleteGoalInput {
   uid: String!
 }
 
+input DeleteIndicatorInput {
+  uid: String!
+}
+
 input DeleteObjectivePNDInput {
   uid: String!
 }
@@ -135,6 +150,7 @@ type Goal {
   active: Boolean!
   deletedAt: DateTime
   description: String!
+  indicators: [Indicator!]!
   institutionalObjective: InstitutionalObjective!
   name: String!
   uid: String!
@@ -159,6 +175,46 @@ type GoalMutations {
 type GoalQueries {
   list(filters: GoalListFilters!, limit: Int!, offset: Int!): GoalListResponse!
   one(uid: String!): Goal!
+}
+
+type Indicator {
+  active: Boolean!
+  deletedAt: DateTime
+  description: String
+  goal: Goal!
+  maxValue: Int
+  minValue: Int
+  name: String!
+  type: IndicatorType
+  uid: ID!
+  unitType: String
+}
+
+input IndicatorListFilters {
+  active: Boolean!
+  goalUid: String!
+  search: String!
+  type: IndicatorType
+}
+
+type IndicatorListResponse {
+  records: [Indicator!]!
+}
+
+type IndicatorMutations {
+  create(data: CreateIndicatorDataInput!): Indicator!
+  delete(input: DeleteIndicatorInput!): Boolean!
+  update(data: UpdateIndicatorDataInput!, where: UpdateIndicatorWhereInput!): Indicator!
+}
+
+type IndicatorQueries {
+  list(filters: IndicatorListFilters!, limit: Int!, offset: Int!): IndicatorListResponse!
+  one(uid: String!): Indicator!
+}
+
+enum IndicatorType {
+  number
+  percentage
 }
 
 type Institution {
@@ -187,10 +243,11 @@ type InstitutionMutations {
 type InstitutionPlan {
   active: Boolean!
   deletedAt: Date
+  description: String!
   institution: Institution!
   name: String!
   uid: ID!
-  url: String!
+  url: String
   year: Int!
 }
 
@@ -254,6 +311,7 @@ scalar JSON
 type Mutation {
   alignment: AlignmentMutations!
   goal: GoalMutations!
+  indicator: IndicatorMutations!
   institution: InstitutionMutations!
   institutionalObjective: InstitutionalObjectiveMutations!
   institutionalPlan: InstitutionalPlanMutations!
@@ -378,6 +436,15 @@ enum ProjectStatus {
   pending
 }
 
+type ProjectStatusCount {
+  count: Int!
+  status: ProjectStatus!
+}
+
+type ProjectStatusReport {
+  records: [ProjectStatusCount!]!
+}
+
 type ProjectTask {
   active: Boolean!
   deletedAt: Date
@@ -420,6 +487,7 @@ type ProjectsQueryResponse {
 
 type Query {
   goal: GoalQueries!
+  indicator: IndicatorQueries!
   institution: InstitutionQueries!
   institutionalObjective: InstitutionalObjectiveQueries!
   institutionalPlan: InstitutionalPlanQueries!
@@ -428,7 +496,14 @@ type Query {
   program: ProgramQueries!
   project: ProjectQueries!
   projectTask: ProjectTaskQueries!
+  reports: ReportsQueries!
   user: UserQueries!
+}
+
+"""Reports queries"""
+type ReportsQueries {
+  projectStatus: ProjectStatusReport!
+  taskStatus: TaskStatusReport!
 }
 
 input StringFilter {
@@ -436,6 +511,15 @@ input StringFilter {
   endsWith: String!
   equals: String!
   startsWith: String!
+}
+
+type TaskStatusCount {
+  count: Int!
+  status: ProjectTaskStatus!
+}
+
+type TaskStatusReport {
+  records: [TaskStatusCount!]!
 }
 
 input UpdateGoalDataInput {
@@ -446,6 +530,21 @@ input UpdateGoalDataInput {
 }
 
 input UpdateGoalWhereInput {
+  uid: String!
+}
+
+input UpdateIndicatorDataInput {
+  active: Boolean
+  description: String
+  goalUid: String
+  maxValue: Int
+  minValue: Int
+  name: String
+  type: IndicatorType
+  unitType: String
+}
+
+input UpdateIndicatorWhereInput {
   uid: String!
 }
 
@@ -473,6 +572,7 @@ input UpdateInstitutionalObjectiveWhereInput {
 
 input UpdateInstitutionalPlanDataInput {
   active: Boolean
+  description: String
   name: String
   url: String
   year: Int

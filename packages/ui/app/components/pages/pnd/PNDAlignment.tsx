@@ -46,10 +46,14 @@ export function PNDAlignment(props: Props) {
     [odsList],
   )
 
-  const { alignments, loading: alignmentsLoading, error: alignmentsError, refetch } =
-    usePndAlignments(pndObjectiveUid, {
-      skip: odsLoading || !odsCalled,
-    })
+  const {
+    alignments,
+    loading: alignmentsLoading,
+    error: alignmentsError,
+    refetch,
+  } = usePndAlignments(pndObjectiveUid, {
+    skip: odsLoading || !odsCalled,
+  })
 
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [initial, setInitial] = useState<Set<string>>(new Set())
@@ -83,8 +87,11 @@ export function PNDAlignment(props: Props) {
     return false
   }, [initial, selected])
 
-  const { saveAlignments, loading: saving, error: saveError } =
-    useSavePndAlignments()
+  const {
+    saveAlignments,
+    loading: saving,
+    error: saveError,
+  } = useSavePndAlignments()
 
   const handleCancel = () => {
     setSelected(new Set(initial))

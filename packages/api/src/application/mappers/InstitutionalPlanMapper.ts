@@ -7,6 +7,7 @@ export class InstitutionalPlanMapper {
     return {
       uid: entity.uid,
       name: entity.name,
+      description: entity.description,
       year: entity.year,
       url: entity.url,
       active: entity.active,

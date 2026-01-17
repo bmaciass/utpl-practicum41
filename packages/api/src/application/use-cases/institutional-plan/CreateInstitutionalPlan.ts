@@ -35,8 +35,9 @@ export class CreateInstitutionalPlan
 
     const plan = InstitutionalPlan.create({
       name: input.name,
+      description: input.description,
       year: input.year,
-      url: input.url,
+      url: input.url ?? null,
       institutionId: institution.id,
       createdBy: user.id,
     })

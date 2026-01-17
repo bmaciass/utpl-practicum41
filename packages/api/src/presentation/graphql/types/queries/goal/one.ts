@@ -1,7 +1,5 @@
 import { GetGoalById } from '~/application/use-cases/goal'
-import {
-  getGoalRepository
-} from '~/infrastructure/persistence/drizzle/repositories'
+import { getGoalRepository } from '~/infrastructure/persistence/drizzle/repositories'
 import builder from '../../../schema/builder'
 import { Goal } from '../../objects/Goal'
 import { GoalQueries } from './root'
@@ -16,7 +14,7 @@ builder.objectField(GoalQueries, 'one', (t) =>
       const goalRepo = getGoalRepository(db)
 
       const useCase = new GetGoalById({
-        goalRepository: goalRepo
+        goalRepository: goalRepo,
       })
 
       return await useCase.execute({ uid: args.uid })

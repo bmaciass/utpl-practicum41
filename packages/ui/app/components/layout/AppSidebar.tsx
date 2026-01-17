@@ -21,11 +21,25 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '~/components/ui/collapsible'
-import { navigationConfig } from '~/config/navigation'
+import { navigationConfig, type NavItem } from '~/config/navigation'
 
-export function AppSidebar() {
+function filterNavigation(items: NavItem[], isAdmin: boolean): NavItem[] {
+  return items
+    .map((item) => {
+      if (!item.children) return item
+      const children = item.children.filter((child) => {
+        if (!child.href) return true
+        return isAdmin || child.href !== '/users'
+      })
+      return { ...item, children }
+    })
+    .filter((item) => item.href || (item.children && item.children.length > 0))
+}
+
+export function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
   const location = useLocation()
   const navigate = useNavigate()
+  const filteredNavigation = filterNavigation(navigationConfig, isAdmin)
 
   const handleLogout = () => {
     navigate('/logout')
@@ -43,7 +57,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navigationConfig.map((item) => (
+              {filteredNavigation.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   {item.children ? (
                     // Collapsible group with children

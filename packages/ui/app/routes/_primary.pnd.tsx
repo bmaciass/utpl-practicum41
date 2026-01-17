@@ -1,6 +1,7 @@
 import { Outlet, useNavigate } from '@remix-run/react'
 import { useState } from 'react'
 import { DeletePNDDialog } from '~/components/pages/pnd/DeletePNDDialog'
+import { PNDHeader } from '~/components/pages/pnd/PNDHeader'
 import { PNDList } from '~/components/pages/pnd/PNDList'
 import { Alert, AlertDescription } from '~/components/ui/alert'
 import { Skeleton } from '~/components/ui/skeleton'
@@ -56,15 +57,18 @@ const PNDPage = () => {
     <>
       <div className='grid grid-cols-8 gap-4'>
         <div className='col-span-3 col-start-1 border-r p-4'>
-          <PNDList
-            objectives={data}
-            onSelect={handleSelect}
-            onDelete={(objective) => {
-              setSelectedObjective(objective)
-              setDeleteOpen(true)
-            }}
-            onCreate={handleCreate}
-          />
+          <div className='flex flex-col gap-4'>
+            <PNDHeader onCreate={handleCreate} />
+            <PNDList
+              objectives={data}
+              onSelect={handleSelect}
+              onDelete={(objective) => {
+                setSelectedObjective(objective)
+                setDeleteOpen(true)
+              }}
+              onCreate={handleCreate}
+            />
+          </div>
         </div>
         <div className='col-span-5 col-start-4 p-4'>
           <Outlet />

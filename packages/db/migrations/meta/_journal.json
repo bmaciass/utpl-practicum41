@@ -71,6 +71,20 @@
       "when": 1768533516598,
       "tag": "0009_add-goal",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1768579900791,
+      "tag": "0010_add-indicator",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1768602265136,
+      "tag": "0011_add-plan-description",
+      "breakpoints": true
     }
   ]
 }

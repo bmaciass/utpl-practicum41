@@ -1,4 +1,5 @@
 export interface GoalResponseDTO {
+  id: number
   uid: string
   name: string
   description: string

@@ -1,8 +1,4 @@
-import {
-  type Db,
-  Goal,
-  InstitutionalEstrategicObjetive,
-} from '@sigep/db'
+import { type Db, Goal, InstitutionalEstrategicObjetive } from '@sigep/db'
 import { eq } from 'drizzle-orm'
 import { nanoid } from 'nanoid/non-secure'
 
@@ -69,11 +65,7 @@ const goalSeeds: GoalSeed[] = [
   },
 ]
 
-export async function seedGoals(
-  db: Db,
-  userId: number,
-  institutionId: number,
-) {
+export async function seedGoals(db: Db, userId: number, institutionId: number) {
   const objectives = await db
     .select()
     .from(InstitutionalEstrategicObjetive)

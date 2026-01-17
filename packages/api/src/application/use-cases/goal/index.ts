@@ -3,4 +3,3 @@ export * from './DeleteGoal'
 export * from './GetGoalByUid'
 export * from './ListGoals'
 export * from './UpdateGoal'
-

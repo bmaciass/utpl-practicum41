@@ -2,8 +2,9 @@ import { Entity, ValidationError } from '@sigep/shared'
 
 export interface CreateInstitutionalPlanProps {
   name: string
+  description: string
   year: number
-  url: string
+  url?: string | null
   institutionId: number
   createdBy: number
 }
@@ -12,8 +13,9 @@ export interface InstitutionalPlanProps {
   id: number
   uid: string
   name: string
+  description: string
   year: number
-  url: string
+  url: string | null
   institutionId: number
   deletedAt: Date | null
   createdBy: number
@@ -25,8 +27,9 @@ export interface InstitutionalPlanProps {
 export class InstitutionalPlan extends Entity {
   private _id: number
   private _name: string
+  private _description: string
   private _year: number
-  private _url: string
+  private _url: string | null
   private _institutionId: number
   private _deletedAt: Date | null
   private _createdByUserId: number
@@ -36,6 +39,7 @@ export class InstitutionalPlan extends Entity {
     super(props.uid, props.createdBy, props.createdAt)
     this._id = props.id
     this._name = props.name
+    this._description = props.description
     this._year = props.year
     this._url = props.url
     this._institutionId = props.institutionId
@@ -55,8 +59,9 @@ export class InstitutionalPlan extends Entity {
       id: 0,
       uid: crypto.randomUUID(),
       name: props.name,
+      description: props.description,
       year: props.year,
-      url: props.url,
+      url: props.url ?? null,
       institutionId: props.institutionId,
       deletedAt: null,
       createdBy: props.createdBy,
@@ -97,7 +102,13 @@ export class InstitutionalPlan extends Entity {
     this.markUpdated(updatedBy)
   }
 
-  updateUrl(url: string, updatedBy: number): void {
+  updateDescription(description: string, updatedBy: number): void {
+    this._description = description
+    this._updatedByUserId = updatedBy
+    this.markUpdated(updatedBy)
+  }
+
+  updateUrl(url: string | null, updatedBy: number): void {
     this._url = url
     this._updatedByUserId = updatedBy
     this.markUpdated(updatedBy)
@@ -121,10 +132,13 @@ export class InstitutionalPlan extends Entity {
   get name(): string {
     return this._name
   }
+  get description(): string {
+    return this._description
+  }
   get year(): number {
     return this._year
   }
-  get url(): string {
+  get url(): string | null {
     return this._url
   }
   get institutionId(): number {

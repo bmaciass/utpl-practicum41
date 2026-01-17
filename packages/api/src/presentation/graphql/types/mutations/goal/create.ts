@@ -36,8 +36,7 @@ builder.objectField(GoalMutations, 'create', (t) =>
     },
     resolve: async (_, { data }, { db, user }) => {
       const goalRepo = getGoalRepository(db)
-      const institutionalObjectiveRepo =
-        getInstitutionalObjectiveRepository(db)
+      const institutionalObjectiveRepo = getInstitutionalObjectiveRepository(db)
       const userRepo = getUserRepository(db)
 
       const useCase = new CreateGoal({

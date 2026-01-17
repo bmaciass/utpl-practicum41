@@ -36,7 +36,12 @@ export function useGoalList(
     search = '',
     limit = 100,
     offset = 0,
-  }: { active?: boolean; search?: string; limit?: number; offset?: number } = {},
+  }: {
+    active?: boolean
+    search?: string
+    limit?: number
+    offset?: number
+  } = {},
 ) {
   const { data, loading, error, refetch } = useQuery(QUERY, {
     variables: {

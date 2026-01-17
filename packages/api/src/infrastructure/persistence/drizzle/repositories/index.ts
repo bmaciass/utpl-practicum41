@@ -1,6 +1,7 @@
 import type { Db } from '@sigep/db'
 import { DrizzleAlignmentInstitutionalToPNDRepository } from './DrizzleAlignmentInstitutionalToPNDRepository'
 import { DrizzleAlignmentPNDToODSRepository } from './DrizzleAlignmentPNDToODSRepository'
+import { DrizzleIndicatorRepository } from './DrizzleIndicatorRepository'
 import { DrizzleInstitutionRepository } from './DrizzleInstitutionRepository'
 import { DrizzleInstitutionalObjectiveRepository } from './DrizzleInstitutionalObjectiveRepository'
 import { DrizzleInstitutionalPlanRepository } from './DrizzleInstitutionalPlanRepository'
@@ -49,6 +50,9 @@ export const getAlignmentInstitutionalToPNDRepository = (db: Db) =>
 
 export const getAlignmentPNDToODSRepository = (db: Db) =>
   new DrizzleAlignmentPNDToODSRepository(db)
+
+export const getIndicatorRepository = (db: Db) =>
+  new DrizzleIndicatorRepository(db)
 
 export function getGoalRepository(db: Db) {
   return new GoalRepository(db)

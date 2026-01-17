@@ -20,7 +20,10 @@ export interface UpdateGoalDeps {
 export class UpdateGoal implements IUseCase<UpdateGoalInput, GoalResponseDTO> {
   constructor(private deps: UpdateGoalDeps) {}
 
-  async execute(input: UpdateGoalInput, userUid: string): Promise<GoalResponseDTO> {
+  async execute(
+    input: UpdateGoalInput,
+    userUid: string,
+  ): Promise<GoalResponseDTO> {
     // 1. Find goal
     const goal = await this.deps.goalRepository.findByUidOrThrow(input.uid)
 

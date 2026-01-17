@@ -3,6 +3,9 @@ import { Alert } from '~/components/globals/Alert'
 import { UserForm } from '~/components/pages/user/UserForm'
 import { Skeleton } from '~/components/ui/skeleton'
 import { useGetUser } from '~/hooks/user/useGetUser'
+import { withRole } from '~/helpers/withAuth'
+
+export const loader = withRole('admin')
 
 export default function Index() {
   const { id } = useParams()

@@ -23,8 +23,9 @@ export const UpdateInstitutionalPlanWhereInput = builder
 
 type TUpdateInstitutionalPlanDataInput = {
   name?: string
+  description?: string
   active?: boolean
-  url?: string
+  url?: string | null
   year?: number
 }
 
@@ -35,6 +36,7 @@ export const UpdateInstitutionalPlanDataInput = builder
   .implement({
     fields: (t) => ({
       name: t.string({ required: false }),
+      description: t.string({ required: false }),
       active: t.boolean({ required: false }),
       url: t.string({ required: false }),
       year: t.int({ required: false }),
@@ -64,7 +66,8 @@ builder.objectField(InstitutionalPlanMutations, 'update', (t) =>
             name: data.name ?? undefined,
             active: data.active ?? undefined,
             year: data.year ?? undefined,
-            url: data.url ?? undefined,
+            description: data.description,
+            url: data.url,
           },
         },
         user.uid,
@@ -76,6 +79,7 @@ builder.objectField(InstitutionalPlanMutations, 'update', (t) =>
         active: plan.active,
         url: plan.url,
         year: plan.year,
+        description: plan.description,
         deletedAt: plan.deletedAt,
         institutionId: plan.institutionId,
       }

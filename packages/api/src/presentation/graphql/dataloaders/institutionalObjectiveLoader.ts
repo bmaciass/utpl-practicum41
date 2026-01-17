@@ -9,10 +9,13 @@ export function createInstitutionalObjectiveLoader(db: Db) {
     async (ids: readonly number[]) => {
       // Fetch all institutions in ONE query
       const institutionalObjectiveRepo = getInstitutionalObjectiveRepository(db)
-      const institutionalObjectives = await institutionalObjectiveRepo.findByIds([...ids])
+      const institutionalObjectives =
+        await institutionalObjectiveRepo.findByIds([...ids])
 
       // Create a map for fast lookup: uid → User
-      const institutionObjectivesMap = new Map(institutionalObjectives.map((u) => [u.id, u]))
+      const institutionObjectivesMap = new Map(
+        institutionalObjectives.map((u) => [u.id, u]),
+      )
 
       // CRITICAL: Return institutions in the SAME ORDER as requested uids
       // DataLoader requires this to match results back to requests

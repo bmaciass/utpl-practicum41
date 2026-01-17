@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useNavigate, useSubmit } from '@remix-run/react'
+import { useNavigate } from '@remix-run/react'
 import { pick } from 'lodash-es'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
@@ -7,7 +7,6 @@ import { z } from 'zod'
 import { Alert } from '~/components/globals/Alert'
 
 import { Button } from '~/components/ui/button'
-import { Checkbox } from '~/components/ui/checkbox'
 import {
   Form,
   FormControl,
@@ -19,25 +18,28 @@ import {
 import { Input } from '~/components/ui/input'
 import type { GetUsers_UseGetUserQuery } from '~/gql/graphql'
 import { useCreateUser } from '~/hooks/user/useCreateUser'
+import { useDeleteUser } from '~/hooks/user/useDeleteUser'
 import { useUpdateUser } from '~/hooks/user/useUpdateUser'
 
 const formSchema = z.object({
   name: z.string().min(2, {
-    error: 'Nombre debe tener al menos dos caracteres',
+    message: 'Nombre debe tener al menos dos caracteres',
   }),
-  password: z.string().min(5, {
-    error: 'Nombre debe tener al menos cinco caracteres',
-  }),
+  password: z.union([
+    z.string().min(5, {
+      message: 'La clave debe tener al menos cinco caracteres',
+    }),
+    z.literal(''),
+  ]),
   firstName: z.string().min(2, {
-    error: 'Nombre debe tener al menos dos caracteres',
+    message: 'Nombre debe tener al menos dos caracteres',
   }),
   lastName: z.string().min(2, {
-    error: 'Nombre debe tener al menos dos caracteres',
+    message: 'Nombre debe tener al menos dos caracteres',
   }),
   dni: z.string().min(9, {
-    error: 'Nombre debe tener al menos nueve caracteres',
+    message: 'Nombre debe tener al menos nueve caracteres',
   }),
-  active: z.boolean(),
 })
 
 export function UserForm(props: {
@@ -57,9 +59,14 @@ export function UserForm(props: {
     error: errorUpdate,
     loading: loadingUpdate,
   } = useUpdateUser()
+  const {
+    deleteUser,
+    error: errorDelete,
+    loading: loadingDelete,
+  } = useDeleteUser()
 
-  const error = errorCreate ?? errorUpdate
-  const loading = loadingCreate ?? loadingUpdate
+  const error = errorCreate ?? errorUpdate ?? errorDelete
+  const loading = loadingCreate || loadingUpdate || loadingDelete
 
   const navigate = useNavigate()
   const form = useForm<z.infer<typeof formSchema>>({
@@ -70,19 +77,24 @@ export function UserForm(props: {
       dni: '',
       firstName: '',
       lastName: '',
-      active: true,
     },
   })
 
   useEffect(() => {
     if (user) {
-      form.reset(user)
+      form.reset({
+        name: user.name ?? '',
+        password: '',
+        dni: user.person?.dni ?? '',
+        firstName: user.person?.firstName ?? '',
+        lastName: user.person?.lastName ?? '',
+      })
     }
   }, [form, user])
 
   useEffect(() => {
     if (userCreated) {
-      navigate(`/users/${userCreated.id}`)
+      navigate(`/users/${userCreated.uid}`)
     }
   }, [userCreated, navigate])
 
@@ -91,8 +103,22 @@ export function UserForm(props: {
   }
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    if (shouldUpdate) {
-      updateUser({ variables: { data: values, where: { id: user.id } } })
+    if (shouldUpdate && user) {
+      const updateData = {
+        name: values.name,
+        dni: values.dni,
+        firstName: values.firstName,
+        lastName: values.lastName,
+        ...(values.password ? { password: values.password } : {}),
+      }
+      updateUser({ variables: { data: updateData, where: { id: user.uid } } })
+      return
+    }
+    if (!values.password) {
+      form.setError('password', {
+        type: 'manual',
+        message: 'La clave es requerida para crear el usuario',
+      })
       return
     }
     createUser({
@@ -106,6 +132,16 @@ export function UserForm(props: {
         ]),
       },
     })
+  }
+
+  const handleDelete = async () => {
+    if (!user) return
+    const confirmed = window.confirm(
+      '¿Está seguro que desea eliminar este usuario?',
+    )
+    if (!confirmed) return
+    await deleteUser(user.uid)
+    navigate('/users')
   }
 
   return (
@@ -139,7 +175,7 @@ export function UserForm(props: {
               <FormItem>
                 <FormLabel>Clave</FormLabel>
                 <FormControl>
-                  <Input className='w-1/2' {...field} />
+                  <Input className='w-1/2' type='password' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -184,24 +220,6 @@ export function UserForm(props: {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name='active'
-            render={({ field }) => (
-              <FormItem className='flex flex-row items-center gap-2'>
-                <FormLabel>Activo</FormLabel>
-                <FormControl>
-                  <Checkbox
-                    name={field.name}
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    ref={field.ref}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           <div className='flex gap-x-2'>
             <Button variant={'secondary'} type='button' onClick={onCancel}>
               Cancelar
@@ -209,6 +227,16 @@ export function UserForm(props: {
             <Button type='submit' disabled={loading}>
               Guardar
             </Button>
+            {shouldUpdate && (
+              <Button
+                variant='destructive'
+                type='button'
+                onClick={handleDelete}
+                disabled={loading}
+              >
+                Eliminar
+              </Button>
+            )}
           </div>
         </form>
       </Form>

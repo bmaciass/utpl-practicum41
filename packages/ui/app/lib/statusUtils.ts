@@ -13,7 +13,7 @@ export const translateProjectStatus = (status: string): string => {
   const translations: Record<string, string> = {
     pending: 'Pendiente',
     in_progress: 'En Progreso',
-    completed: 'Completado',
+    done: 'Completado',
     cancelled: 'Cancelado',
   }
   return translations[status] || status

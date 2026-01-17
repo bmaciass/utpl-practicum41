@@ -6,11 +6,11 @@ import { Title } from '~/components/typography/Headers'
 import { Paragraph } from '~/components/typography/Paragraph'
 import { Button } from '~/components/ui/button'
 import { Skeleton } from '~/components/ui/skeleton'
-import { withAuth } from '~/helpers/withAuth'
+import { withRole } from '~/helpers/withAuth'
 import { useUserList } from '~/hooks/user/useUserList'
 import { ClientOnly } from '~/utils/ClientOnly'
 
-export const loader = withAuth()
+export const loader = withRole('admin')
 
 const UsersSection = () => {
   const { users, error, loading } = useUserList()

@@ -11,7 +11,9 @@ export interface GetGoalByUidDeps {
   goalRepository: IGoalRepository
 }
 
-export class GetGoalById implements IUseCase<GetGoalByUidInput, GoalResponseDTO> {
+export class GetGoalById
+  implements IUseCase<GetGoalByUidInput, GoalResponseDTO>
+{
   constructor(private deps: GetGoalByUidDeps) {}
 
   async execute(input: GetGoalByUidInput): Promise<GoalResponseDTO> {

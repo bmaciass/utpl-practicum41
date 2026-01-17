@@ -33,21 +33,9 @@ interface PNDFormProps {
   onSuccess?: (objective: ObjectivePnd) => void
 }
 
-export function PNDForm({
-  objective,
-  onCancel,
-  onSuccess,
-}: PNDFormProps) {
-  const {
-    createPND,
-    loading: creating,
-    error: createError,
-  } = usePNDCreate()
-  const {
-    updatePND,
-    loading: updating,
-    error: updateError,
-  } = usePNDUpdate()
+export function PNDForm({ objective, onCancel, onSuccess }: PNDFormProps) {
+  const { createPND, loading: creating, error: createError } = usePNDCreate()
+  const { updatePND, loading: updating, error: updateError } = usePNDUpdate()
 
   const mutationError = createError ?? updateError
   const isSubmitting = creating || updating

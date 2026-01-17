@@ -6,6 +6,7 @@
   "scripts": {
     "build": "remix vite:build",
     "build:env": "./scripts/build-env",
+    "check": "tsc --noEmit",
     "codegen": "gql-gen --config codegen.ts",
     "dev": "remix vite:dev",
     "format": "biome format --write .",
@@ -38,7 +39,9 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "graphql": "^16.11.0",
+    "html2canvas": "^1.4.1",
     "isbot": "^4.1.0",
+    "jspdf": "^2.5.1",
     "lodash-es": "^4.17.21",
     "lucide-react": "^0.514.0",
     "react": "^18.2.0",

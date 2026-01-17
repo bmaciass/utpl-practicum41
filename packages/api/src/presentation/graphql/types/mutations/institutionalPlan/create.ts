@@ -10,7 +10,8 @@ import { InstitutionalPlanMutations } from './root'
 
 type TCreateInstitutionalPlanDataInput = {
   name: string
-  url: string
+  description: string
+  url?: string | null
   year: number
   institutionId: string
 }
@@ -22,8 +23,9 @@ export const CreateInstitutionalPlanDataInput = builder
   .implement({
     fields: (t) => ({
       name: t.string(),
+      description: t.string(),
       institutionId: t.string(),
-      url: t.string(),
+      url: t.string({ required: false }),
       year: t.int(),
     }),
   })
@@ -49,6 +51,7 @@ builder.objectField(InstitutionalPlanMutations, 'create', (t) =>
       const plan = await createPlan.execute(
         {
           name: data.name,
+          description: data.description,
           url: data.url,
           year: data.year,
           institutionUid: data.institutionId,
@@ -62,6 +65,7 @@ builder.objectField(InstitutionalPlanMutations, 'create', (t) =>
         active: plan.active,
         url: plan.url,
         year: plan.year,
+        description: plan.description,
         deletedAt: plan.deletedAt,
         institutionId: plan.institutionId,
       }

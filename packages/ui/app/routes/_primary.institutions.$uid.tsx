@@ -5,7 +5,7 @@ import { Button } from '~/components/ui/button'
 import { Skeleton } from '~/components/ui/skeleton'
 import { useGetInstitution } from '~/hooks/institution/useGetInstitution'
 
-export default function Index() {
+export default function Index () {
   const { uid } = useParams()
   if (!uid) {
     return <Alert variant='error' description='Parametro no encontrado' />
@@ -21,8 +21,7 @@ export default function Index() {
         />
       )}
       {loading && <Skeleton className='w-full' />}
-      <div className='flex flex-column ga-y-2'>
-        <InstitutionForm institution={institution} />
+      <div className='flex flex-col gap-2'>
         <div className='flex gap-2'>
           <Link to={`/institutions/${uid}/plans`}>
             <Button type='button' variant={'secondary'}>
@@ -35,6 +34,7 @@ export default function Index() {
             </Button>
           </Link>
         </div>
+        <InstitutionForm institution={institution} />
       </div>
     </>
   )

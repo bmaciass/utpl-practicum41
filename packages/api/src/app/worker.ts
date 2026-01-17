@@ -4,6 +4,7 @@ import { useCookies } from '@whatwg-node/server-plugin-cookies'
 import { env } from 'cloudflare:workers'
 import { createYoga } from 'graphql-yoga'
 import { getDefaultJWTService } from '~/infrastructure/services/JWTService'
+import { createIndicatorsByGoalLoader } from '~/presentation/graphql/dataloaders/indicatorsByGoalLoader'
 import { createInstitutionLoader } from '~/presentation/graphql/dataloaders/institutionLoader'
 import { createInstitutionalObjectiveLoader } from '~/presentation/graphql/dataloaders/institutionalObjectiveLoader'
 import { createPersonLoader } from '~/presentation/graphql/dataloaders/personLoader'
@@ -59,6 +60,7 @@ async function createContext(request: Request, env: Env): Promise<AppContext> {
   // Create DataLoaders for this request
   // Each request gets fresh loaders to ensure cache isolation
   const loaders = {
+    indicatorsByGoal: createIndicatorsByGoalLoader(db),
     institution: createInstitutionLoader(db),
     institutionalObjective: createInstitutionalObjectiveLoader(db),
     user: createUserLoader(db),

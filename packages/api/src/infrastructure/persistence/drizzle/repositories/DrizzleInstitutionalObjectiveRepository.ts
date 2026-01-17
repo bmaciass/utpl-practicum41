@@ -1,7 +1,5 @@
 import type { Db } from '@sigep/db'
-import {
-  InstitutionalEstrategicObjetive as InstitutionalObjectiveTable
-} from '@sigep/db'
+import { InstitutionalEstrategicObjetive as InstitutionalObjectiveTable } from '@sigep/db'
 import { NotFoundError } from '@sigep/shared'
 import { type SQL, and, eq, inArray, isNull, like } from 'drizzle-orm'
 import { compact, isEmpty, isNil } from 'lodash-es'

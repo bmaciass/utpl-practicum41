@@ -6,19 +6,19 @@ import type { GetUsers_UseUserListQuery } from '~/gql/graphql'
 export const UserCard = (data: {
   user: GetUsers_UseUserListQuery['user']['list']['records'][number]
 }) => {
-  const { id, name } = data.user
+  const { uid, name } = data.user
   const navigate = useNavigate()
 
-  const handleOnClick = (id: string) => {
-    navigate(`/users/${id}`)
+  const handleOnClick = (userUid: string) => {
+    navigate(`/users/${userUid}`)
   }
 
   return (
     <Card
       className='cursor-pointer'
-      key={`user-${id}`}
+      key={`user-${uid}`}
       onClick={() => {
-        handleOnClick(id)
+        handleOnClick(uid)
       }}
     >
       <CardHeader>

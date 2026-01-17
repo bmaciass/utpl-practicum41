@@ -7,6 +7,7 @@
 export * from './tables/Goal'
 export * from './tables/alignmentObjectiveEstrategicWithPND'
 export * from './tables/alignmentObjectivePNDWithODS'
+export * from './tables/indicator'
 export * from './tables/institution'
 export * from './tables/institutionalClassification'
 export * from './tables/institutionalEstrategicObjetive'

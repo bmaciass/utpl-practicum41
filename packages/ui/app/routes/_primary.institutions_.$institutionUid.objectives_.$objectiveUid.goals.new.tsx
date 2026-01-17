@@ -12,7 +12,9 @@ const GoalNewInner = () => {
   const objectiveUid = params.objectiveUid
 
   if (!institutionUid || !objectiveUid) {
-    return <Alert variant='error' description='Parámetros inválidos para metas' />
+    return (
+      <Alert variant='error' description='Parámetros inválidos para metas' />
+    )
   }
 
   return (

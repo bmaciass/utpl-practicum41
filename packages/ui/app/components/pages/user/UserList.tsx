@@ -14,13 +14,13 @@ export const UserList = (props: {
   const institutionList = shallowClonedList.map((record) => {
     return (
       <>
-        <Separator key={`separator-${record.id}`} />
-        <UserCard key={`${record.id}`} user={record} />
+        <Separator key={`separator-${record.uid}`} />
+        <UserCard key={`${record.uid}`} user={record} />
       </>
     )
   })
 
-  institutionList.unshift(<UserCard key={firstRecord.id} user={firstRecord} />)
+  institutionList.unshift(<UserCard key={firstRecord.uid} user={firstRecord} />)
 
   return <>{institutionList}</>
 }

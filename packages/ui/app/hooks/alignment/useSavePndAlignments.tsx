@@ -43,12 +43,8 @@ export function useSavePndAlignments() {
       const nextSet = new Set(nextSelected)
       const currentSet = new Set(currentSelected)
 
-      const toCreate = Array.from(nextSet).filter(
-        (uid) => !currentSet.has(uid),
-      )
-      const toDelete = Array.from(currentSet).filter(
-        (uid) => !nextSet.has(uid),
-      )
+      const toCreate = Array.from(nextSet).filter((uid) => !currentSet.has(uid))
+      const toDelete = Array.from(currentSet).filter((uid) => !nextSet.has(uid))
 
       if (toCreate.length === 0 && toDelete.length === 0) {
         return { created: 0, deleted: 0 }

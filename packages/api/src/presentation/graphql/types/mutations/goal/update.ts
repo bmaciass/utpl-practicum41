@@ -54,8 +54,7 @@ builder.objectField(GoalMutations, 'update', (t) =>
     },
     resolve: async (_, { where, data }, { db, user }) => {
       const goalRepo = getGoalRepository(db)
-      const institutionalObjectiveRepo =
-        getInstitutionalObjectiveRepository(db)
+      const institutionalObjectiveRepo = getInstitutionalObjectiveRepository(db)
       const userRepo = getUserRepository(db)
 
       const useCase = new UpdateGoal({

@@ -39,6 +39,9 @@ export class UpdateInstitutionalPlan
     if (input.data.year !== undefined) {
       plan.updateYear(input.data.year, updatedBy)
     }
+    if (input.data.description !== undefined) {
+      plan.updateDescription(input.data.description, updatedBy)
+    }
     if (input.data.url !== undefined) {
       plan.updateUrl(input.data.url, updatedBy)
     }

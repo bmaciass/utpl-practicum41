@@ -1,10 +1,7 @@
 import { useNavigate } from '@remix-run/react'
 import { Badge } from '~/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
-import type {
-  Goal_UseGoalListQuery,
-  Goal_UseGetGoalQuery,
-} from '~/gql/graphql'
+import type { Goal_UseGoalListQuery, Goal_UseGetGoalQuery } from '~/gql/graphql'
 
 type GoalRecord =
   | Goal_UseGoalListQuery['goal']['list']['records'][number]

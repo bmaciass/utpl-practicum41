@@ -28,7 +28,9 @@ export function GoalsPage() {
         )}
         <div className='flex items-center gap-2'>
           <div className='flex-none'>
-            <Link to={`/institutions/${institutionUid}/objectives/${objectiveUid}`}>
+            <Link
+              to={`/institutions/${institutionUid}/objectives/${objectiveUid}`}
+            >
               <Button variant='ghost' size='icon'>
                 <ArrowLeft className='h-4 w-4' />
               </Button>
@@ -38,7 +40,9 @@ export function GoalsPage() {
             <Title variant='h4'>Metas</Title>
           </div>
           <div className='flex-none'>
-            <Link to={`/institutions/${institutionUid}/objectives/${objectiveUid}/goals/new`}>
+            <Link
+              to={`/institutions/${institutionUid}/objectives/${objectiveUid}/goals/new`}
+            >
               <Button>Nuevo</Button>
             </Link>
           </div>
