@@ -8,7 +8,6 @@ import { Alert } from '~/components/globals/Alert'
 import { UserSelect } from '~/components/selects/UserSelect'
 
 import { Button } from '~/components/ui/button'
-import { Checkbox } from '~/components/ui/checkbox'
 import {
   Form,
   FormControl,
@@ -27,14 +26,15 @@ const formSchema = z.object({
   name: z.string().min(2, {
     error: 'Nombre debe tener al menos dos caracteres',
   }),
-  description: z.string(),
+  description: z.string().min(10, {
+    error: 'Descripcion debe tener al menos 10 caracteres',
+  }),
   // startDate: z.date(),
   // endDate: z.date(),
   responsibleUid: z.string().nonoptional(),
-  active: z.boolean(),
 })
 
-export function ProgramForm(props: {
+export function ProgramForm (props: {
   program?: GetPrograms_UseGetProgramQuery['program']['one']
 }) {
   const { program } = props
@@ -64,7 +64,6 @@ export function ProgramForm(props: {
       // startDate: new Date(),
       // endDate: new Date(),
       responsibleUid: '',
-      active: true,
     },
   })
 
@@ -88,12 +87,12 @@ export function ProgramForm(props: {
     navigate('/programs')
   }
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit (values: z.infer<typeof formSchema>) {
     if (shouldUpdate) {
       updateProgram({ variables: { data: values, where: { id: program.uid } } })
       return
     }
-    createProgram({ variables: { data: omit(values, ['active']) } })
+    createProgram({ variables: { data: values } })
   }
 
   return (
@@ -114,7 +113,7 @@ export function ProgramForm(props: {
               <FormItem>
                 <FormLabel>Nombre de institucion</FormLabel>
                 <FormControl>
-                  <Input className='w-1/2' {...field} />
+                  <Input {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -127,7 +126,7 @@ export function ProgramForm(props: {
               <FormItem>
                 <FormLabel>Descripcion</FormLabel>
                 <FormControl>
-                  <Textarea className='w-1/2' {...field} />
+                  <Textarea {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -143,24 +142,6 @@ export function ProgramForm(props: {
                   <UserSelect
                     onValueChange={field.onChange}
                     {...omit(field, 'onChange')}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name='active'
-            render={({ field }) => (
-              <FormItem className='flex flex-row items-center gap-2'>
-                <FormLabel>Activo</FormLabel>
-                <FormControl>
-                  <Checkbox
-                    name={field.name}
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    ref={field.ref}
                   />
                 </FormControl>
                 <FormMessage />

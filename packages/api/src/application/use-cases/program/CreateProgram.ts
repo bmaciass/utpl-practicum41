@@ -17,12 +17,13 @@ export class CreateProgram
 
   async execute(
     input: CreateProgramDTO,
-    actorId: string,
+    userUid: string,
   ): Promise<ProgramResponseDTO> {
     // Fetch responsible user to get the database ID
-    const responsibleUser = await this.deps.userRepository.findByUidOrThrow(
-      input.responsibleUid,
-    )
+    const [responsibleUser, user] = await Promise.all([
+      this.deps.userRepository.findByUidOrThrow(input.responsibleUid),
+      this.deps.userRepository.findByUidOrThrow(userUid),
+    ])
 
     const program = Program.create({
       name: input.name,
@@ -30,7 +31,7 @@ export class CreateProgram
       startDate: input.startDate,
       endDate: input.endDate,
       responsibleId: responsibleUser.id,
-      createdBy: Number(actorId),
+      createdBy: user.id,
     })
 
     await this.deps.programRepository.save(program)

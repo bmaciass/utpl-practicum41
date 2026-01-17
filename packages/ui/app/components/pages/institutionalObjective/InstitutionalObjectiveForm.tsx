@@ -23,13 +23,13 @@ import { useUpdateInstitutionalObjective } from '~/hooks/institutionalObjective/
 
 const formSchema = z.object({
   name: z.string().min(2, {
-    message: 'Nombre debe tener al menos 2 caracteres',
+    error: 'Nombre debe tener al menos 2 caracteres',
   }),
-  description: z.string().optional(),
+  description: z.string().min(10, { error: 'Descripcion debe tener al menos 10 caracteres' }),
   institutionId: z.string(),
 })
 
-export function InstitutionalObjectiveForm(props: {
+export function InstitutionalObjectiveForm (props: {
   institutionalObjective?: GetInstitutionalObjective_UseGetInstitutionalObjectiveQuery['institutionalObjective']['one']
   institutionUid: string
 }) {
@@ -46,7 +46,7 @@ export function InstitutionalObjectiveForm(props: {
     update,
     error: errorUpdate,
     loading: loadingUpdate,
-  } = useUpdateInstitutionalObjective()
+  } = useUpdateInstitutionalObjective(institutionUid)
 
   const error = errorCreate ?? errorUpdate
   const loading = loadingCreate ?? loadingUpdate
@@ -102,13 +102,13 @@ export function InstitutionalObjectiveForm(props: {
     navigate(`/institutions/${institutionUid}/objectives?deleted=success`)
   }
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit (values: z.infer<typeof formSchema>) {
     if (shouldUpdate && institutionalObjective) {
       update({
         variables: {
           data: {
             name: values.name,
-            description: values.description || undefined,
+            description: values.description,
           },
           where: { uid: institutionalObjective.uid },
         },
@@ -119,7 +119,7 @@ export function InstitutionalObjectiveForm(props: {
       variables: {
         data: {
           name: values.name,
-          description: values.description || undefined,
+          description: values.description,
           institutionId: institutionUid,
         },
       },
@@ -144,7 +144,7 @@ export function InstitutionalObjectiveForm(props: {
               <FormItem>
                 <FormLabel>Nombre</FormLabel>
                 <FormControl>
-                  <Input className='w-1/2' {...field} />
+                  <Input {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -157,7 +157,7 @@ export function InstitutionalObjectiveForm(props: {
               <FormItem>
                 <FormLabel>Descripción</FormLabel>
                 <FormControl>
-                  <Textarea className='w-1/2' {...field} />
+                  <Textarea {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

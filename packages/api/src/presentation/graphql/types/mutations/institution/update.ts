@@ -3,7 +3,10 @@ import type {
   InstitutionArea,
   InstitutionLevel,
 } from '~/domain/entities/Institution'
-import { getInstitutionRepository } from '~/infrastructure/persistence/drizzle/repositories'
+import {
+  getInstitutionRepository,
+  getUserRepository,
+} from '~/infrastructure/persistence/drizzle/repositories'
 import builder from '../../../schema/builder'
 import { InstitutionAreaEnum } from '../../enums/InstitutionArea'
 import { InstitutionLevelEnum } from '../../enums/InstitutionLevel'
@@ -50,7 +53,11 @@ builder.objectField(InstitutionMutations, 'update', (t) =>
     },
     resolve: async (_, { data, where }, { db, user }) => {
       const institutionRepository = getInstitutionRepository(db)
-      const updateInstitution = new UpdateInstitution({ institutionRepository })
+      const userRepository = getUserRepository(db)
+      const updateInstitution = new UpdateInstitution({
+        institutionRepository,
+        userRepository,
+      })
 
       const institution = await updateInstitution.execute(
         {

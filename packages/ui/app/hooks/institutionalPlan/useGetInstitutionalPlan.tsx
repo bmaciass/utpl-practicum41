@@ -7,6 +7,7 @@ const query = graphql(`
       one (uid: $uid) {
         uid
         name
+        description
         year
         url
       }

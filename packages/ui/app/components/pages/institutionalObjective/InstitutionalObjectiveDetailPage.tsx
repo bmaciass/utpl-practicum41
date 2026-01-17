@@ -46,7 +46,7 @@ export const InstitutionalObjectiveDetailPage = () => {
               <Title variant='h4'>{institutionalObjective.name}</Title>
               <div className='flex gap-2'>
                 <Button
-                  variant='secondary'
+                  variant='link'
                   type='button'
                   onClick={() =>
                     navigate(

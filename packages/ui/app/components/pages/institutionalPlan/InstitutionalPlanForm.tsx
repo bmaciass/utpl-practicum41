@@ -16,12 +16,16 @@ import {
   FormMessage,
 } from '~/components/ui/form'
 import { Input } from '~/components/ui/input'
+import { Textarea } from '~/components/ui/textarea'
 import type { GetInstitutionalPlan_UseGetInstitutionalPlanQuery } from '~/gql/graphql'
 import { useCreateInstitutionalPlan } from '~/hooks/institutionalPlan/useCreateInstitutionalPlan'
 import { useUpdateInstitutionalPlan } from '~/hooks/institutionalPlan/useUpdateInstitutionalPlan'
 
 const formSchema = z.object({
   name: z.string().min(2, {
+    error: 'Nombre debe tener al menos dos caracteres',
+  }),
+  description: z.string().min(2, {
     error: 'Nombre debe tener al menos dos caracteres',
   }),
   year: z.coerce
@@ -35,10 +39,10 @@ const formSchema = z.object({
     }),
   url: z.url({
     error: 'URL debe ser válida',
-  }),
+  }).optional(),
 })
 
-export function InstitutionalPlanForm(props: {
+export function InstitutionalPlanForm (props: {
   institutionalPlan?: GetInstitutionalPlan_UseGetInstitutionalPlanQuery['institutionalPlan']['one']
   institutionUid: string
 }) {
@@ -65,6 +69,7 @@ export function InstitutionalPlanForm(props: {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
+      description: '',
       year: new Date().getFullYear(),
       url: '',
     },
@@ -75,7 +80,8 @@ export function InstitutionalPlanForm(props: {
       form.reset({
         name: institutionalPlan.name,
         year: institutionalPlan.year,
-        url: institutionalPlan.url,
+        url: institutionalPlan.url ?? undefined,
+        description: institutionalPlan.description,
       })
     }
   }, [form, institutionalPlan])
@@ -92,7 +98,7 @@ export function InstitutionalPlanForm(props: {
     navigate(`/institutions/${institutionUid}/plans`)
   }
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit (values: z.infer<typeof formSchema>) {
     if (shouldUpdate) {
       updateInstitutionalPlan({
         variables: {
@@ -113,6 +119,7 @@ export function InstitutionalPlanForm(props: {
           year: values.year,
           url: values.url,
           institutionId: institutionUid,
+          description: values.description,
         },
       },
     })
@@ -136,33 +143,52 @@ export function InstitutionalPlanForm(props: {
               <FormItem>
                 <FormLabel>Nombre del plan</FormLabel>
                 <FormControl>
-                  <Input className='w-1/2' {...field} />
+                  <Input {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+          <div className='flex gap-2'>
+            <div className='grow'>
+              <FormField
+                control={form.control}
+                name='year'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Año</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className='grow'>
+              <FormField
+                control={form.control}
+                name='url'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>URL</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
           <FormField
             control={form.control}
-            name='year'
+            name='description'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Año</FormLabel>
+                <FormLabel>Descripcion</FormLabel>
                 <FormControl>
-                  <Input className='w-1/2' {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name='url'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>URL</FormLabel>
-                <FormControl>
-                  <Input className='w-1/2' {...field} />
+                  <Textarea {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

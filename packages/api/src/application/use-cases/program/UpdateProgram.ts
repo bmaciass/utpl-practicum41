@@ -21,12 +21,13 @@ export class UpdateProgram
 
   async execute(
     input: UpdateProgramInput,
-    actorId: string,
+    userUid: string,
   ): Promise<ProgramResponseDTO> {
-    const program = await this.deps.programRepository.findByUidOrThrow(
-      input.uid,
-    )
-    const updatedBy = Number(actorId)
+    const [program, user] = await Promise.all([
+      this.deps.programRepository.findByUidOrThrow(input.uid),
+      this.deps.userRepository.findByUidOrThrow(userUid),
+    ])
+    const updatedBy = user.id
 
     if (input.data.name !== undefined) {
       program.updateName(input.data.name, updatedBy)

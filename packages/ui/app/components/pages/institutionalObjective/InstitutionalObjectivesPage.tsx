@@ -51,7 +51,7 @@ export const InstitutionalObjectivesPage = () => {
   }
 
   return (
-    <div className='grid grid-cols-6 gap-4'>
+    <div className='grid grid-cols-8 gap-4'>
       <div className='col-span-3 col-start-1 p-4'>
         <div className='flex items-center gap-2'>
           <div className='flex-none'>
@@ -72,7 +72,7 @@ export const InstitutionalObjectivesPage = () => {
         </div>
         <InstitutionalObjectivesSection institutionUid={institutionUid} />
       </div>
-      <div className='col-span-3 col-start-4 p-4'>
+      <div className='col-span-5 col-start-4 p-4'>
         <Outlet />
       </div>
     </div>

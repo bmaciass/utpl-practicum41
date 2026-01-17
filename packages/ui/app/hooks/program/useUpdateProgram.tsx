@@ -20,7 +20,7 @@ const updateMutation = graphql(`
 
 export const useUpdateProgram = () => {
   const [fn, { called, loading, error, data }] = useMutation(updateMutation, {
-    refetchQueries: [{ query }],
+    refetchQueries: [{ query, variables: { active: true } }],
   })
 
   const program = data?.program.update

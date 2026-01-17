@@ -1,8 +1,9 @@
 import type { IUseCase } from '@sigep/shared'
 import type { IInstitutionRepository } from '~/domain/repositories/IInstitutionRepository'
+import type { IUserRepository } from '~/domain/repositories/IUserRepository'
 import type {
-  UpdateInstitutionDTO,
   InstitutionResponseDTO,
+  UpdateInstitutionDTO,
 } from '../../dto/institution'
 import { InstitutionMapper } from '../../mappers/InstitutionMapper'
 
@@ -13,6 +14,7 @@ export interface UpdateInstitutionInput {
 
 export interface UpdateInstitutionDeps {
   institutionRepository: IInstitutionRepository
+  userRepository: IUserRepository
 }
 
 export class UpdateInstitution
@@ -22,13 +24,14 @@ export class UpdateInstitution
 
   async execute(
     input: UpdateInstitutionInput,
-    actorId: string,
+    userUid: string,
   ): Promise<InstitutionResponseDTO> {
-    const institution = await this.deps.institutionRepository.findByUidOrThrow(
-      input.uid,
-    )
+    const [institution, user] = await Promise.all([
+      this.deps.institutionRepository.findByUidOrThrow(input.uid),
+      this.deps.userRepository.findByUidOrThrow(userUid),
+    ])
 
-    const updatedBy = Number(actorId)
+    const updatedBy = user.id
 
     if (input.data.name !== undefined) {
       institution.updateName(input.data.name, updatedBy)
