@@ -5,12 +5,24 @@ type AlignmentInstitutionalToPND {
   pndObjectiveUid: String!
 }
 
-"""Alignment mutations"""
+"""
+Alignment mutations
+"""
 type AlignmentMutations {
-  createInstitutionalToPND(input: CreateAlignmentInstitutionalToPNDInput!): AlignmentInstitutionalToPND!
+  createInstitutionalToPND(
+    input: CreateAlignmentInstitutionalToPNDInput!
+  ): AlignmentInstitutionalToPND!
   createPNDToODS(input: CreateAlignmentPNDToODSInput!): AlignmentPNDToODS!
-  deleteInstitutionalToPND(input: DeleteAlignmentInstitutionalToPNDInput!): Boolean!
+  createProjectObjectiveToODS(
+    input: CreateAlignmentProjectObjectiveToODSInput!
+  ): AlignmentProjectObjectiveToODS!
+  deleteInstitutionalToPND(
+    input: DeleteAlignmentInstitutionalToPNDInput!
+  ): Boolean!
   deletePNDToODS(input: DeleteAlignmentPNDToODSInput!): Boolean!
+  deleteProjectObjectiveToODS(
+    input: DeleteAlignmentProjectObjectiveToODSInput!
+  ): Boolean!
 }
 
 type AlignmentPNDToODS {
@@ -18,6 +30,13 @@ type AlignmentPNDToODS {
   id: ID!
   odsObjectiveUid: String!
   pndObjectiveUid: String!
+}
+
+type AlignmentProjectObjectiveToODS {
+  createdAt: Date!
+  id: ID!
+  odsObjectiveUid: String!
+  projectObjectiveUid: String!
 }
 
 input CreateAlignmentInstitutionalToPNDInput {
@@ -28,6 +47,11 @@ input CreateAlignmentInstitutionalToPNDInput {
 input CreateAlignmentPNDToODSInput {
   odsObjectiveUid: String!
   pndObjectiveUid: String!
+}
+
+input CreateAlignmentProjectObjectiveToODSInput {
+  odsObjectiveUid: String!
+  projectObjectiveUid: String!
 }
 
 input CreateGoalDataInput {
@@ -74,6 +98,7 @@ input CreateObjectivePNDDataInput {
 input CreateProgramDataInput {
   description: String!
   endDate: Date
+  estimatedInversion: Decimal
   name: String!
   responsibleUid: String!
   startDate: Date
@@ -87,6 +112,12 @@ input CreateProjectDataInput {
   responsibleUid: String!
   startDate: Date
   status: ProjectStatus!
+}
+
+input CreateProjectObjectiveDataInput {
+  name: String!
+  projectUid: String!
+  status: ProjectObjectiveStatus!
 }
 
 input CreateProjectTaskDataInput {
@@ -117,7 +148,9 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTime
 
-"""An arbitrary-precision Decimal type."""
+"""
+An arbitrary-precision Decimal type.
+"""
 scalar Decimal
 
 input DeleteAlignmentInstitutionalToPNDInput {
@@ -128,6 +161,11 @@ input DeleteAlignmentInstitutionalToPNDInput {
 input DeleteAlignmentPNDToODSInput {
   odsObjectiveUid: String!
   pndObjectiveUid: String!
+}
+
+input DeleteAlignmentProjectObjectiveToODSInput {
+  odsObjectiveUid: String!
+  projectObjectiveUid: String!
 }
 
 input DeleteGoalInput {
@@ -204,11 +242,18 @@ type IndicatorListResponse {
 type IndicatorMutations {
   create(data: CreateIndicatorDataInput!): Indicator!
   delete(input: DeleteIndicatorInput!): Boolean!
-  update(data: UpdateIndicatorDataInput!, where: UpdateIndicatorWhereInput!): Indicator!
+  update(
+    data: UpdateIndicatorDataInput!
+    where: UpdateIndicatorWhereInput!
+  ): Indicator!
 }
 
 type IndicatorQueries {
-  list(filters: IndicatorListFilters!, limit: Int!, offset: Int!): IndicatorListResponse!
+  list(
+    filters: IndicatorListFilters!
+    limit: Int!
+    offset: Int!
+  ): IndicatorListResponse!
   one(uid: String!): Indicator!
 }
 
@@ -234,10 +279,15 @@ enum InstitutionLevel {
   nacional
 }
 
-"""Institution mutations"""
+"""
+Institution mutations
+"""
 type InstitutionMutations {
   create(data: CreateInstitutionDataInput!): Institution!
-  update(data: UpdateInstitutionDataInput!, where: UpdateInstitutionWhereInput!): Institution!
+  update(
+    data: UpdateInstitutionDataInput!
+    where: UpdateInstitutionWhereInput!
+  ): Institution!
 }
 
 type InstitutionPlan {
@@ -251,7 +301,9 @@ type InstitutionPlan {
   year: Int!
 }
 
-"""Institution queries"""
+"""
+Institution queries
+"""
 type InstitutionQueries {
   list(active: Boolean, name: StringFilter): InstitutionsQueryResponse!
   one(id: String!): Institution
@@ -267,15 +319,26 @@ type InstitutionalObjective {
   uid: ID!
 }
 
-"""InstitutionalObjective mutations"""
+"""
+InstitutionalObjective mutations
+"""
 type InstitutionalObjectiveMutations {
   create(data: CreateInstitutionalObjectiveDataInput!): InstitutionalObjective!
-  update(data: UpdateInstitutionalObjectiveDataInput!, where: UpdateInstitutionalObjectiveWhereInput!): InstitutionalObjective!
+  update(
+    data: UpdateInstitutionalObjectiveDataInput!
+    where: UpdateInstitutionalObjectiveWhereInput!
+  ): InstitutionalObjective!
 }
 
-"""InstitutionalObjective queries"""
+"""
+InstitutionalObjective queries
+"""
 type InstitutionalObjectiveQueries {
-  list(active: Boolean, institutionUid: String, name: StringFilter): InstitutionalObjectivesQueryResponse!
+  list(
+    active: Boolean
+    institutionUid: String
+    name: StringFilter
+  ): InstitutionalObjectivesQueryResponse!
   one(uid: String!): InstitutionalObjective!
 }
 
@@ -283,15 +346,26 @@ type InstitutionalObjectivesQueryResponse {
   records: [InstitutionalObjective!]!
 }
 
-"""Institution Plan mutations"""
+"""
+Institution Plan mutations
+"""
 type InstitutionalPlanMutations {
   create(data: CreateInstitutionalPlanDataInput!): InstitutionPlan!
-  update(data: UpdateInstitutionalPlanDataInput!, where: UpdateInstitutionalPlanWhereInput!): InstitutionPlan!
+  update(
+    data: UpdateInstitutionalPlanDataInput!
+    where: UpdateInstitutionalPlanWhereInput!
+  ): InstitutionPlan!
 }
 
-"""Institutional Plan queries"""
+"""
+Institutional Plan queries
+"""
 type InstitutionalPlanQueries {
-  list(active: Boolean, institutionUid: String!, name: StringFilter): InstitutionalPlansQueryResponse!
+  list(
+    active: Boolean
+    institutionUid: String!
+    name: StringFilter
+  ): InstitutionalPlansQueryResponse!
   one(uid: String!): InstitutionPlan
 }
 
@@ -318,6 +392,7 @@ type Mutation {
   objectivePND: ObjectivePNDMutations!
   program: ProgramMutations!
   project: ProjectMutations!
+  projectObjective: ProjectObjectiveMutations!
   projectTask: ProjectTaskMutations!
   user: UserMutations!
 }
@@ -325,13 +400,16 @@ type Mutation {
 type ObjectiveODS {
   active: Boolean!
   alignmentsFromPND: [AlignmentPNDToODS!]!
+  alignmentsFromProjectObjectives: [AlignmentProjectObjectiveToODS!]!
   deletedAt: Date
   description: String!
   name: String!
   uid: ID!
 }
 
-"""ObjectiveODS queries"""
+"""
+ObjectiveODS queries
+"""
 type ObjectiveODSQueries {
   list(active: Boolean, name: StringFilter): ObjectiveODSQueryResponse!
 }
@@ -350,14 +428,21 @@ type ObjectivePND {
   uid: ID!
 }
 
-"""ObjectivePND mutations"""
+"""
+ObjectivePND mutations
+"""
 type ObjectivePNDMutations {
   create(data: CreateObjectivePNDDataInput!): ObjectivePND!
   delete(input: DeleteObjectivePNDInput!): Boolean!
-  update(data: UpdateObjectivePNDDataInput!, where: UpdateObjectivePNDWhereInput!): ObjectivePND!
+  update(
+    data: UpdateObjectivePNDDataInput!
+    where: UpdateObjectivePNDWhereInput!
+  ): ObjectivePND!
 }
 
-"""ObjectivePND queries"""
+"""
+ObjectivePND queries
+"""
 type ObjectivePNDQueries {
   list(active: Boolean, name: StringFilter): ObjectivePNDQueryResponse!
   one(uid: String!): ObjectivePND!
@@ -380,6 +465,7 @@ type Program {
   deletedAt: Date
   description: String
   endDate: Date
+  estimatedInversion: Decimal
   name: String!
   projects: [Project!]!
   responsible: User!
@@ -387,13 +473,20 @@ type Program {
   uid: ID!
 }
 
-"""Program mutations"""
+"""
+Program mutations
+"""
 type ProgramMutations {
   create(data: CreateProgramDataInput!): Program!
-  update(data: UpdateProgramDataInput!, where: UpdateProgramWhereInput!): Program!
+  update(
+    data: UpdateProgramDataInput!
+    where: UpdateProgramWhereInput!
+  ): Program!
 }
 
-"""Program queries"""
+"""
+Program queries
+"""
 type ProgramQueries {
   list(active: Boolean, name: StringFilter): ProgramsQueryResponse!
   one(id: String!): Program
@@ -409,6 +502,7 @@ type Project {
   description: String
   endDate: Date
   name: String!
+  objectives: [ProjectObjective!]!
   program: Program!
   responsible: User!
   startDate: Date
@@ -417,13 +511,70 @@ type Project {
   uid: ID!
 }
 
-"""Project mutations"""
-type ProjectMutations {
-  create(data: CreateProjectDataInput!): Project!
-  update(data: UpdateProjectDataInput!, where: UpdateProjectWhereInput!): Project!
+type ProjectCompletionReport {
+  completed: Int!
+  percentage: Float!
+  total: Int!
 }
 
-"""Project queries"""
+"""
+Project mutations
+"""
+type ProjectMutations {
+  create(data: CreateProjectDataInput!): Project!
+  update(
+    data: UpdateProjectDataInput!
+    where: UpdateProjectWhereInput!
+  ): Project!
+}
+
+type ProjectObjective {
+  active: Boolean!
+  alignmentsToODS: [AlignmentProjectObjectiveToODS!]!
+  deletedAt: Date
+  name: String!
+  status: ProjectObjectiveStatus!
+  uid: ID!
+}
+
+"""
+ProjectObjective mutations
+"""
+type ProjectObjectiveMutations {
+  create(data: CreateProjectObjectiveDataInput!): ProjectObjective!
+  update(
+    data: UpdateProjectObjectiveDataInput!
+    where: UpdateProjectObjectiveWhereInput!
+  ): ProjectObjective!
+}
+
+"""
+ProjectObjective queries
+"""
+type ProjectObjectiveQueries {
+  list(
+    active: Boolean
+    projectUid: String!
+    status: ProjectObjectiveStatus
+  ): ProjectObjectivesQueryResponse!
+  one(uid: String!): ProjectObjective!
+}
+
+enum ProjectObjectiveStatus {
+  cancelled
+  done
+  in_progress
+  pending
+  reviewing
+}
+
+type ProjectObjectivesQueryResponse {
+  records: [ProjectObjective!]!
+}
+
+"""
+Project queries
+"""
 type ProjectQueries {
   list(active: Boolean, programId: String!): ProjectsQueryResponse!
   one(id: String!): Project
@@ -457,13 +608,20 @@ type ProjectTask {
   uid: ID!
 }
 
-"""ProjectTask mutations"""
+"""
+ProjectTask mutations
+"""
 type ProjectTaskMutations {
   create(data: CreateProjectTaskDataInput!): ProjectTask!
-  update(data: UpdateProjectTaskDataInput!, where: UpdateProjectTaskWhereInput!): ProjectTask!
+  update(
+    data: UpdateProjectTaskDataInput!
+    where: UpdateProjectTaskWhereInput!
+  ): ProjectTask!
 }
 
-"""ProjectTask queries"""
+"""
+ProjectTask queries
+"""
 type ProjectTaskQueries {
   list(projectUid: String!, responsibleUid: String): ProjectTasksQueryResponse!
   one(uid: String!): ProjectTask!
@@ -495,13 +653,17 @@ type Query {
   objectivePND: ObjectivePNDQueries!
   program: ProgramQueries!
   project: ProjectQueries!
+  projectObjective: ProjectObjectiveQueries!
   projectTask: ProjectTaskQueries!
   reports: ReportsQueries!
   user: UserQueries!
 }
 
-"""Reports queries"""
+"""
+Reports queries
+"""
 type ReportsQueries {
+  projectCompletion(projectUid: String!): ProjectCompletionReport
   projectStatus: ProjectStatusReport!
   taskStatus: TaskStatusReport!
 }
@@ -596,6 +758,7 @@ input UpdateProgramDataInput {
   active: Boolean
   description: String
   endDate: Date
+  estimatedInversion: Decimal
   name: String
   responsibleId: String
   startDate: Date
@@ -613,6 +776,16 @@ input UpdateProjectDataInput {
   responsibleUid: String
   startDate: Date
   status: ProjectStatus
+}
+
+input UpdateProjectObjectiveDataInput {
+  active: Boolean
+  name: String
+  status: ProjectObjectiveStatus
+}
+
+input UpdateProjectObjectiveWhereInput {
+  uid: String!
 }
 
 input UpdateProjectTaskDataInput {
@@ -653,14 +826,18 @@ type User {
   uid: ID!
 }
 
-"""User mutations"""
+"""
+User mutations
+"""
 type UserMutations {
   create(data: CreateUserDataInput!): User!
   delete(input: DeleteUserInput!): Boolean!
   update(data: UpdateUserDataInput!, where: UpdateUserWhereInput!): User!
 }
 
-"""User queries"""
+"""
+User queries
+"""
 type UserQueries {
   list(active: Boolean, name: StringFilter): UsersQueryResponse!
   one(id: String!): User

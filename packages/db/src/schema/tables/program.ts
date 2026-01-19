@@ -1,4 +1,11 @@
-import { date, integer, pgTable, text, varchar } from 'drizzle-orm/pg-core'
+import {
+  date,
+  decimal,
+  integer,
+  pgTable,
+  text,
+  varchar,
+} from 'drizzle-orm/pg-core'
 import {
   byColumns,
   deletedAtColumn,
@@ -17,6 +24,7 @@ export const Program = pgTable('Program', {
     .notNull(),
   startDate: date({ mode: 'date' }),
   endDate: date({ mode: 'date' }),
+  estimatedInversion: decimal({ mode: 'number' }),
   ...deletedAtColumn,
   ...byColumns,
   ...timestampColumns,

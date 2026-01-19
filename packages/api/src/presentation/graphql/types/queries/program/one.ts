@@ -33,6 +33,7 @@ builder.objectField(ProgramQueries, 'one', (t) =>
         description: program.description,
         startDate: program.startDate,
         endDate: program.endDate,
+        estimatedInversion: program.estimatedInversion,
         active: program.active,
         responsibleId: program.responsibleId,
         deletedAt: program.deletedAt,

@@ -22,8 +22,11 @@ export const UpdateProgramWhereInput = builder
   })
 
 type TUpdateProgramDataInput = Pick<
-  SetOptional<ProgramPayload, 'name' | 'description' | 'startDate' | 'endDate'>,
-  'name' | 'description' | 'startDate' | 'endDate'
+  SetOptional<
+    ProgramPayload,
+    'name' | 'description' | 'startDate' | 'endDate' | 'estimatedInversion'
+  >,
+  'name' | 'description' | 'startDate' | 'endDate' | 'estimatedInversion'
 > & {
   active?: boolean
   responsibleId?: string
@@ -39,6 +42,7 @@ export const UpdateProgramDataInput = builder
       responsibleId: t.string({ required: false }),
       startDate: t.field({ type: 'Date', required: false }),
       endDate: t.field({ type: 'Date', required: false }),
+      estimatedInversion: t.field({ type: 'Decimal', required: false }),
     }),
   })
 
@@ -64,8 +68,9 @@ builder.objectField(ProgramMutations, 'update', (t) =>
           data: {
             name: data.name ?? undefined,
             description: data.description ?? undefined,
-            startDate: data.startDate ?? undefined,
-            endDate: data.endDate ?? undefined,
+            startDate: data.startDate,
+            endDate: data.endDate,
+            estimatedInversion: data.estimatedInversion,
             responsibleUid: data.responsibleId ?? undefined,
             active: data.active ?? undefined,
           },
@@ -80,6 +85,7 @@ builder.objectField(ProgramMutations, 'update', (t) =>
         description: program.description,
         startDate: program.startDate,
         endDate: program.endDate,
+        estimatedInversion: program.estimatedInversion,
         active: program.active,
         deletedAt: program.deletedAt,
         responsibleId: program.responsibleId,

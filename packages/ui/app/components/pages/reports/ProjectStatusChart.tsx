@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import { Pie, PieChart } from 'recharts'
 
@@ -61,9 +61,7 @@ export function ProjectStatusChart() {
         >
           <PieChart>
             <ChartTooltip
-              content={
-                <ChartTooltipContent nameKey='count' hideLabel />
-              }
+              content={<ChartTooltipContent nameKey='count' hideLabel />}
             />
             <Pie
               data={chartData}

@@ -52,9 +52,7 @@ export async function seedAlignmentStrategicPND(db: Db, userId: number) {
   for (const alignment of alignments) {
     const strategicObj = findStrategic(alignment.strategic)
     if (!strategicObj) {
-      console.warn(
-        `Strategic objective not found: ${alignment.strategic}`,
-      )
+      console.warn(`Strategic objective not found: ${alignment.strategic}`)
       continue
     }
 
@@ -74,8 +72,6 @@ export async function seedAlignmentStrategicPND(db: Db, userId: number) {
   }
 
   if (alignmentRecords.length > 0) {
-    await db
-      .insert(AlignmentObjectiveStrategicWithPND)
-      .values(alignmentRecords)
+    await db.insert(AlignmentObjectiveStrategicWithPND).values(alignmentRecords)
   }
 }

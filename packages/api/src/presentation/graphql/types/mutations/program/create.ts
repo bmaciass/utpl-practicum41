@@ -10,7 +10,7 @@ import { ProgramMutations } from './root'
 
 type TCreateProgramDataInput = Pick<
   ProgramPayload,
-  'name' | 'description' | 'startDate' | 'endDate'
+  'name' | 'description' | 'startDate' | 'endDate' | 'estimatedInversion'
 > & {
   responsibleUid: string
 }
@@ -23,6 +23,7 @@ export const CreateProgramDataInput = builder
       description: t.string(),
       startDate: t.field({ type: 'Date', required: false }),
       endDate: t.field({ type: 'Date', required: false }),
+      estimatedInversion: t.field({ type: 'Decimal', required: false }),
       responsibleUid: t.string(),
     }),
   })
@@ -48,6 +49,7 @@ builder.objectField(ProgramMutations, 'create', (t) =>
           description: data.description,
           startDate: data.startDate,
           endDate: data.endDate,
+          estimatedInversion: data.estimatedInversion,
           responsibleUid: data.responsibleUid,
         },
         user.uid,
@@ -60,6 +62,7 @@ builder.objectField(ProgramMutations, 'create', (t) =>
         description: program.description,
         startDate: program.startDate,
         endDate: program.endDate,
+        estimatedInversion: program.estimatedInversion,
         active: program.active,
         deletedAt: program.deletedAt,
         responsibleId: program.responsibleId,

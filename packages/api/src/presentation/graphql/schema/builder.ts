@@ -1,6 +1,5 @@
 import SchemaBuilder from '@pothos/core'
 import ScopeAuthPlugin from '@pothos/plugin-scope-auth'
-import type Decimal from 'decimal.js'
 import {
   DateResolver,
   DateTimeISOResolver,
@@ -24,8 +23,8 @@ const builder = new SchemaBuilder<{
       Output: unknown
     }
     Decimal: {
-      Input: Decimal
-      Output: unknown
+      Input: number
+      Output: number
     }
     Date: {
       Input: Date

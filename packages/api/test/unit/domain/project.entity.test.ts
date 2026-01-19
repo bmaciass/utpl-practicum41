@@ -1,6 +1,9 @@
 import { ValidationError } from '@sigep/shared'
 import { describe, expect, it } from 'vitest'
-import { Project, type CreateProjectProps } from '../../../src/domain/entities/Project'
+import {
+  Project,
+  type CreateProjectProps,
+} from '../../../src/domain/entities/Project'
 
 const baseProps: CreateProjectProps = {
   name: 'Campus renewal',

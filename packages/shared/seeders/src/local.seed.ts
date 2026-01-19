@@ -23,14 +23,13 @@ import { seedPNDODSAlignment } from './seedPNDODSAlignment'
 import { seedPNDObjectives } from './seedPNDObjectives'
 import { seedPermissionRoles } from './seedPermissionRoles'
 import { seedProjects } from './seedProjects'
+import { seedProjectObjectiveODSAlignment } from './seedProjectObjectiveODSAlignment'
 
 async function recreatePublicSchema(db: Db) {
   await db.execute('DROP SCHEMA "public" CASCADE; CREATE SCHEMA "public";')
 }
 
-async function seedOrganizationData(
-  db: Db,
-): Promise<{
+async function seedOrganizationData(db: Db): Promise<{
   adminUserId: number
   institutionId: number
   programId: number
@@ -158,6 +157,7 @@ async function main() {
     await seedPermissionRoles(tx, adminUserId)
     await seedProjects(tx, adminUserId, userOperativeId, programId)
     await seedODSObjectives(tx, adminUserId)
+    await seedProjectObjectiveODSAlignment(tx, adminUserId)
     await seedPNDObjectives(tx, adminUserId)
     await seedPNDODSAlignment(tx, adminUserId)
     await seedInstitutionalObjectives(tx, adminUserId, institutionId)

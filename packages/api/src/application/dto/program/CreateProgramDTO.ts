@@ -3,5 +3,6 @@ export interface CreateProgramDTO {
   description?: string | null
   startDate?: Date | null
   endDate?: Date | null
+  estimatedInversion?: number | null
   responsibleUid: string
 }

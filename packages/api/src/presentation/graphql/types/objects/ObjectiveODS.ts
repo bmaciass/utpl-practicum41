@@ -1,12 +1,16 @@
 import type { ObjectiveODSRecord } from '@sigep/db'
 import {
   getAlignmentPNDToODSRepository,
+  getAlignmentProjectObjectiveToODSRepository,
   getObjectiveODSRepository,
   getObjectivePNDRepository,
+  getProjectObjectiveRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
 import builder from '../../schema/builder'
 import type { TAlignmentPNDToODS } from './AlignmentPNDToODS'
 import { AlignmentPNDToODS } from './AlignmentPNDToODS'
+import type { TAlignmentProjectObjectiveToODS } from './AlignmentProjectObjectiveToODS'
+import { AlignmentProjectObjectiveToODS } from './AlignmentProjectObjectiveToODS'
 
 export type TObjectiveODS = Pick<
   ObjectiveODSRecord,
@@ -66,6 +70,51 @@ export const ObjectiveODS = ObjectiveODSRef.implement({
             id: a.id,
             pndObjectiveId: a.pndObjectiveId,
             pndObjectiveUid,
+            odsObjectiveId: a.odsObjectiveId,
+            odsObjectiveUid,
+            createdAt: a.createdAt,
+          }
+        })
+      },
+    }),
+
+    // Alignments FROM project objectives
+    alignmentsFromProjectObjectives: t.field({
+      type: [AlignmentProjectObjectiveToODS],
+      resolve: async (objective, _args, { db }) => {
+        const alignmentRepo = getAlignmentProjectObjectiveToODSRepository(db)
+        const projectObjectiveRepo = getProjectObjectiveRepository(db)
+        const odsObjectiveRepo = getObjectiveODSRepository(db)
+        const alignments = await alignmentRepo.findByODSObjectiveId(
+          objective.id,
+        )
+
+        const odsObjectiveIds = alignments.map((a) => a.odsObjectiveId)
+        const projectObjectiveIds = alignments.map((a) => a.projectObjectiveId)
+
+        const [odsObjectives, projectObjectives] = await Promise.all([
+          odsObjectiveRepo.findMany({ where: { id: odsObjectiveIds } }),
+          projectObjectiveRepo.findByIds(projectObjectiveIds),
+        ])
+
+        return alignments.map((a): TAlignmentProjectObjectiveToODS => {
+          const odsObjectiveUid = odsObjectives.find(
+            (o) => o.id === a.odsObjectiveId,
+          )?.uid
+          const projectObjectiveUid = projectObjectives.find(
+            (o) => o.id === a.projectObjectiveId,
+          )?.uid
+
+          if (!odsObjectiveUid || !projectObjectiveUid) {
+            throw new Error(
+              'project objective uid or ods objective uid not found',
+            )
+          }
+
+          return {
+            id: a.id,
+            projectObjectiveId: a.projectObjectiveId,
+            projectObjectiveUid,
             odsObjectiveId: a.odsObjectiveId,
             odsObjectiveUid,
             createdAt: a.createdAt,

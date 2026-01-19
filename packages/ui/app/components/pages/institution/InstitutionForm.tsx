@@ -41,7 +41,7 @@ const formSchema = z.object({
   }),
 })
 
-export function InstitutionForm (props: {
+export function InstitutionForm(props: {
   institution?: GetInstitutions_UseGetInstitutionQuery['institution']['one']
 }) {
   const { institution } = props
@@ -88,7 +88,7 @@ export function InstitutionForm (props: {
     navigate('/institutions')
   }
 
-  function onSubmit (values: z.infer<typeof formSchema>) {
+  function onSubmit(values: z.infer<typeof formSchema>) {
     if (shouldUpdate) {
       updateInstitution({
         variables: {

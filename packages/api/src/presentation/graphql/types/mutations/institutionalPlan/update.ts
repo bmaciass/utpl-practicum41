@@ -66,7 +66,7 @@ builder.objectField(InstitutionalPlanMutations, 'update', (t) =>
             name: data.name ?? undefined,
             active: data.active ?? undefined,
             year: data.year ?? undefined,
-            description: data.description,
+            description: data.description ?? undefined,
             url: data.url,
           },
         },

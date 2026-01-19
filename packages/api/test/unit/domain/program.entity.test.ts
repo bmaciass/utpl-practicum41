@@ -1,6 +1,9 @@
 import { ValidationError } from '@sigep/shared'
 import { describe, expect, it } from 'vitest'
-import { Program, type CreateProgramProps } from '../../../src/domain/entities/Program'
+import {
+  Program,
+  type CreateProgramProps,
+} from '../../../src/domain/entities/Program'
 
 const baseProps: CreateProgramProps = {
   name: 'Community outreach',

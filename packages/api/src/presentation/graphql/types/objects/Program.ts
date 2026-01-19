@@ -11,6 +11,7 @@ export type TProgram = Pick<
   | 'name'
   | 'startDate'
   | 'endDate'
+  | 'estimatedInversion'
   | 'description'
   | 'deletedAt'
   | 'responsibleId'
@@ -28,6 +29,10 @@ export const Program = ProgramRef.implement({
     description: t.exposeString('description', { nullable: true }),
     startDate: t.expose('startDate', { type: 'Date', nullable: true }),
     endDate: t.expose('endDate', { type: 'Date', nullable: true }),
+    estimatedInversion: t.expose('estimatedInversion', {
+      type: 'Decimal',
+      nullable: true,
+    }),
     deletedAt: t.expose('deletedAt', { type: 'Date', nullable: true }),
     active: t.field({
       type: 'Boolean',

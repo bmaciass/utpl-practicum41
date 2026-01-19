@@ -1,6 +1,9 @@
 import { ValidationError } from '@sigep/shared'
 import { describe, expect, it } from 'vitest'
-import { Person, type CreatePersonProps } from '../../../src/domain/entities/Person'
+import {
+  Person,
+  type CreatePersonProps,
+} from '../../../src/domain/entities/Person'
 
 const baseProps: CreatePersonProps = {
   firstName: 'Ana',

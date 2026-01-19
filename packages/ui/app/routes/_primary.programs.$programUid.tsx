@@ -17,7 +17,7 @@ import { Skeleton } from '~/components/ui/skeleton'
 import { useGetProgram } from '~/hooks/program/useGetProgram'
 import { useUpdateProgram } from '~/hooks/program/useUpdateProgram'
 
-export default function Index () {
+export default function Index() {
   const { programUid } = useParams()
   if (!programUid) {
     return <Alert variant='error' description='Parametro no encontrado' />
@@ -61,7 +61,8 @@ export default function Index () {
               <AlertDialogHeader>
                 <AlertDialogTitle>Desactivar programa</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Esta accion marcara el programa como inactivo. Puedes reactivarlo luego editandolo.
+                  Esta accion marcara el programa como inactivo. Puedes
+                  reactivarlo luego editandolo.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

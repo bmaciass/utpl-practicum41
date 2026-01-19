@@ -33,9 +33,11 @@ const listQuery = graphql(`
   }
 `)
 
-export function useUpdateInstitutionalObjective (institutionUid: string) {
+export function useUpdateInstitutionalObjective(institutionUid: string) {
   const [fn, { called, loading, error, data }] = useMutation(updateMutation, {
-    refetchQueries: [{ query: listQuery, variables: { active: true, institutionUid } }],
+    refetchQueries: [
+      { query: listQuery, variables: { active: true, institutionUid } },
+    ],
   })
 
   return {

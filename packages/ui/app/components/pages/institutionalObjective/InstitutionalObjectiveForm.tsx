@@ -25,11 +25,13 @@ const formSchema = z.object({
   name: z.string().min(2, {
     error: 'Nombre debe tener al menos 2 caracteres',
   }),
-  description: z.string().min(10, { error: 'Descripcion debe tener al menos 10 caracteres' }),
+  description: z
+    .string()
+    .min(10, { error: 'Descripcion debe tener al menos 10 caracteres' }),
   institutionId: z.string(),
 })
 
-export function InstitutionalObjectiveForm (props: {
+export function InstitutionalObjectiveForm(props: {
   institutionalObjective?: GetInstitutionalObjective_UseGetInstitutionalObjectiveQuery['institutionalObjective']['one']
   institutionUid: string
 }) {
@@ -102,7 +104,7 @@ export function InstitutionalObjectiveForm (props: {
     navigate(`/institutions/${institutionUid}/objectives?deleted=success`)
   }
 
-  function onSubmit (values: z.infer<typeof formSchema>) {
+  function onSubmit(values: z.infer<typeof formSchema>) {
     if (shouldUpdate && institutionalObjective) {
       update({
         variables: {

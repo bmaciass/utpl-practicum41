@@ -29,12 +29,19 @@ const formSchema = z.object({
   description: z.string().min(10, {
     error: 'Descripcion debe tener al menos 10 caracteres',
   }),
-  // startDate: z.date(),
-  // endDate: z.date(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  estimatedInversion: z.string().optional(),
   responsibleUid: z.string().nonoptional(),
 })
 
-export function ProgramForm (props: {
+const parseDecimal = (value?: string) => {
+  if (!value) return null
+  const parsed = Number(value)
+  return Number.isNaN(parsed) ? null : parsed
+}
+
+export function ProgramForm(props: {
   program?: GetPrograms_UseGetProgramQuery['program']['one']
 }) {
   const { program } = props
@@ -61,8 +68,9 @@ export function ProgramForm (props: {
     defaultValues: {
       name: '',
       description: '',
-      // startDate: new Date(),
-      // endDate: new Date(),
+      startDate: '',
+      endDate: '',
+      estimatedInversion: '',
       responsibleUid: '',
     },
   })
@@ -70,9 +78,20 @@ export function ProgramForm (props: {
   useEffect(() => {
     if (program) {
       form.reset({
-        ...program,
+        name: program.name,
+        description: program.description ?? '',
+        startDate: program.startDate
+          ? new Date(program.startDate).toISOString().split('T')[0]
+          : '',
+        endDate: program.endDate
+          ? new Date(program.endDate).toISOString().split('T')[0]
+          : '',
+        estimatedInversion:
+          program.estimatedInversion !== null &&
+          program.estimatedInversion !== undefined
+            ? String(program.estimatedInversion)
+            : '',
         responsibleUid: program.responsible.uid,
-        description: program.description ?? undefined,
       })
     }
   }, [form, program])
@@ -87,12 +106,35 @@ export function ProgramForm (props: {
     navigate('/programs')
   }
 
-  function onSubmit (values: z.infer<typeof formSchema>) {
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    const payload = {
+      name: values.name,
+      description: values.description,
+      startDate: values.startDate || null,
+      endDate: values.endDate || null,
+      estimatedInversion: parseDecimal(values.estimatedInversion),
+    }
+
     if (shouldUpdate) {
-      updateProgram({ variables: { data: values, where: { id: program.uid } } })
+      updateProgram({
+        variables: {
+          data: {
+            ...payload,
+            responsibleId: values.responsibleUid,
+          },
+          where: { id: program.uid },
+        },
+      })
       return
     }
-    createProgram({ variables: { data: values } })
+    createProgram({
+      variables: {
+        data: {
+          ...payload,
+          responsibleUid: values.responsibleUid,
+        },
+      },
+    })
   }
 
   return (
@@ -132,6 +174,53 @@ export function ProgramForm (props: {
               </FormItem>
             )}
           />
+          <div className='flex gap-2'>
+            <div className='grow'>
+              <FormField
+                control={form.control}
+                name='startDate'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Fecha de inicio</FormLabel>
+                    <FormControl>
+                      <Input type='date' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className='grow'>
+              <FormField
+                control={form.control}
+                name='endDate'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Fecha de fin</FormLabel>
+                    <FormControl>
+                      <Input type='date' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className='grow'>
+              <FormField
+                control={form.control}
+                name='estimatedInversion'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Inversion estimada</FormLabel>
+                    <FormControl>
+                      <Input type='number' step='0.01' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
           <FormField
             control={form.control}
             name='responsibleUid'

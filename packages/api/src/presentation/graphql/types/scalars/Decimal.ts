@@ -9,8 +9,15 @@ const config: GraphQLScalarTypeConfig<number, number> = {
    * Value sent to the client
    */
   serialize(value) {
-    if (!Decimal.isDecimal(value))
+    if (
+      !(
+        Decimal.isDecimal(value) ||
+        typeof value === 'number' ||
+        typeof value === 'string'
+      )
+    ) {
       throw new Error('value is not a valid decimal')
+    }
 
     return new Decimal(value).toNumber()
   },
@@ -18,8 +25,15 @@ const config: GraphQLScalarTypeConfig<number, number> = {
    * Value from the client
    */
   parseValue(value) {
-    if (!Decimal.isDecimal(value))
+    if (
+      !(
+        Decimal.isDecimal(value) ||
+        typeof value === 'number' ||
+        typeof value === 'string'
+      )
+    ) {
       throw new Error('value is not a valid decimal')
+    }
 
     return new Decimal(value).toNumber()
   },

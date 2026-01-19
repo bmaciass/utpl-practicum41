@@ -1,11 +1,12 @@
 import { Entity, ValidationError } from '@sigep/shared'
-import { isUndefined } from 'lodash-es'
+import { isNil, isUndefined } from 'lodash-es'
 
 export interface CreateProgramProps {
   name: string
   description?: string | null
   startDate?: Date | null
   endDate?: Date | null
+  estimatedInversion?: number | null
   responsibleId: number
   createdBy: number
 }
@@ -17,6 +18,7 @@ export interface ProgramProps {
   description: string | null
   startDate: Date | null
   endDate: Date | null
+  estimatedInversion: number | null
   responsibleId: number
   deletedAt: Date | null
   createdBy: number
@@ -31,6 +33,7 @@ export class Program extends Entity {
   private _description: string | null = null
   private _startDate: Date | null = null
   private _endDate: Date | null = null
+  private _estimatedInversion: number | null = null
   private _responsibleId: number
   private _deletedAt: Date | null
   private _createdByUserId: number
@@ -43,6 +46,7 @@ export class Program extends Entity {
     this._description = props.description
     this._startDate = props.startDate
     this._endDate = props.endDate
+    this._estimatedInversion = props.estimatedInversion // ? new Decimal(props.estimatedInversion) : null
     this._responsibleId = props.responsibleId
     this._deletedAt = props.deletedAt
     this._createdByUserId = props.createdBy
@@ -60,6 +64,7 @@ export class Program extends Entity {
       description: props.description ?? null,
       startDate: props.startDate ?? null,
       endDate: props.endDate ?? null,
+      estimatedInversion: props.estimatedInversion ?? null,
       responsibleId: props.responsibleId,
       deletedAt: null,
       createdBy: props.createdBy,
@@ -102,7 +107,10 @@ export class Program extends Entity {
   }
 
   updateDates(
-    data: { startDate: Date | undefined; endDate: Date | undefined },
+    data: {
+      startDate: Date | null | undefined
+      endDate: Date | null | undefined
+    },
     updatedBy: number,
   ): void {
     const { endDate, startDate } = data
@@ -111,6 +119,18 @@ export class Program extends Entity {
     }
     if (!isUndefined(startDate)) {
       this._startDate = startDate
+    }
+    this._updatedByUserId = updatedBy
+    this.markUpdated(updatedBy)
+  }
+
+  updateEstimatedInversion(data: {
+    estimatedInversion?: number | null
+    updatedBy: number
+  }): void {
+    const { estimatedInversion, updatedBy } = data
+    if (!isNil(estimatedInversion)) {
+      this._estimatedInversion = estimatedInversion // new Decimal(estimatedInversion)
     }
     this._updatedByUserId = updatedBy
     this.markUpdated(updatedBy)
@@ -149,6 +169,9 @@ export class Program extends Entity {
   }
   get endDate(): Date | null {
     return this._endDate
+  }
+  get estimatedInversion(): number | null {
+    return this._estimatedInversion //? this._estimatedInversion.toNumber() : null
   }
   get responsibleId(): number {
     return this._responsibleId

@@ -8,6 +8,9 @@ const query = graphql(`
         uid
         name
         description
+        startDate
+        endDate
+        estimatedInversion
         responsible {
           uid
         }

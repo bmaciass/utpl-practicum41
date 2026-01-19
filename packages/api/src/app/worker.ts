@@ -10,6 +10,7 @@ import { createInstitutionalObjectiveLoader } from '~/presentation/graphql/datal
 import { createPersonLoader } from '~/presentation/graphql/dataloaders/personLoader'
 import { createProgramLoader } from '~/presentation/graphql/dataloaders/programLoader'
 import { createProjectLoader } from '~/presentation/graphql/dataloaders/projectLoader'
+import { createProjectObjectivesByProjectLoader } from '~/presentation/graphql/dataloaders/projectObjectivesByProjectLoader'
 import { createProjectTasksByProjectLoader } from '~/presentation/graphql/dataloaders/projectTasksByProjectLoader'
 import { createProjectByProgramLoader } from '~/presentation/graphql/dataloaders/projectsByProgram'
 import { createUserLoader } from '~/presentation/graphql/dataloaders/userLoader'
@@ -67,6 +68,7 @@ async function createContext(request: Request, env: Env): Promise<AppContext> {
     person: createPersonLoader(db),
     program: createProgramLoader(db),
     project: createProjectLoader(db),
+    projectObjectivesByProject: createProjectObjectivesByProjectLoader(db),
     projectGoalsByProject: createProjectTasksByProjectLoader(db),
     projectByProgramId: createProjectByProgramLoader(db),
   } satisfies AppDataloaders

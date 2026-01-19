@@ -2,6 +2,7 @@ import { useParams } from '@remix-run/react'
 import { Alert } from '~/components/globals/Alert'
 import { Skeleton } from '~/components/ui/skeleton'
 import { useGetProject } from '~/hooks/project/useGetProject'
+import { ProjectCompletionMetric } from './ProjectCompletionMetric'
 import { ProjectDetailsSection } from './ProjectDetailsSection'
 import { ProjectTasksSection } from './ProjectTasksSection'
 
@@ -31,7 +32,16 @@ export const ProjectDetailPage = () => {
 
   return (
     <div className='space-y-8'>
-      <ProjectDetailsSection project={project} />
+      <div className='grid grid-cols-6'>
+        <div className='col-span-1'>
+          <ProjectCompletionMetric projectUid={projectUid} />
+        </div>
+      </div>
+      <ProjectDetailsSection
+        project={project}
+        programUid={programUid}
+        projectUid={projectUid}
+      />
       <ProjectTasksSection projectUid={projectUid} />
     </div>
   )

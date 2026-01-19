@@ -1,6 +1,7 @@
 import type { Db } from '@sigep/db'
 import { DrizzleAlignmentInstitutionalToPNDRepository } from './DrizzleAlignmentInstitutionalToPNDRepository'
 import { DrizzleAlignmentPNDToODSRepository } from './DrizzleAlignmentPNDToODSRepository'
+import { DrizzleAlignmentProjectObjectiveToODSRepository } from './DrizzleAlignmentProjectObjectiveToODSRepository'
 import { DrizzleIndicatorRepository } from './DrizzleIndicatorRepository'
 import { DrizzleInstitutionRepository } from './DrizzleInstitutionRepository'
 import { DrizzleInstitutionalObjectiveRepository } from './DrizzleInstitutionalObjectiveRepository'
@@ -10,6 +11,7 @@ import { DrizzleObjectivePNDRepository } from './DrizzleObjectivePNDRepository'
 import { DrizzlePersonRepository } from './DrizzlePersonRepository'
 import { DrizzleProgramRepository } from './DrizzleProgramRepository'
 import { DrizzleProjectRepository } from './DrizzleProjectRepository'
+import { DrizzleProjectObjectiveRepository } from './DrizzleProjectObjectiveRepository'
 import { DrizzleProjectTaskRepository } from './DrizzleProjectTaskRepository'
 import { DrizzleRoleRepository } from './DrizzleRoleRepository'
 import { DrizzleUserRepository } from './DrizzleUserRepository'
@@ -41,6 +43,9 @@ export const getProjectRepository = (db: Db) => new DrizzleProjectRepository(db)
 export const getProjectTasksRepository = (db: Db) =>
   new DrizzleProjectTaskRepository(db)
 
+export const getProjectObjectiveRepository = (db: Db) =>
+  new DrizzleProjectObjectiveRepository(db)
+
 export const getUserRepository = (db: Db) => new DrizzleUserRepository(db)
 
 export const getRoleRepository = (db: Db) => new DrizzleRoleRepository(db)
@@ -50,6 +55,9 @@ export const getAlignmentInstitutionalToPNDRepository = (db: Db) =>
 
 export const getAlignmentPNDToODSRepository = (db: Db) =>
   new DrizzleAlignmentPNDToODSRepository(db)
+
+export const getAlignmentProjectObjectiveToODSRepository = (db: Db) =>
+  new DrizzleAlignmentProjectObjectiveToODSRepository(db)
 
 export const getIndicatorRepository = (db: Db) =>
   new DrizzleIndicatorRepository(db)

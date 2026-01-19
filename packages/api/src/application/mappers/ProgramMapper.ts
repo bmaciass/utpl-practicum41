@@ -11,6 +11,7 @@ export class ProgramMapper {
       description: program.description ?? null,
       startDate: program.startDate ?? null,
       endDate: program.endDate ?? null,
+      estimatedInversion: program.estimatedInversion ?? null,
       active: program.active,
       deletedAt: program.deletedAt,
       responsibleId: program.responsibleId,

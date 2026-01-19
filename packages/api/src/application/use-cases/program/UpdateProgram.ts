@@ -50,6 +50,12 @@ export class UpdateProgram
         updatedBy,
       )
     }
+    if (input.data.estimatedInversion !== undefined) {
+      program.updateEstimatedInversion({
+        estimatedInversion: input.data.estimatedInversion,
+        updatedBy,
+      })
+    }
     if (input.data.responsibleUid !== undefined) {
       const user = await this.deps.userRepository.findByUid(
         input.data.responsibleUid,

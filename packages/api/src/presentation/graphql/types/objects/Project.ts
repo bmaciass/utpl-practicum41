@@ -1,8 +1,10 @@
 import type { ProjectRecord } from '@sigep/db'
+import type { ProjectObjective as ProjectObjectiveDomain } from '~/domain/entities/ProjectObjective'
 import type { ProjectTask as ProjectTaskDomain } from '~/domain/entities/ProjectTask'
 import builder from '../../schema/builder'
 import { ProjectStatusEnum } from '../enums/ProjectStatus'
 import { ProgramRef } from './Program'
+import { ProjectObjectiveRef } from './ProjectObjective'
 import { ProjectTaskRef } from './ProjectTask'
 import { User } from './User'
 
@@ -43,6 +45,20 @@ export const Project = ProjectRef.implement({
         return records
           .flat()
           .filter((record) => !(record instanceof Error)) as ProjectTaskDomain[]
+      },
+    }),
+    objectives: t.field({
+      type: [ProjectObjectiveRef],
+      resolve: async (project, _args, { loaders }) => {
+        const records = await loaders.projectObjectivesByProject.loadMany([
+          project.id,
+        ])
+
+        return records
+          .flat()
+          .filter(
+            (record) => !(record instanceof Error),
+          ) as ProjectObjectiveDomain[]
       },
     }),
     responsible: t.field({

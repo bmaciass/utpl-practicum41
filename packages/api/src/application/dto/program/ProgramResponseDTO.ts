@@ -7,6 +7,7 @@ export interface ProgramResponseDTO {
   description: string | null
   startDate: Date | null
   endDate: Date | null
+  estimatedInversion: number | null
   active: boolean
   deletedAt: Date | null
   responsibleId: number

@@ -17,7 +17,7 @@ import { Skeleton } from '~/components/ui/skeleton'
 import { useGetInstitution } from '~/hooks/institution/useGetInstitution'
 import { useUpdateInstitution } from '~/hooks/institution/useUpdateInstitution'
 
-export default function Index () {
+export default function Index() {
   const { uid } = useParams()
   if (!uid) {
     return <Alert variant='error' description='Parametro no encontrado' />
@@ -66,7 +66,8 @@ export default function Index () {
               <AlertDialogHeader>
                 <AlertDialogTitle>Desactivar institucion</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Esta accion marcara la institucion como inactiva. Puedes reactivarla luego editandola.
+                  Esta accion marcara la institucion como inactiva. Puedes
+                  reactivarla luego editandola.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

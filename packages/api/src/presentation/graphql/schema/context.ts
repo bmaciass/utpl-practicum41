@@ -6,6 +6,7 @@ import type { createIndicatorsByGoalLoader } from '../dataloaders/indicatorsByGo
 import type { createPersonLoader } from '../dataloaders/personLoader'
 import type { createProgramLoader } from '../dataloaders/programLoader'
 import type { createProjectLoader } from '../dataloaders/projectLoader'
+import type { createProjectObjectivesByProjectLoader } from '../dataloaders/projectObjectivesByProjectLoader'
 import type { createProjectTasksByProjectLoader } from '../dataloaders/projectTasksByProjectLoader'
 import type { createProjectByProgramLoader } from '../dataloaders/projectsByProgram'
 import type { createUserLoader } from '../dataloaders/userLoader'
@@ -18,6 +19,9 @@ export type AppDataloaders = {
   person: ReturnType<typeof createPersonLoader>
   program: ReturnType<typeof createProgramLoader>
   project: ReturnType<typeof createProjectLoader>
+  projectObjectivesByProject: ReturnType<
+    typeof createProjectObjectivesByProjectLoader
+  >
   projectGoalsByProject: ReturnType<typeof createProjectTasksByProjectLoader>
   projectByProgramId: ReturnType<typeof createProjectByProgramLoader>
 }

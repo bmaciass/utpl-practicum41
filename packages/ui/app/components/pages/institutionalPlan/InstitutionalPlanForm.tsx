@@ -37,12 +37,14 @@ const formSchema = z.object({
     .max(new Date().getFullYear(), {
       error: `Año debe ser menor o igual a ${new Date().getFullYear()}`,
     }),
-  url: z.url({
-    error: 'URL debe ser válida',
-  }).optional(),
+  url: z
+    .url({
+      error: 'URL debe ser válida',
+    })
+    .optional(),
 })
 
-export function InstitutionalPlanForm (props: {
+export function InstitutionalPlanForm(props: {
   institutionalPlan?: GetInstitutionalPlan_UseGetInstitutionalPlanQuery['institutionalPlan']['one']
   institutionUid: string
 }) {
@@ -98,7 +100,7 @@ export function InstitutionalPlanForm (props: {
     navigate(`/institutions/${institutionUid}/plans`)
   }
 
-  function onSubmit (values: z.infer<typeof formSchema>) {
+  function onSubmit(values: z.infer<typeof formSchema>) {
     if (shouldUpdate) {
       updateInstitutionalPlan({
         variables: {

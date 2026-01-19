@@ -1,3 +1,4 @@
+import { Link } from '@remix-run/react'
 import { useState } from 'react'
 import { Button } from '~/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '~/components/ui/card'
@@ -15,8 +16,12 @@ import { ProjectEditForm } from './ProjectEditForm'
 
 export const ProjectDetailsSection = ({
   project,
+  programUid,
+  projectUid,
 }: {
   project: GetProjects_UseGetProjectQuery['project']['one']
+  programUid: string
+  projectUid: string
 }) => {
   const [dialogOpen, setDialogOpen] = useState(false)
 
@@ -27,21 +32,28 @@ export const ProjectDetailsSection = ({
       <CardHeader>
         <div className='flex justify-between items-center'>
           <CardTitle className='text-2xl'>{project.name}</CardTitle>
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button variant='outline'>Editar</Button>
-            </DialogTrigger>
-            <DialogContent className='max-w-2xl max-h-[90vh] overflow-y-auto'>
-              <DialogHeader>
-                <DialogTitle>Editar Proyecto</DialogTitle>
-              </DialogHeader>
-              <ProjectEditForm
-                project={project}
-                onSuccess={() => setDialogOpen(false)}
-                onCancel={() => setDialogOpen(false)}
-              />
-            </DialogContent>
-          </Dialog>
+          <div className='flex items-center gap-2'>
+            <Link
+              to={`/programs/${programUid}/projects/${projectUid}/objectives`}
+            >
+              <Button variant='secondary'>Objetivos</Button>
+            </Link>
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant='outline'>Editar</Button>
+              </DialogTrigger>
+              <DialogContent className='max-w-2xl max-h-[90vh] overflow-y-auto'>
+                <DialogHeader>
+                  <DialogTitle>Editar Proyecto</DialogTitle>
+                </DialogHeader>
+                <ProjectEditForm
+                  project={project}
+                  onSuccess={() => setDialogOpen(false)}
+                  onCancel={() => setDialogOpen(false)}
+                />
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
       </CardHeader>
       <CardContent>

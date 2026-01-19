@@ -1,4 +1,4 @@
-import { type Db, Project, ProjectTask } from '@sigep/db'
+import { type Db, Project, ProjectObjective, ProjectTask } from '@sigep/db'
 import { nanoid } from 'nanoid/non-secure'
 
 type ProjectSeed = {
@@ -11,6 +11,12 @@ type TaskSeed = {
   projectName: string
   name: string
   description: string
+  status: 'pending' | 'in_progress' | 'reviewing' | 'done' | 'cancelled'
+}
+
+type ObjectiveSeed = {
+  projectName: string
+  name: string
   status: 'pending' | 'in_progress' | 'reviewing' | 'done' | 'cancelled'
 }
 
@@ -112,6 +118,39 @@ const taskSeeds: TaskSeed[] = [
   },
 ]
 
+const objectiveSeeds: ObjectiveSeed[] = [
+  {
+    projectName: 'Actualizacion de plataforma de datos',
+    name: 'Mejorar la calidad de datos institucionales',
+    status: 'in_progress',
+  },
+  {
+    projectName: 'Actualizacion de plataforma de datos',
+    name: 'Aumentar la resiliencia de pipelines',
+    status: 'pending',
+  },
+  {
+    projectName: 'Sistema de seguimiento estudiantil',
+    name: 'Reducir la desercion estudiantil',
+    status: 'done',
+  },
+  {
+    projectName: 'Modernizacion de mesa de servicio',
+    name: 'Mejorar tiempos de respuesta del soporte',
+    status: 'pending',
+  },
+  {
+    projectName: 'Optimizacion de procesos',
+    name: 'Simplificar aprobaciones internas',
+    status: 'cancelled',
+  },
+  {
+    projectName: 'Despliegue de campus digital',
+    name: 'Aumentar cobertura de servicios digitales',
+    status: 'in_progress',
+  },
+]
+
 export async function seedProjects(
   db: Db,
   adminUserId: number,
@@ -131,7 +170,35 @@ export async function seedProjects(
     )
     .returning()
 
-  const projectByName = new Map(projects.map((project) => [project.name, project.id]))
+  const projectByName = new Map(
+    projects.map((project) => [project.name, project.id]),
+  )
+
+  const objectives = objectiveSeeds
+    .map((objective) => {
+      const projectId = projectByName.get(objective.projectName)
+      if (!projectId) {
+        return null
+      }
+      return {
+        name: objective.name,
+        status: objective.status,
+        projectId,
+        createdBy: adminUserId,
+        uid: nanoid(),
+      }
+    })
+    .filter(Boolean) as Array<{
+    name: string
+    status: 'pending' | 'in_progress' | 'reviewing' | 'done' | 'cancelled'
+    projectId: number
+    createdBy: number
+    uid: string
+  }>
+
+  if (objectives.length) {
+    await db.insert(ProjectObjective).values(objectives)
+  }
 
   const tasks = taskSeeds
     .map((task) => {

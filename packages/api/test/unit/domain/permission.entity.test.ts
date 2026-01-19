@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { formatPermission, parsePermission } from '../../../src/domain/entities/Permission'
+import {
+  formatPermission,
+  parsePermission,
+} from '../../../src/domain/entities/Permission'
 
 describe('Permission value object', () => {
   it('formats permissions consistently', () => {

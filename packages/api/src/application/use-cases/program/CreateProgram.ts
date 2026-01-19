@@ -30,6 +30,7 @@ export class CreateProgram
       description: input.description,
       startDate: input.startDate,
       endDate: input.endDate,
+      estimatedInversion: input.estimatedInversion,
       responsibleId: responsibleUser.id,
       createdBy: user.id,
     })
