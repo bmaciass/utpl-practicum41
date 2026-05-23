@@ -25,6 +25,21 @@ export async function seedInstitutionalUnits(
     {
       name: 'Tecnologias de la Informacion',
     },
+    {
+      name: 'Direccion de Planificacion',
+    },
+    {
+      name: 'Direccion Financiera',
+    },
+    {
+      name: 'Direccion de Vinculacion',
+    },
+    {
+      name: 'Direccion de Aseguramiento de la Calidad',
+    },
+    {
+      name: 'Centro de Innovacion y Emprendimiento',
+    },
   ].map((unit) => ({
     ...unit,
     uid: nanoid(),

@@ -6,7 +6,7 @@ export async function seedPermissionRoles(db: Db, userId: number) {
   const roles = await db
     .select()
     .from(Role)
-    .where(inArray(Role.name, ['admin', 'operador']))
+    .where(inArray(Role.name, ['admin', 'operador', 'coordinador', 'analista']))
 
   const roleByName = new Map(roles.map((role) => [role.name, role.id]))
 
@@ -17,9 +17,47 @@ export async function seedPermissionRoles(db: Db, userId: number) {
     { role: 'admin', action: 'delete', effect: 'allow', scope: 'module' },
     { role: 'admin', action: 'list', effect: 'allow', scope: 'module' },
     { role: 'admin', action: 'approve', effect: 'allow', scope: 'module' },
+    {
+      role: 'coordinador',
+      action: 'create',
+      effect: 'allow',
+      scope: 'resource',
+    },
+    {
+      role: 'coordinador',
+      action: 'read',
+      effect: 'allow',
+      scope: 'resource',
+    },
+    {
+      role: 'coordinador',
+      action: 'update',
+      effect: 'allow',
+      scope: 'resource',
+    },
+    {
+      role: 'coordinador',
+      action: 'list',
+      effect: 'allow',
+      scope: 'resource',
+    },
+    {
+      role: 'coordinador',
+      action: 'approve',
+      effect: 'allow',
+      scope: 'resource',
+    },
     { role: 'operador', action: 'read', effect: 'allow', scope: 'resource' },
     { role: 'operador', action: 'list', effect: 'allow', scope: 'resource' },
     { role: 'operador', action: 'update', effect: 'allow', scope: 'resource' },
+    { role: 'analista', action: 'read', effect: 'allow', scope: 'resource' },
+    { role: 'analista', action: 'list', effect: 'allow', scope: 'resource' },
+    {
+      role: 'analista',
+      action: 'delete',
+      effect: 'deny',
+      scope: 'resource',
+    },
   ]
 
   const records = permissions

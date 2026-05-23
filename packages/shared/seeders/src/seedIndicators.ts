@@ -6,6 +6,7 @@ import {
 } from '@sigep/db'
 import { eq, inArray } from 'drizzle-orm'
 import { nanoid } from 'nanoid/non-secure'
+import { normalizeText } from './normalizeText'
 
 type IndicatorSeed = {
   goalName: string
@@ -72,6 +73,76 @@ const indicatorSeeds: IndicatorSeed[] = [
     minValue: 0,
     maxValue: 3000,
   },
+  {
+    goalName: 'Actualizar mallas curriculares',
+    name: 'Carreras con rediseño validado',
+    description:
+      'Cantidad de carreras con rediseño curricular validado por comités académicos.',
+    type: 'number',
+    unitType: 'carreras',
+    minValue: 0,
+    maxValue: 40,
+  },
+  {
+    goalName: 'Laboratorios de innovación abierta',
+    name: 'Retos prototipados con aliados',
+    description:
+      'Numero de retos de innovación prototipados junto con empresas y gobiernos locales.',
+    type: 'number',
+    unitType: 'retos',
+    minValue: 0,
+    maxValue: 30,
+  },
+  {
+    goalName: 'Portafolio de proyectos territoriales',
+    name: 'Convenios territoriales activos',
+    description:
+      'Cantidad de convenios activos que respaldan proyectos territoriales vigentes.',
+    type: 'number',
+    unitType: 'convenios',
+    minValue: 0,
+    maxValue: 80,
+  },
+  {
+    goalName: 'Tablero integral de seguimiento institucional',
+    name: 'Unidades con seguimiento mensual',
+    description:
+      'Porcentaje de unidades que reportan avances mensuales en el tablero institucional.',
+    type: 'percentage',
+    unitType: '%',
+    minValue: 0,
+    maxValue: 100,
+  },
+  {
+    goalName: 'Movilidad saliente y entrante',
+    name: 'Participantes en movilidad internacional',
+    description:
+      'Cantidad de estudiantes y docentes participantes en movilidad internacional.',
+    type: 'number',
+    unitType: 'participantes',
+    minValue: 0,
+    maxValue: 1000,
+  },
+  {
+    goalName: 'Plan de permanencia y acompañamiento',
+    name: 'Estudiantes acompañados',
+    description:
+      'Numero de estudiantes atendidos con tutorías, becas o alertas tempranas.',
+    type: 'number',
+    unitType: 'estudiantes',
+    minValue: 0,
+    maxValue: 15000,
+  },
+  {
+    goalName: 'Campus sostenible y movilidad limpia',
+    name: 'Reduccion de emisiones operativas',
+    description:
+      'Porcentaje de reducción de emisiones operativas asociadas a movilidad y consumo.',
+    type: 'percentage',
+    unitType: '%',
+    minValue: 0,
+    maxValue: 100,
+  },
 ]
 
 export async function seedIndicators(
@@ -95,9 +166,17 @@ export async function seedIndicators(
     .from(Goal)
     .where(inArray(Goal.institutionalObjectiveId, objectiveIds))
 
+  const goalByName = new Map(
+    goals.map((goal) => [normalizeText(goal.name), goal]),
+  )
+
   const indicatorsToInsert = indicatorSeeds
     .map((seed) => {
-      const goal = goals.find((item) => item.name.includes(seed.goalName))
+      const goal =
+        goalByName.get(normalizeText(seed.goalName)) ??
+        goals.find((item) =>
+          normalizeText(item.name).includes(normalizeText(seed.goalName)),
+        )
       if (!goal) {
         console.warn(`Goal not found for indicator: ${seed.goalName}`)
         return null

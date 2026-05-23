@@ -1,6 +1,7 @@
 import { type Db, Goal, InstitutionalEstrategicObjetive } from '@sigep/db'
 import { eq } from 'drizzle-orm'
 import { nanoid } from 'nanoid/non-secure'
+import { normalizeText } from './normalizeText'
 
 type GoalSeed = {
   objectiveName: string
@@ -40,10 +41,22 @@ const goalSeeds: GoalSeed[] = [
       'Diseñar prácticas preprofesionales y proyectos de servicio comunitario coordinados con gobiernos locales y ONG.',
   },
   {
+    objectiveName: 'Vinculación con la Sociedad',
+    name: 'Portafolio de proyectos territoriales',
+    description:
+      'Consolidar un portafolio anual de proyectos territoriales cocreados con municipios, comunidades y sector productivo.',
+  },
+  {
     objectiveName: 'Gestión Institucional Eficiente',
     name: 'Digitalizar trámites clave',
     description:
       'Digitalizar los trámites académicos y administrativos de mayor demanda para reducir tiempos de respuesta.',
+  },
+  {
+    objectiveName: 'Gestión Institucional Eficiente',
+    name: 'Tablero integral de seguimiento institucional',
+    description:
+      'Implementar un tablero institucional con seguimiento mensual de hitos, presupuesto, riesgos y cumplimiento.',
   },
   {
     objectiveName: 'Internacionalización',
@@ -52,16 +65,34 @@ const goalSeeds: GoalSeed[] = [
       'Ampliar la red de convenios internacionales y establecer al menos un programa de doble titulación por facultad.',
   },
   {
+    objectiveName: 'Internacionalización',
+    name: 'Movilidad saliente y entrante',
+    description:
+      'Incrementar la movilidad estudiantil y docente mediante convocatorias semestrales y acuerdos activos.',
+  },
+  {
     objectiveName: 'Bienestar Universitario',
     name: 'Programa integral de salud mental',
     description:
       'Implementar servicios de acompañamiento psicoemocional, talleres y campañas de autocuidado para la comunidad.',
   },
   {
+    objectiveName: 'Bienestar Universitario',
+    name: 'Plan de permanencia y acompañamiento',
+    description:
+      'Fortalecer tutorías, acompañamiento socioeconómico y alertas tempranas para mejorar retención estudiantil.',
+  },
+  {
     objectiveName: 'Sostenibilidad y Responsabilidad Ambiental',
     name: 'Plan de gestión de residuos y eficiencia energética',
     description:
       'Implementar gestión de residuos, reciclaje y eficiencia energética con metas de reducción anual de consumo.',
+  },
+  {
+    objectiveName: 'Sostenibilidad y Responsabilidad Ambiental',
+    name: 'Campus sostenible y movilidad limpia',
+    description:
+      'Ejecutar acciones de movilidad sostenible, compras responsables y sensibilización ambiental en campus.',
   },
 ]
 
@@ -71,11 +102,13 @@ export async function seedGoals(db: Db, userId: number, institutionId: number) {
     .from(InstitutionalEstrategicObjetive)
     .where(eq(InstitutionalEstrategicObjetive.institutionId, institutionId))
 
+  const objectiveByName = new Map(
+    objectives.map((objective) => [normalizeText(objective.name), objective]),
+  )
+
   const goalsToInsert = goalSeeds
     .map((seed) => {
-      const objective = objectives.find((obj) =>
-        obj.name.includes(seed.objectiveName),
-      )
+      const objective = objectiveByName.get(normalizeText(seed.objectiveName))
       if (!objective) {
         console.warn(
           `Objetivo institucional no encontrado para meta: ${seed.objectiveName}`,

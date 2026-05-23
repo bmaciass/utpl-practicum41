@@ -4,23 +4,59 @@ import {
   ObjectiveODS,
   ProjectObjective,
 } from '@sigep/db'
+import { findByNormalizedName } from './normalizeText'
 
 export async function seedProjectObjectiveODSAlignment(db: Db, userId: number) {
   const projectObjectives = await db.select().from(ProjectObjective)
   const odsObjectives = await db.select().from(ObjectiveODS)
 
   const findProjectObjective = (pattern: string) =>
-    projectObjectives.find((obj) => obj.name.includes(pattern))
+    findByNormalizedName(projectObjectives, pattern)
   const findODS = (pattern: string) =>
-    odsObjectives.find((obj) => obj.name.includes(pattern))
+    findByNormalizedName(odsObjectives, pattern)
 
   const alignments = [
-    { projectObjective: 'calidad de datos', ods: ['ODS 9'] },
-    { projectObjective: 'resiliencia de pipelines', ods: ['ODS 9'] },
-    { projectObjective: 'desercion estudiantil', ods: ['ODS 4'] },
-    { projectObjective: 'tiempos de respuesta del soporte', ods: ['ODS 16'] },
-    { projectObjective: 'Simplificar aprobaciones internas', ods: ['ODS 16'] },
-    { projectObjective: 'cobertura de servicios digitales', ods: ['ODS 9'] },
+    {
+      projectObjective: 'Mejorar la calidad de datos institucionales',
+      ods: ['ODS 9'],
+    },
+    {
+      projectObjective: 'Aumentar la resiliencia de pipelines',
+      ods: ['ODS 9'],
+    },
+    {
+      projectObjective: 'Reducir la desercion estudiantil',
+      ods: ['ODS 4'],
+    },
+    {
+      projectObjective: 'Fortalecer rutas de acompañamiento estudiantil',
+      ods: ['ODS 4', 'ODS 10'],
+    },
+    {
+      projectObjective: 'Mejorar tiempos de respuesta del soporte',
+      ods: ['ODS 16'],
+    },
+    {
+      projectObjective: 'Estandarizar catalogo y niveles de servicio',
+      ods: ['ODS 16'],
+    },
+    {
+      projectObjective: 'Aumentar cobertura de servicios digitales',
+      ods: ['ODS 9', 'ODS 16'],
+    },
+    {
+      projectObjective: 'Conectar servicios academicos y administrativos',
+      ods: ['ODS 9'],
+    },
+    {
+      projectObjective: 'Mejorar la continuidad academica',
+      ods: ['ODS 4', 'ODS 10'],
+    },
+    {
+      projectObjective:
+        'Escalar proyectos de innovacion con impacto territorial',
+      ods: ['ODS 8', 'ODS 9', 'ODS 17'],
+    },
   ]
 
   const alignmentRecords = []

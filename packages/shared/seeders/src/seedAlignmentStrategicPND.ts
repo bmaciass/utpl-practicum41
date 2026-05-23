@@ -4,6 +4,7 @@ import {
   InstitutionalEstrategicObjetive,
   ObjectivePND,
 } from '@sigep/db'
+import { findByNormalizedName } from './normalizeText'
 
 export async function seedAlignmentStrategicPND(db: Db, userId: number) {
   const strategicObjectives = await db
@@ -12,9 +13,9 @@ export async function seedAlignmentStrategicPND(db: Db, userId: number) {
   const pndObjectives = await db.select().from(ObjectivePND)
 
   const findStrategic = (pattern: string) =>
-    strategicObjectives.find((obj) => obj.name.includes(pattern))
+    findByNormalizedName(strategicObjectives, pattern)
   const findPND = (pattern: string) =>
-    pndObjectives.find((obj) => obj.name.includes(pattern))
+    findByNormalizedName(pndObjectives, pattern)
 
   const alignments = [
     {

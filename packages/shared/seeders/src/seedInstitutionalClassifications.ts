@@ -21,6 +21,18 @@ export async function seedInstitutionalClassifications(db: Db, userId: number) {
       uid: nanoid(),
       createdBy: userId,
     },
+    {
+      name: 'Tecnologia',
+      code: 'TEC',
+      uid: nanoid(),
+      createdBy: userId,
+    },
+    {
+      name: 'Vinculacion',
+      code: 'VIN',
+      uid: nanoid(),
+      createdBy: userId,
+    },
   ]
 
   const insertedParents = await db
@@ -62,6 +74,26 @@ export async function seedInstitutionalClassifications(db: Db, userId: number) {
       name: 'Finanzas',
       code: 'ADM-FIN',
       parentId: parentByCode.get('ADM'),
+    },
+    {
+      name: 'Infraestructura Digital',
+      code: 'TEC-INF',
+      parentId: parentByCode.get('TEC'),
+    },
+    {
+      name: 'Analitica Institucional',
+      code: 'TEC-ANA',
+      parentId: parentByCode.get('TEC'),
+    },
+    {
+      name: 'Territorio',
+      code: 'VIN-TERR',
+      parentId: parentByCode.get('VIN'),
+    },
+    {
+      name: 'Practicas y Servicio',
+      code: 'VIN-PS',
+      parentId: parentByCode.get('VIN'),
     },
   ].map((child) => ({
     ...child,
