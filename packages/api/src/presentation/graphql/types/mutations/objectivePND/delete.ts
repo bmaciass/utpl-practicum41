@@ -3,6 +3,7 @@ import {
   getObjectivePNDRepository,
   getUserRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
+import { withAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { ObjectivePNDMutations } from './root'
 
@@ -28,18 +29,30 @@ builder.objectField(ObjectivePNDMutations, 'delete', (t) =>
         required: true,
       }),
     },
-    resolve: async (_, { input }, { db, user }) => {
-      const pndRepo = getObjectivePNDRepository(db)
-      const userRepo = getUserRepository(db)
+    resolve: withAuditedMutation(
+      {
+        action: 'delete',
+        resourceType: 'objective_pnd',
+        getRequestPayload: ({ input }) => input,
+        getInitialResourceUid: ({ input }) => input.uid,
+        loadBefore: async ({ input }, { db }) =>
+          getObjectivePNDRepository(db).findByUid(input.uid),
+        getAfterSnapshot: async ({ input }, _result, { db }) =>
+          getObjectivePNDRepository(db).findByUid(input.uid),
+      },
+      async (_, { input }, { db, user }) => {
+        const pndRepo = getObjectivePNDRepository(db)
+        const userRepo = getUserRepository(db)
 
-      const useCase = new DeleteObjectivePND({
-        objectivePNDRepository: pndRepo,
-        userRepository: userRepo,
-      })
+        const useCase = new DeleteObjectivePND({
+          objectivePNDRepository: pndRepo,
+          userRepository: userRepo,
+        })
 
-      await useCase.execute({ uid: input.uid }, user.uid)
+        await useCase.execute({ uid: input.uid }, user.uid)
 
-      return true
-    },
+        return true
+      },
+    ),
   }),
 )

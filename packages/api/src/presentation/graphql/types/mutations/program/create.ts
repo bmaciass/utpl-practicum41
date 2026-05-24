@@ -4,6 +4,7 @@ import {
   getProgramRepository,
   getUserRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
+import { withAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { Program } from '../../objects/Program'
 import { ProgramMutations } from './root'
@@ -35,38 +36,46 @@ builder.objectField(ProgramMutations, 'create', (t) =>
     args: {
       data: t.arg({ type: CreateProgramDataInput, required: true }),
     },
-    resolve: async (_, { data }, { db, user }) => {
-      const programRepository = getProgramRepository(db)
-      const userRepository = getUserRepository(db)
-      const createProgram = new CreateProgram({
-        programRepository,
-        userRepository,
-      })
+    resolve: withAuditedMutation(
+      {
+        action: 'create',
+        resourceType: 'program',
+        getRequestPayload: ({ data }) => data,
+        getResourceUid: (_args, result) => result.uid,
+      },
+      async (_, { data }, { db, user }) => {
+        const programRepository = getProgramRepository(db)
+        const userRepository = getUserRepository(db)
+        const createProgram = new CreateProgram({
+          programRepository,
+          userRepository,
+        })
 
-      const program = await createProgram.execute(
-        {
-          name: data.name,
-          description: data.description,
-          startDate: data.startDate,
-          endDate: data.endDate,
-          estimatedInversion: data.estimatedInversion,
-          responsibleUid: data.responsibleUid,
-        },
-        user.uid,
-      )
+        const program = await createProgram.execute(
+          {
+            name: data.name,
+            description: data.description,
+            startDate: data.startDate,
+            endDate: data.endDate,
+            estimatedInversion: data.estimatedInversion,
+            responsibleUid: data.responsibleUid,
+          },
+          user.uid,
+        )
 
-      return {
-        id: program.id,
-        uid: program.uid,
-        name: program.name,
-        description: program.description,
-        startDate: program.startDate,
-        endDate: program.endDate,
-        estimatedInversion: program.estimatedInversion,
-        active: program.active,
-        deletedAt: program.deletedAt,
-        responsibleId: program.responsibleId,
-      }
-    },
+        return {
+          id: program.id,
+          uid: program.uid,
+          name: program.name,
+          description: program.description,
+          startDate: program.startDate,
+          endDate: program.endDate,
+          estimatedInversion: program.estimatedInversion,
+          active: program.active,
+          deletedAt: program.deletedAt,
+          responsibleId: program.responsibleId,
+        }
+      },
+    ),
   }),
 )

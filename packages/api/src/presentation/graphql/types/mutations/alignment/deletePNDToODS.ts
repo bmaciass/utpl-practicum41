@@ -4,6 +4,7 @@ import {
   getObjectiveODSRepository,
   getObjectivePNDRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
+import { withAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { AlignmentMutations } from './root'
 
@@ -31,23 +32,60 @@ builder.objectField(AlignmentMutations, 'deletePNDToODS', (t) =>
         required: true,
       }),
     },
-    resolve: async (_, { input }, { db }) => {
-      const alignmentRepo = getAlignmentPNDToODSRepository(db)
-      const pndRepo = getObjectivePNDRepository(db)
-      const odsRepo = getObjectiveODSRepository(db)
+    resolve: withAuditedMutation(
+      {
+        action: 'delete',
+        resourceType: 'alignment_pnd_ods',
+        getRequestPayload: ({ input }) => input,
+        getInitialResourceUid: ({ input }) =>
+          `${input.pndObjectiveUid}:${input.odsObjectiveUid}`,
+        loadBefore: async ({ input }, { db }) => {
+          const alignmentRepo = getAlignmentPNDToODSRepository(db)
+          const pndRepo = getObjectivePNDRepository(db)
+          const odsRepo = getObjectiveODSRepository(db)
+          const [pndObjective, odsObjective] = await Promise.all([
+            pndRepo.findByUidOrThrow(input.pndObjectiveUid),
+            odsRepo.findByUidOrThrow(input.odsObjectiveUid),
+          ])
 
-      const useCase = new DeleteAlignmentPNDToODS({
-        alignmentRepository: alignmentRepo,
-        pndObjectiveRepository: pndRepo,
-        odsObjectiveRepository: odsRepo,
-      })
+          return alignmentRepo.findMany({
+            pndObjectiveId: pndObjective.id,
+            odsObjectiveId: odsObjective.id,
+          })
+        },
+        getAfterSnapshot: async ({ input }, _result, { db }) => {
+          const alignmentRepo = getAlignmentPNDToODSRepository(db)
+          const pndRepo = getObjectivePNDRepository(db)
+          const odsRepo = getObjectiveODSRepository(db)
+          const [pndObjective, odsObjective] = await Promise.all([
+            pndRepo.findByUidOrThrow(input.pndObjectiveUid),
+            odsRepo.findByUidOrThrow(input.odsObjectiveUid),
+          ])
 
-      await useCase.execute({
-        pndObjectiveUid: input.pndObjectiveUid,
-        odsObjectiveUid: input.odsObjectiveUid,
-      })
+          return alignmentRepo.findMany({
+            pndObjectiveId: pndObjective.id,
+            odsObjectiveId: odsObjective.id,
+          })
+        },
+      },
+      async (_, { input }, { db }) => {
+        const alignmentRepo = getAlignmentPNDToODSRepository(db)
+        const pndRepo = getObjectivePNDRepository(db)
+        const odsRepo = getObjectiveODSRepository(db)
 
-      return true
-    },
+        const useCase = new DeleteAlignmentPNDToODS({
+          alignmentRepository: alignmentRepo,
+          pndObjectiveRepository: pndRepo,
+          odsObjectiveRepository: odsRepo,
+        })
+
+        await useCase.execute({
+          pndObjectiveUid: input.pndObjectiveUid,
+          odsObjectiveUid: input.odsObjectiveUid,
+        })
+
+        return true
+      },
+    ),
   }),
 )

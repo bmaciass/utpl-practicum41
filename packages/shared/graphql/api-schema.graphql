@@ -5,24 +5,14 @@ type AlignmentInstitutionalToPND {
   pndObjectiveUid: String!
 }
 
-"""
-Alignment mutations
-"""
+"""Alignment mutations"""
 type AlignmentMutations {
-  createInstitutionalToPND(
-    input: CreateAlignmentInstitutionalToPNDInput!
-  ): AlignmentInstitutionalToPND!
+  createInstitutionalToPND(input: CreateAlignmentInstitutionalToPNDInput!): AlignmentInstitutionalToPND!
   createPNDToODS(input: CreateAlignmentPNDToODSInput!): AlignmentPNDToODS!
-  createProjectObjectiveToODS(
-    input: CreateAlignmentProjectObjectiveToODSInput!
-  ): AlignmentProjectObjectiveToODS!
-  deleteInstitutionalToPND(
-    input: DeleteAlignmentInstitutionalToPNDInput!
-  ): Boolean!
+  createProjectObjectiveToODS(input: CreateAlignmentProjectObjectiveToODSInput!): AlignmentProjectObjectiveToODS!
+  deleteInstitutionalToPND(input: DeleteAlignmentInstitutionalToPNDInput!): Boolean!
   deletePNDToODS(input: DeleteAlignmentPNDToODSInput!): Boolean!
-  deleteProjectObjectiveToODS(
-    input: DeleteAlignmentProjectObjectiveToODSInput!
-  ): Boolean!
+  deleteProjectObjectiveToODS(input: DeleteAlignmentProjectObjectiveToODSInput!): Boolean!
 }
 
 type AlignmentPNDToODS {
@@ -37,6 +27,66 @@ type AlignmentProjectObjectiveToODS {
   id: ID!
   odsObjectiveUid: String!
   projectObjectiveUid: String!
+}
+
+type AuditEvent {
+  action: String!
+  actorLabel: String
+  actorUser: User
+  afterSnapshot: JSON
+  beforeSnapshot: JSON
+  createdAt: DateTime!
+  error: JSON
+  metadata: JSON
+  requestPayload: JSON
+  resourceType: AuditResourceType!
+  resourceUid: String
+  status: AuditEventStatus!
+  uid: ID!
+}
+
+input AuditEventFiltersInput {
+  action: String
+  actorLabel: String
+  resourceType: AuditResourceType
+  resourceUid: String
+  status: AuditEventStatus
+}
+
+type AuditEventListResponse {
+  records: [AuditEvent!]!
+  total: Int!
+}
+
+enum AuditEventStatus {
+  failed
+  pending
+  succeeded
+}
+
+"""Audit queries"""
+type AuditQueries {
+  list(filters: AuditEventFiltersInput, limit: Int, offset: Int): AuditEventListResponse!
+  one(uid: String!): AuditEvent!
+}
+
+enum AuditResourceType {
+  alignment_institutional_pnd
+  alignment_pnd_ods
+  alignment_project_objective_ods
+  auth_session
+  goal
+  indicator
+  institution
+  institutional_objective
+  institutional_plan
+  objective_ods
+  objective_pnd
+  program
+  project
+  project_objective
+  project_task
+  user
 }
 
 input CreateAlignmentInstitutionalToPNDInput {
@@ -148,9 +198,7 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTime
 
-"""
-An arbitrary-precision Decimal type.
-"""
+"""An arbitrary-precision Decimal type."""
 scalar Decimal
 
 input DeleteAlignmentInstitutionalToPNDInput {
@@ -242,18 +290,11 @@ type IndicatorListResponse {
 type IndicatorMutations {
   create(data: CreateIndicatorDataInput!): Indicator!
   delete(input: DeleteIndicatorInput!): Boolean!
-  update(
-    data: UpdateIndicatorDataInput!
-    where: UpdateIndicatorWhereInput!
-  ): Indicator!
+  update(data: UpdateIndicatorDataInput!, where: UpdateIndicatorWhereInput!): Indicator!
 }
 
 type IndicatorQueries {
-  list(
-    filters: IndicatorListFilters!
-    limit: Int!
-    offset: Int!
-  ): IndicatorListResponse!
+  list(filters: IndicatorListFilters!, limit: Int!, offset: Int!): IndicatorListResponse!
   one(uid: String!): Indicator!
 }
 
@@ -279,15 +320,10 @@ enum InstitutionLevel {
   nacional
 }
 
-"""
-Institution mutations
-"""
+"""Institution mutations"""
 type InstitutionMutations {
   create(data: CreateInstitutionDataInput!): Institution!
-  update(
-    data: UpdateInstitutionDataInput!
-    where: UpdateInstitutionWhereInput!
-  ): Institution!
+  update(data: UpdateInstitutionDataInput!, where: UpdateInstitutionWhereInput!): Institution!
 }
 
 type InstitutionPlan {
@@ -301,9 +337,7 @@ type InstitutionPlan {
   year: Int!
 }
 
-"""
-Institution queries
-"""
+"""Institution queries"""
 type InstitutionQueries {
   list(active: Boolean, name: StringFilter): InstitutionsQueryResponse!
   one(id: String!): Institution
@@ -319,26 +353,15 @@ type InstitutionalObjective {
   uid: ID!
 }
 
-"""
-InstitutionalObjective mutations
-"""
+"""InstitutionalObjective mutations"""
 type InstitutionalObjectiveMutations {
   create(data: CreateInstitutionalObjectiveDataInput!): InstitutionalObjective!
-  update(
-    data: UpdateInstitutionalObjectiveDataInput!
-    where: UpdateInstitutionalObjectiveWhereInput!
-  ): InstitutionalObjective!
+  update(data: UpdateInstitutionalObjectiveDataInput!, where: UpdateInstitutionalObjectiveWhereInput!): InstitutionalObjective!
 }
 
-"""
-InstitutionalObjective queries
-"""
+"""InstitutionalObjective queries"""
 type InstitutionalObjectiveQueries {
-  list(
-    active: Boolean
-    institutionUid: String
-    name: StringFilter
-  ): InstitutionalObjectivesQueryResponse!
+  list(active: Boolean, institutionUid: String, name: StringFilter): InstitutionalObjectivesQueryResponse!
   one(uid: String!): InstitutionalObjective!
 }
 
@@ -346,26 +369,15 @@ type InstitutionalObjectivesQueryResponse {
   records: [InstitutionalObjective!]!
 }
 
-"""
-Institution Plan mutations
-"""
+"""Institution Plan mutations"""
 type InstitutionalPlanMutations {
   create(data: CreateInstitutionalPlanDataInput!): InstitutionPlan!
-  update(
-    data: UpdateInstitutionalPlanDataInput!
-    where: UpdateInstitutionalPlanWhereInput!
-  ): InstitutionPlan!
+  update(data: UpdateInstitutionalPlanDataInput!, where: UpdateInstitutionalPlanWhereInput!): InstitutionPlan!
 }
 
-"""
-Institutional Plan queries
-"""
+"""Institutional Plan queries"""
 type InstitutionalPlanQueries {
-  list(
-    active: Boolean
-    institutionUid: String!
-    name: StringFilter
-  ): InstitutionalPlansQueryResponse!
+  list(active: Boolean, institutionUid: String!, name: StringFilter): InstitutionalPlansQueryResponse!
   one(uid: String!): InstitutionPlan
 }
 
@@ -407,9 +419,7 @@ type ObjectiveODS {
   uid: ID!
 }
 
-"""
-ObjectiveODS queries
-"""
+"""ObjectiveODS queries"""
 type ObjectiveODSQueries {
   list(active: Boolean, name: StringFilter): ObjectiveODSQueryResponse!
 }
@@ -428,21 +438,14 @@ type ObjectivePND {
   uid: ID!
 }
 
-"""
-ObjectivePND mutations
-"""
+"""ObjectivePND mutations"""
 type ObjectivePNDMutations {
   create(data: CreateObjectivePNDDataInput!): ObjectivePND!
   delete(input: DeleteObjectivePNDInput!): Boolean!
-  update(
-    data: UpdateObjectivePNDDataInput!
-    where: UpdateObjectivePNDWhereInput!
-  ): ObjectivePND!
+  update(data: UpdateObjectivePNDDataInput!, where: UpdateObjectivePNDWhereInput!): ObjectivePND!
 }
 
-"""
-ObjectivePND queries
-"""
+"""ObjectivePND queries"""
 type ObjectivePNDQueries {
   list(active: Boolean, name: StringFilter): ObjectivePNDQueryResponse!
   one(uid: String!): ObjectivePND!
@@ -473,20 +476,13 @@ type Program {
   uid: ID!
 }
 
-"""
-Program mutations
-"""
+"""Program mutations"""
 type ProgramMutations {
   create(data: CreateProgramDataInput!): Program!
-  update(
-    data: UpdateProgramDataInput!
-    where: UpdateProgramWhereInput!
-  ): Program!
+  update(data: UpdateProgramDataInput!, where: UpdateProgramWhereInput!): Program!
 }
 
-"""
-Program queries
-"""
+"""Program queries"""
 type ProgramQueries {
   list(active: Boolean, name: StringFilter): ProgramsQueryResponse!
   one(id: String!): Program
@@ -517,15 +513,10 @@ type ProjectCompletionReport {
   total: Int!
 }
 
-"""
-Project mutations
-"""
+"""Project mutations"""
 type ProjectMutations {
   create(data: CreateProjectDataInput!): Project!
-  update(
-    data: UpdateProjectDataInput!
-    where: UpdateProjectWhereInput!
-  ): Project!
+  update(data: UpdateProjectDataInput!, where: UpdateProjectWhereInput!): Project!
 }
 
 type ProjectObjective {
@@ -537,26 +528,15 @@ type ProjectObjective {
   uid: ID!
 }
 
-"""
-ProjectObjective mutations
-"""
+"""ProjectObjective mutations"""
 type ProjectObjectiveMutations {
   create(data: CreateProjectObjectiveDataInput!): ProjectObjective!
-  update(
-    data: UpdateProjectObjectiveDataInput!
-    where: UpdateProjectObjectiveWhereInput!
-  ): ProjectObjective!
+  update(data: UpdateProjectObjectiveDataInput!, where: UpdateProjectObjectiveWhereInput!): ProjectObjective!
 }
 
-"""
-ProjectObjective queries
-"""
+"""ProjectObjective queries"""
 type ProjectObjectiveQueries {
-  list(
-    active: Boolean
-    projectUid: String!
-    status: ProjectObjectiveStatus
-  ): ProjectObjectivesQueryResponse!
+  list(active: Boolean, projectUid: String!, status: ProjectObjectiveStatus): ProjectObjectivesQueryResponse!
   one(uid: String!): ProjectObjective!
 }
 
@@ -572,9 +552,7 @@ type ProjectObjectivesQueryResponse {
   records: [ProjectObjective!]!
 }
 
-"""
-Project queries
-"""
+"""Project queries"""
 type ProjectQueries {
   list(active: Boolean, programId: String!): ProjectsQueryResponse!
   one(id: String!): Project
@@ -608,20 +586,13 @@ type ProjectTask {
   uid: ID!
 }
 
-"""
-ProjectTask mutations
-"""
+"""ProjectTask mutations"""
 type ProjectTaskMutations {
   create(data: CreateProjectTaskDataInput!): ProjectTask!
-  update(
-    data: UpdateProjectTaskDataInput!
-    where: UpdateProjectTaskWhereInput!
-  ): ProjectTask!
+  update(data: UpdateProjectTaskDataInput!, where: UpdateProjectTaskWhereInput!): ProjectTask!
 }
 
-"""
-ProjectTask queries
-"""
+"""ProjectTask queries"""
 type ProjectTaskQueries {
   list(projectUid: String!, responsibleUid: String): ProjectTasksQueryResponse!
   one(uid: String!): ProjectTask!
@@ -644,6 +615,7 @@ type ProjectsQueryResponse {
 }
 
 type Query {
+  audit: AuditQueries!
   goal: GoalQueries!
   indicator: IndicatorQueries!
   institution: InstitutionQueries!
@@ -659,9 +631,7 @@ type Query {
   user: UserQueries!
 }
 
-"""
-Reports queries
-"""
+"""Reports queries"""
 type ReportsQueries {
   projectCompletion(projectUid: String!): ProjectCompletionReport
   projectStatus: ProjectStatusReport!
@@ -826,18 +796,14 @@ type User {
   uid: ID!
 }
 
-"""
-User mutations
-"""
+"""User mutations"""
 type UserMutations {
   create(data: CreateUserDataInput!): User!
   delete(input: DeleteUserInput!): Boolean!
   update(data: UpdateUserDataInput!, where: UpdateUserWhereInput!): User!
 }
 
-"""
-User queries
-"""
+"""User queries"""
 type UserQueries {
   list(active: Boolean, name: StringFilter): UsersQueryResponse!
   one(id: String!): User

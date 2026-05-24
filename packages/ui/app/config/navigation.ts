@@ -1,18 +1,20 @@
 import {
-  Home,
-  Users,
-  Building,
-  FolderOpen,
   BarChart,
+  Building,
+  ClipboardList,
+  FolderOpen,
+  Home,
+  type LucideIcon,
   Settings,
   Target,
-  type LucideIcon,
+  Users,
 } from 'lucide-react'
 
 export interface NavItem {
   title: string
   href?: string
   icon: LucideIcon
+  adminOnly?: boolean
   children?: NavItem[]
 }
 
@@ -30,6 +32,13 @@ export const navigationConfig: NavItem[] = [
         title: 'Usuarios',
         href: '/users',
         icon: Users,
+        adminOnly: true,
+      },
+      {
+        title: 'Auditoria',
+        href: '/audit',
+        icon: ClipboardList,
+        adminOnly: true,
       },
       {
         title: 'Instituciones',

@@ -5,6 +5,7 @@ import {
   getProjectRepository,
   getUserRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
+import { withAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { ProjectObjectiveStatusEnum } from '../../enums/ProjectObjectiveStatus'
 import { ProjectObjective } from '../../objects/ProjectObjective'
@@ -34,34 +35,42 @@ builder.objectField(ProjectObjectiveMutations, 'create', (t) =>
     args: {
       data: t.arg({ type: CreateProjectObjectiveDataInput, required: true }),
     },
-    resolve: async (_, { data }, { db, user }) => {
-      const projectObjectiveRepository = getProjectObjectiveRepository(db)
-      const projectRepository = getProjectRepository(db)
-      const userRepository = getUserRepository(db)
-      const createProjectObjective = new CreateProjectObjective({
-        projectObjectiveRepository,
-        projectRepository,
-        userRepository,
-      })
+    resolve: withAuditedMutation(
+      {
+        action: 'create',
+        resourceType: 'project_objective',
+        getRequestPayload: ({ data }) => data,
+        getResourceUid: (_args, result) => result.uid,
+      },
+      async (_, { data }, { db, user }) => {
+        const projectObjectiveRepository = getProjectObjectiveRepository(db)
+        const projectRepository = getProjectRepository(db)
+        const userRepository = getUserRepository(db)
+        const createProjectObjective = new CreateProjectObjective({
+          projectObjectiveRepository,
+          projectRepository,
+          userRepository,
+        })
 
-      const objective = await createProjectObjective.execute(
-        {
-          name: data.name,
-          status: data.status ?? undefined,
-          projectUid: data.projectUid,
-        },
-        user.uid,
-      )
+        const objective = await createProjectObjective.execute(
+          {
+            name: data.name,
+            status: data.status ?? undefined,
+            projectUid: data.projectUid,
+          },
+          user.uid,
+        )
 
-      return {
-        id: objective.id,
-        uid: objective.uid,
-        name: objective.name,
-        status: objective.status,
-        active: objective.active,
-        projectId: objective.projectId,
-        deletedAt: objective.deletedAt,
-      }
-    },
+        return {
+          id: objective.id,
+          uid: objective.uid,
+          name: objective.name,
+          status: objective.status,
+          active: objective.active,
+          projectId: objective.projectId,
+          deletedAt: objective.deletedAt,
+        }
+      },
+    ),
   }),
 )

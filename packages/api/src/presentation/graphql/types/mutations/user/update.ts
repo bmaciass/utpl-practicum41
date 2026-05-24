@@ -2,7 +2,7 @@ import { UpdateUser } from '~/application/use-cases/user'
 import { DrizzleUnitOfWork } from '~/infrastructure/persistence/drizzle/DrizzleUnitOfWork'
 import { getUserRepository } from '~/infrastructure/persistence/drizzle/repositories'
 import { PasswordService } from '~/infrastructure/services/PasswordService'
-import { executeAuditedMutation } from '../../../helpers/audit'
+import { withAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { User } from '../../objects/User'
 import { UserMutations } from './root'
@@ -49,38 +49,35 @@ builder.objectField(UserMutations, 'update', (t) =>
       where: t.arg({ type: UpdateUserWhereInput, required: true }),
       data: t.arg({ type: UpdateUserDataInput, required: true }),
     },
-    resolve: async (_, { data, where }, context, info) => {
-      const { db, user: currentUser } = context
-      const unitOfWork = new DrizzleUnitOfWork(db)
-      const userRepository = getUserRepository(db)
-      const useCase = new UpdateUser({
-        unitOfWork,
-        passwordService: new PasswordService(),
-      })
-
-      return executeAuditedMutation({
-        context,
-        info,
+    resolve: withAuditedMutation(
+      {
         action: 'update',
         resourceType: 'user',
-        resourceUid: where.id,
-        requestPayload: { where, data },
-        beforeSnapshot: () => userRepository.findByUid(where.id),
-        afterSnapshot: (result) => result,
-        run: () =>
-          useCase.execute(
-            {
-              uid: where.id,
-              name: data.name ?? undefined,
-              password: data.password ?? undefined,
-              active: data.active ?? undefined,
-              firstName: data.firstName ?? undefined,
-              lastName: data.lastName ?? undefined,
-              dni: data.dni ?? undefined,
-            },
-            currentUser.uid,
-          ),
-      })
-    },
+        getRequestPayload: ({ where, data }) => ({ where, data }),
+        getInitialResourceUid: ({ where }) => where.id,
+        loadBefore: async ({ where }, { db }) =>
+          getUserRepository(db).findByUid(where.id),
+      },
+      async (_, { data, where }, { db, user: currentUser }) => {
+        const unitOfWork = new DrizzleUnitOfWork(db)
+        const useCase = new UpdateUser({
+          unitOfWork,
+          passwordService: new PasswordService(),
+        })
+
+        return useCase.execute(
+          {
+            uid: where.id,
+            name: data.name ?? undefined,
+            password: data.password ?? undefined,
+            active: data.active ?? undefined,
+            firstName: data.firstName ?? undefined,
+            lastName: data.lastName ?? undefined,
+            dni: data.dni ?? undefined,
+          },
+          currentUser.uid,
+        )
+      },
+    ),
   }),
 )

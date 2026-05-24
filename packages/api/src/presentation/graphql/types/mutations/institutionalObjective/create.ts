@@ -4,6 +4,7 @@ import {
   getInstitutionalObjectiveRepository,
   getUserRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
+import { withAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { InstitutionalObjective } from '../../objects/InstitutionalObjective'
 import { InstitutionalObjectiveMutations } from './root'
@@ -36,36 +37,44 @@ builder.objectField(InstitutionalObjectiveMutations, 'create', (t) =>
         required: true,
       }),
     },
-    resolve: async (_, { data }, { db, user }) => {
-      const institutionalObjectiveRepository =
-        getInstitutionalObjectiveRepository(db)
-      const institutionRepository = getInstitutionRepository(db)
-      const userRepository = getUserRepository(db)
+    resolve: withAuditedMutation(
+      {
+        action: 'create',
+        resourceType: 'institutional_objective',
+        getRequestPayload: ({ data }) => data,
+        getResourceUid: (_args, result) => result.uid,
+      },
+      async (_, { data }, { db, user }) => {
+        const institutionalObjectiveRepository =
+          getInstitutionalObjectiveRepository(db)
+        const institutionRepository = getInstitutionRepository(db)
+        const userRepository = getUserRepository(db)
 
-      const createObjective = new CreateInstitutionalObjective({
-        institutionalObjectiveRepository,
-        institutionRepository,
-        userRepository,
-      })
+        const createObjective = new CreateInstitutionalObjective({
+          institutionalObjectiveRepository,
+          institutionRepository,
+          userRepository,
+        })
 
-      const objective = await createObjective.execute(
-        {
-          name: data.name,
-          description: data.description,
-          institutionUid: data.institutionId,
-        },
-        user.uid,
-      )
+        const objective = await createObjective.execute(
+          {
+            name: data.name,
+            description: data.description,
+            institutionUid: data.institutionId,
+          },
+          user.uid,
+        )
 
-      return {
-        id: objective.id,
-        uid: objective.uid,
-        name: objective.name,
-        description: objective.description,
-        active: objective.active,
-        deletedAt: objective.deletedAt,
-        institutionId: objective.institutionId,
-      }
-    },
+        return {
+          id: objective.id,
+          uid: objective.uid,
+          name: objective.name,
+          description: objective.description,
+          active: objective.active,
+          deletedAt: objective.deletedAt,
+          institutionId: objective.institutionId,
+        }
+      },
+    ),
   }),
 )

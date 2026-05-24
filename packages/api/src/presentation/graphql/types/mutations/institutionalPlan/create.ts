@@ -4,6 +4,7 @@ import {
   getInstitutionalPlanRepository,
   getUserRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
+import { withAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { InstitutionalPlan } from '../../objects/InstitutionalPlan'
 import { InstitutionalPlanMutations } from './root'
@@ -37,38 +38,46 @@ builder.objectField(InstitutionalPlanMutations, 'create', (t) =>
     args: {
       data: t.arg({ type: CreateInstitutionalPlanDataInput, required: true }),
     },
-    resolve: async (_, { data }, { db, user }) => {
-      const institutionalPlanRepository = getInstitutionalPlanRepository(db)
-      const institutionRepository = getInstitutionRepository(db)
-      const userRepository = getUserRepository(db)
+    resolve: withAuditedMutation(
+      {
+        action: 'create',
+        resourceType: 'institutional_plan',
+        getRequestPayload: ({ data }) => data,
+        getResourceUid: (_args, result) => result.uid,
+      },
+      async (_, { data }, { db, user }) => {
+        const institutionalPlanRepository = getInstitutionalPlanRepository(db)
+        const institutionRepository = getInstitutionRepository(db)
+        const userRepository = getUserRepository(db)
 
-      const createPlan = new CreateInstitutionalPlan({
-        institutionalPlanRepository,
-        institutionRepository,
-        userRepository,
-      })
+        const createPlan = new CreateInstitutionalPlan({
+          institutionalPlanRepository,
+          institutionRepository,
+          userRepository,
+        })
 
-      const plan = await createPlan.execute(
-        {
-          name: data.name,
-          description: data.description,
-          url: data.url,
-          year: data.year,
-          institutionUid: data.institutionId,
-        },
-        user.uid,
-      )
+        const plan = await createPlan.execute(
+          {
+            name: data.name,
+            description: data.description,
+            url: data.url,
+            year: data.year,
+            institutionUid: data.institutionId,
+          },
+          user.uid,
+        )
 
-      return {
-        uid: plan.uid,
-        name: plan.name,
-        active: plan.active,
-        url: plan.url,
-        year: plan.year,
-        description: plan.description,
-        deletedAt: plan.deletedAt,
-        institutionId: plan.institutionId,
-      }
-    },
+        return {
+          uid: plan.uid,
+          name: plan.name,
+          active: plan.active,
+          url: plan.url,
+          year: plan.year,
+          description: plan.description,
+          deletedAt: plan.deletedAt,
+          institutionId: plan.institutionId,
+        }
+      },
+    ),
   }),
 )

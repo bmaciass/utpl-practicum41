@@ -5,6 +5,7 @@ import {
   getProjectRepository,
   getUserRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
+import { withAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { ProjectStatusEnum } from '../../enums/ProjectStatus'
 import { Project } from '../../objects/Project'
@@ -55,42 +56,52 @@ builder.objectField(ProjectMutations, 'update', (t) =>
       where: t.arg({ type: UpdateProjectWhereInput, required: true }),
       data: t.arg({ type: UpdateProjectDataInput, required: true }),
     },
-    resolve: async (_, { data, where }, { db, user }) => {
-      const projectRepository = getProjectRepository(db)
-      const userRepository = getUserRepository(db)
-      const updateProject = new UpdateProject({
-        projectRepository,
-        userRepository,
-      })
-      const project = await updateProject.execute(
-        {
-          uid: where.id,
-          data: {
-            name: data.name ?? undefined,
-            description: data.description ?? undefined,
-            status: data.status ?? undefined,
-            startDate: data.startDate ?? undefined,
-            endDate: data.endDate ?? undefined,
-            responsibleUid: data.responsibleUid ?? undefined,
-            active: data.active ?? undefined,
+    resolve: withAuditedMutation(
+      {
+        action: 'update',
+        resourceType: 'project',
+        getRequestPayload: ({ where, data }) => ({ where, data }),
+        getInitialResourceUid: ({ where }) => where.id,
+        loadBefore: async ({ where }, { db }) =>
+          getProjectRepository(db).findByUid(where.id),
+      },
+      async (_, { data, where }, { db, user }) => {
+        const projectRepository = getProjectRepository(db)
+        const userRepository = getUserRepository(db)
+        const updateProject = new UpdateProject({
+          projectRepository,
+          userRepository,
+        })
+        const project = await updateProject.execute(
+          {
+            uid: where.id,
+            data: {
+              name: data.name ?? undefined,
+              description: data.description ?? undefined,
+              status: data.status ?? undefined,
+              startDate: data.startDate ?? undefined,
+              endDate: data.endDate ?? undefined,
+              responsibleUid: data.responsibleUid ?? undefined,
+              active: data.active ?? undefined,
+            },
           },
-        },
-        user.uid,
-      )
+          user.uid,
+        )
 
-      return {
-        id: project.id,
-        uid: project.uid,
-        name: project.name,
-        description: project.description,
-        status: project.status,
-        startDate: project.startDate,
-        endDate: project.endDate,
-        deletedAt: project.deletedAt,
-        active: project.active,
-        programId: project.programId,
-        responsibleId: project.responsibleId,
-      }
-    },
+        return {
+          id: project.id,
+          uid: project.uid,
+          name: project.name,
+          description: project.description,
+          status: project.status,
+          startDate: project.startDate,
+          endDate: project.endDate,
+          deletedAt: project.deletedAt,
+          active: project.active,
+          programId: project.programId,
+          responsibleId: project.responsibleId,
+        }
+      },
+    ),
   }),
 )

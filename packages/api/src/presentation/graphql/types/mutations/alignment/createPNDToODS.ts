@@ -5,6 +5,7 @@ import {
   getObjectivePNDRepository,
   getUserRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
+import { withAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { AlignmentPNDToODS } from '../../objects/AlignmentPNDToODS'
 import { AlignmentMutations } from './root'
@@ -33,36 +34,44 @@ builder.objectField(AlignmentMutations, 'createPNDToODS', (t) =>
         required: true,
       }),
     },
-    resolve: async (_, { input }, { db, user }) => {
-      const alignmentRepo = getAlignmentPNDToODSRepository(db)
-      const pndRepo = getObjectivePNDRepository(db)
-      const odsRepo = getObjectiveODSRepository(db)
-      const userRepo = getUserRepository(db)
+    resolve: withAuditedMutation(
+      {
+        action: 'create',
+        resourceType: 'alignment_pnd_ods',
+        getRequestPayload: ({ input }) => input,
+        getResourceUid: ({ input }) =>
+          `${input.pndObjectiveUid}:${input.odsObjectiveUid}`,
+      },
+      async (_, { input }, { db, user }) => {
+        const alignmentRepo = getAlignmentPNDToODSRepository(db)
+        const pndRepo = getObjectivePNDRepository(db)
+        const odsRepo = getObjectiveODSRepository(db)
+        const userRepo = getUserRepository(db)
 
-      const useCase = new CreateAlignmentPNDToODS({
-        alignmentRepository: alignmentRepo,
-        pndObjectiveRepository: pndRepo,
-        odsObjectiveRepository: odsRepo,
-        userRepository: userRepo,
-      })
+        const useCase = new CreateAlignmentPNDToODS({
+          alignmentRepository: alignmentRepo,
+          pndObjectiveRepository: pndRepo,
+          odsObjectiveRepository: odsRepo,
+          userRepository: userRepo,
+        })
 
-      const result = await useCase.execute(
-        {
-          pndObjectiveUid: input.pndObjectiveUid,
-          odsObjectiveUid: input.odsObjectiveUid,
-        },
-        user.uid,
-      )
+        const result = await useCase.execute(
+          {
+            pndObjectiveUid: input.pndObjectiveUid,
+            odsObjectiveUid: input.odsObjectiveUid,
+          },
+          user.uid,
+        )
 
-      // Map to GraphQL type
-      return {
-        id: result.id,
-        pndObjectiveId: result.pndObjective.id,
-        odsObjectiveId: result.odsObjective.id,
-        pndObjectiveUid: result.pndObjective.uid,
-        odsObjectiveUid: result.odsObjective.uid,
-        createdAt: result.createdAt,
-      }
-    },
+        return {
+          id: result.id,
+          pndObjectiveId: result.pndObjective.id,
+          odsObjectiveId: result.odsObjective.id,
+          pndObjectiveUid: result.pndObjective.uid,
+          odsObjectiveUid: result.odsObjective.uid,
+          createdAt: result.createdAt,
+        }
+      },
+    ),
   }),
 )

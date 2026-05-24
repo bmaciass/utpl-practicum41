@@ -1,12 +1,16 @@
 import { Link, useLocation, useNavigate } from '@remix-run/react'
 import { ChevronRight, LogOut } from 'lucide-react'
 import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '~/components/ui/collapsible'
+import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -16,21 +20,16 @@ import {
   SidebarMenuSubItem,
   SidebarRail,
 } from '~/components/ui/sidebar'
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '~/components/ui/collapsible'
-import { navigationConfig, type NavItem } from '~/config/navigation'
+import { type NavItem, navigationConfig } from '~/config/navigation'
 
 function filterNavigation(items: NavItem[], isAdmin: boolean): NavItem[] {
   return items
+    .filter((item) => !item.adminOnly || isAdmin)
     .map((item) => {
       if (!item.children) return item
-      const children = item.children.filter((child) => {
-        if (!child.href) return true
-        return isAdmin || child.href !== '/users'
-      })
+      const children = item.children.filter(
+        (child) => !child.adminOnly || isAdmin,
+      )
       return { ...item, children }
     })
     .filter((item) => item.href || (item.children && item.children.length > 0))
@@ -73,17 +72,19 @@ export function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
                         <SidebarMenuSub>
                           {item.children.map((child) => (
                             <SidebarMenuSubItem key={child.title}>
-                              <SidebarMenuSubButton
-                                asChild
-                                isActive={location.pathname.startsWith(
-                                  child.href!,
-                                )}
-                              >
-                                <Link to={child.href!}>
-                                  <child.icon className='h-4 w-4' />
-                                  <span>{child.title}</span>
-                                </Link>
-                              </SidebarMenuSubButton>
+                              {!child.href ? null : (
+                                <SidebarMenuSubButton
+                                  asChild
+                                  isActive={location.pathname.startsWith(
+                                    child.href,
+                                  )}
+                                >
+                                  <Link to={child.href}>
+                                    <child.icon className='h-4 w-4' />
+                                    <span>{child.title}</span>
+                                  </Link>
+                                </SidebarMenuSubButton>
+                              )}
                             </SidebarMenuSubItem>
                           ))}
                         </SidebarMenuSub>
@@ -91,15 +92,17 @@ export function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
                     </Collapsible>
                   ) : (
                     // Single navigation item
-                    <SidebarMenuButton
-                      asChild
-                      isActive={location.pathname === item.href}
-                    >
-                      <Link to={item.href!}>
-                        <item.icon className='h-4 w-4' />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
+                    item.href && (
+                      <SidebarMenuButton
+                        asChild
+                        isActive={location.pathname === item.href}
+                      >
+                        <Link to={item.href}>
+                          <item.icon className='h-4 w-4' />
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    )
                   )}
                 </SidebarMenuItem>
               ))}

@@ -5,6 +5,7 @@ import {
   getObjectivePNDRepository,
   getUserRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
+import { withAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { AlignmentInstitutionalToPND } from '../../objects/AlignmentInstitutionalToPND'
 import { AlignmentMutations } from './root'
@@ -35,36 +36,44 @@ builder.objectField(AlignmentMutations, 'createInstitutionalToPND', (t) =>
         required: true,
       }),
     },
-    resolve: async (_, { input }, { db, user }) => {
-      const alignmentRepo = getAlignmentInstitutionalToPNDRepository(db)
-      const institutionalRepo = getInstitutionalObjectiveRepository(db)
-      const pndRepo = getObjectivePNDRepository(db)
-      const userRepo = getUserRepository(db)
+    resolve: withAuditedMutation(
+      {
+        action: 'create',
+        resourceType: 'alignment_institutional_pnd',
+        getRequestPayload: ({ input }) => input,
+        getResourceUid: ({ input }) =>
+          `${input.institutionalObjectiveUid}:${input.pndObjectiveUid}`,
+      },
+      async (_, { input }, { db, user }) => {
+        const alignmentRepo = getAlignmentInstitutionalToPNDRepository(db)
+        const institutionalRepo = getInstitutionalObjectiveRepository(db)
+        const pndRepo = getObjectivePNDRepository(db)
+        const userRepo = getUserRepository(db)
 
-      const useCase = new CreateAlignmentInstitutionalToPND({
-        alignmentRepository: alignmentRepo,
-        institutionalObjectiveRepository: institutionalRepo,
-        pndObjectiveRepository: pndRepo,
-        userRepository: userRepo,
-      })
+        const useCase = new CreateAlignmentInstitutionalToPND({
+          alignmentRepository: alignmentRepo,
+          institutionalObjectiveRepository: institutionalRepo,
+          pndObjectiveRepository: pndRepo,
+          userRepository: userRepo,
+        })
 
-      const result = await useCase.execute(
-        {
-          institutionalObjectiveUid: input.institutionalObjectiveUid,
-          pndObjectiveUid: input.pndObjectiveUid,
-        },
-        user.uid,
-      )
+        const result = await useCase.execute(
+          {
+            institutionalObjectiveUid: input.institutionalObjectiveUid,
+            pndObjectiveUid: input.pndObjectiveUid,
+          },
+          user.uid,
+        )
 
-      // Map to GraphQL type
-      return {
-        id: result.id,
-        institutionalObjectiveId: result.institutionalObjective.id,
-        institutionalObjectiveUid: result.institutionalObjective.uid,
-        pndObjectiveId: result.pndObjective.id,
-        pndObjectiveUid: result.pndObjective.uid,
-        createdAt: result.createdAt,
-      }
-    },
+        return {
+          id: result.id,
+          institutionalObjectiveId: result.institutionalObjective.id,
+          institutionalObjectiveUid: result.institutionalObjective.uid,
+          pndObjectiveId: result.pndObjective.id,
+          pndObjectiveUid: result.pndObjective.uid,
+          createdAt: result.createdAt,
+        }
+      },
+    ),
   }),
 )

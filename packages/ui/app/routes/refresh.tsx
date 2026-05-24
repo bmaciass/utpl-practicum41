@@ -3,7 +3,9 @@ import {
   DrizzleAuthSessionRepository,
   DrizzleRoleRepository,
   DrizzleUserRepository,
+  getDefaultJWTService,
   RefreshTokenUseCase,
+  withAuditedAction,
 } from '@sigep/api'
 import { getDBConnection } from '@sigep/db'
 import { getAccessTokenCookie } from '~/cookies/access-token.server'
@@ -70,21 +72,49 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
     context.cloudflare.env.DATABASE_URL,
   )
   await client.connect()
+  const authSessionRepository = new DrizzleAuthSessionRepository(db)
+  const userRepository = new DrizzleUserRepository(db)
+  const roleRepository = new DrizzleRoleRepository(db)
+  const jwtService = await getDefaultJWTService()
 
   try {
-    const refreshTokenUseCase = new RefreshTokenUseCase({
-      authSessionRepository: new DrizzleAuthSessionRepository(db),
-      userRepository: new DrizzleUserRepository(db),
-      roleRepository: new DrizzleRoleRepository(db),
-    })
+    const refreshSession = withAuditedAction(
+      {
+        action: 'refresh',
+        resourceType: 'auth_session',
+        routeName: 'refresh',
+        getInitialResourceUid: async (input) =>
+          (await jwtService.verifyRefreshToken(input.refreshToken))
+            ?.sessionId ?? null,
+        getActorUserUid: async (input) =>
+          (await jwtService.verifyRefreshToken(input.refreshToken))?.sub ??
+          null,
+        getResourceUid: async (_input, result) =>
+          (await jwtService.verifyRefreshToken(result.refreshToken))
+            ?.sessionId ?? null,
+        getMetadata: async () => ({
+          responseMode: shouldReturnJson ? 'json' : 'redirect',
+          redirectTo: new URL(request.url).searchParams.get('redirectTo'),
+        }),
+      },
+      (input) =>
+        new RefreshTokenUseCase({
+          authSessionRepository,
+          userRepository,
+          roleRepository,
+        }).execute(input),
+    )
 
     const {
       accessToken: newAccessToken,
       refreshToken: newRefreshToken,
       accessTokenExpiresAt,
-    } = await refreshTokenUseCase.execute({
-      refreshToken,
-    })
+    } = await refreshSession(
+      {
+        refreshToken,
+      },
+      { db, request },
+    )
 
     // Set BOTH new cookies (old tokens invalidated)
     const accessCookie = getAccessTokenCookie(secret)
@@ -100,8 +130,6 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
     headers.append('Set-Cookie', serializedAccessExpiry)
     headers.append('Set-Cookie', serializedRefresh)
 
-    await client.end()
-
     if (shouldReturnJson) {
       return new Response(null, { status: 204, headers })
     }
@@ -110,12 +138,13 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
     const redirectTo = url.searchParams.get('redirectTo') || '/'
     return redirect(redirectTo, { headers })
   } catch (error) {
-    await client.end()
     const headers = await clearAuthCookies(secret)
     if (shouldReturnJson) {
       return new Response(null, { status: 401, headers })
     }
     return redirect('/login', { headers })
+  } finally {
+    await client.end()
   }
 }
 

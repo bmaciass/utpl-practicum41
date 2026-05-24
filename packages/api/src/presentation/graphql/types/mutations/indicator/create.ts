@@ -4,6 +4,7 @@ import {
   getIndicatorRepository,
   getUserRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
+import { withAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { IndicatorTypeEnum } from '../../enums/IndicatorType'
 import { Indicator } from '../../objects/Indicator'
@@ -43,18 +44,26 @@ builder.objectField(IndicatorMutations, 'create', (t) =>
         required: true,
       }),
     },
-    resolve: async (_, { data }, { db, user }) => {
-      const indicatorRepo = getIndicatorRepository(db)
-      const goalRepo = getGoalRepository(db)
-      const userRepo = getUserRepository(db)
+    resolve: withAuditedMutation(
+      {
+        action: 'create',
+        resourceType: 'indicator',
+        getRequestPayload: ({ data }) => data,
+        getResourceUid: (_args, result) => result.uid,
+      },
+      async (_, { data }, { db, user }) => {
+        const indicatorRepo = getIndicatorRepository(db)
+        const goalRepo = getGoalRepository(db)
+        const userRepo = getUserRepository(db)
 
-      const useCase = new CreateIndicator({
-        indicatorRepository: indicatorRepo,
-        goalRepository: goalRepo,
-        userRepository: userRepo,
-      })
+        const useCase = new CreateIndicator({
+          indicatorRepository: indicatorRepo,
+          goalRepository: goalRepo,
+          userRepository: userRepo,
+        })
 
-      return await useCase.execute(data, user.uid)
-    },
+        return useCase.execute(data, user.uid)
+      },
+    ),
   }),
 )

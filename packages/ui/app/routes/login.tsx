@@ -4,7 +4,9 @@ import {
   DrizzleAuthSessionRepository,
   DrizzleRoleRepository,
   DrizzleUserRepository,
+  getDefaultJWTService,
   LoginUseCase,
+  withAuditedAction,
 } from '@sigep/api'
 import { getDBConnection } from '@sigep/db'
 import { isEmpty } from 'lodash-es'
@@ -36,17 +38,37 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
 
   const userRepository = new DrizzleUserRepository(db)
   const roleRepository = new DrizzleRoleRepository(db)
+  const authSessionRepository = new DrizzleAuthSessionRepository(db)
+  const jwtService = await getDefaultJWTService()
 
   try {
-    const { accessToken, refreshToken, accessTokenExpiresAt } =
-      await new LoginUseCase({
-        authSessionRepository: new DrizzleAuthSessionRepository(db),
-        roleRepository,
-        userRepository,
-      }).execute({
+    const login = withAuditedAction(
+      {
+        action: 'login',
+        resourceType: 'auth_session',
+        routeName: 'login',
+        getActorUserUid: async (input) =>
+          (await userRepository.findByName(input.username))?.uid ?? null,
+        getActorLabel: (input) => input.username,
+        getResourceUid: async (_input, result) =>
+          (await jwtService.verifyRefreshToken(result.refreshToken))
+            ?.sessionId ?? null,
+      },
+      (input) =>
+        new LoginUseCase({
+          authSessionRepository,
+          roleRepository,
+          userRepository,
+        }).execute(input),
+    )
+
+    const { accessToken, refreshToken, accessTokenExpiresAt } = await login(
+      {
         username: username.toString(),
         password: password.toString(),
-      })
+      },
+      { db, request },
+    )
 
     const accessCookie = getAccessTokenCookie(
       context.cloudflare.env.UI_AUTH_COOKIE_SECRET,

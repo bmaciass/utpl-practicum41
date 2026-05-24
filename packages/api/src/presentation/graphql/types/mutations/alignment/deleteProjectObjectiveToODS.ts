@@ -4,6 +4,7 @@ import {
   getObjectiveODSRepository,
   getProjectObjectiveRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
+import { withAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { AlignmentMutations } from './root'
 
@@ -33,23 +34,60 @@ builder.objectField(AlignmentMutations, 'deleteProjectObjectiveToODS', (t) =>
         required: true,
       }),
     },
-    resolve: async (_, { input }, { db }) => {
-      const alignmentRepo = getAlignmentProjectObjectiveToODSRepository(db)
-      const projectObjectiveRepo = getProjectObjectiveRepository(db)
-      const odsRepo = getObjectiveODSRepository(db)
+    resolve: withAuditedMutation(
+      {
+        action: 'delete',
+        resourceType: 'alignment_project_objective_ods',
+        getRequestPayload: ({ input }) => input,
+        getInitialResourceUid: ({ input }) =>
+          `${input.projectObjectiveUid}:${input.odsObjectiveUid}`,
+        loadBefore: async ({ input }, { db }) => {
+          const alignmentRepo = getAlignmentProjectObjectiveToODSRepository(db)
+          const projectObjectiveRepo = getProjectObjectiveRepository(db)
+          const odsRepo = getObjectiveODSRepository(db)
+          const [projectObjective, odsObjective] = await Promise.all([
+            projectObjectiveRepo.findByUidOrThrow(input.projectObjectiveUid),
+            odsRepo.findByUidOrThrow(input.odsObjectiveUid),
+          ])
 
-      const useCase = new DeleteAlignmentProjectObjectiveToODS({
-        alignmentRepository: alignmentRepo,
-        projectObjectiveRepository: projectObjectiveRepo,
-        odsObjectiveRepository: odsRepo,
-      })
+          return alignmentRepo.findMany({
+            projectObjectiveId: projectObjective.id,
+            odsObjectiveId: odsObjective.id,
+          })
+        },
+        getAfterSnapshot: async ({ input }, _result, { db }) => {
+          const alignmentRepo = getAlignmentProjectObjectiveToODSRepository(db)
+          const projectObjectiveRepo = getProjectObjectiveRepository(db)
+          const odsRepo = getObjectiveODSRepository(db)
+          const [projectObjective, odsObjective] = await Promise.all([
+            projectObjectiveRepo.findByUidOrThrow(input.projectObjectiveUid),
+            odsRepo.findByUidOrThrow(input.odsObjectiveUid),
+          ])
 
-      await useCase.execute({
-        projectObjectiveUid: input.projectObjectiveUid,
-        odsObjectiveUid: input.odsObjectiveUid,
-      })
+          return alignmentRepo.findMany({
+            projectObjectiveId: projectObjective.id,
+            odsObjectiveId: odsObjective.id,
+          })
+        },
+      },
+      async (_, { input }, { db }) => {
+        const alignmentRepo = getAlignmentProjectObjectiveToODSRepository(db)
+        const projectObjectiveRepo = getProjectObjectiveRepository(db)
+        const odsRepo = getObjectiveODSRepository(db)
 
-      return true
-    },
+        const useCase = new DeleteAlignmentProjectObjectiveToODS({
+          alignmentRepository: alignmentRepo,
+          projectObjectiveRepository: projectObjectiveRepo,
+          odsObjectiveRepository: odsRepo,
+        })
+
+        await useCase.execute({
+          projectObjectiveUid: input.projectObjectiveUid,
+          odsObjectiveUid: input.odsObjectiveUid,
+        })
+
+        return true
+      },
+    ),
   }),
 )
