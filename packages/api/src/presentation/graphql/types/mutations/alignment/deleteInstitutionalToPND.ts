@@ -4,6 +4,7 @@ import {
   getInstitutionalObjectiveRepository,
   getObjectivePNDRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
+import { withAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { AlignmentMutations } from './root'
 
@@ -33,23 +34,60 @@ builder.objectField(AlignmentMutations, 'deleteInstitutionalToPND', (t) =>
         required: true,
       }),
     },
-    resolve: async (_, { input }, { db }) => {
-      const alignmentRepo = getAlignmentInstitutionalToPNDRepository(db)
-      const institutionalRepo = getInstitutionalObjectiveRepository(db)
-      const pndRepo = getObjectivePNDRepository(db)
+    resolve: withAuditedMutation(
+      {
+        action: 'delete',
+        resourceType: 'alignment_institutional_pnd',
+        getRequestPayload: ({ input }) => input,
+        getInitialResourceUid: ({ input }) =>
+          `${input.institutionalObjectiveUid}:${input.pndObjectiveUid}`,
+        loadBefore: async ({ input }, { db }) => {
+          const alignmentRepo = getAlignmentInstitutionalToPNDRepository(db)
+          const institutionalRepo = getInstitutionalObjectiveRepository(db)
+          const pndRepo = getObjectivePNDRepository(db)
+          const [institutionalObjective, pndObjective] = await Promise.all([
+            institutionalRepo.findByUidOrThrow(input.institutionalObjectiveUid),
+            pndRepo.findByUidOrThrow(input.pndObjectiveUid),
+          ])
 
-      const useCase = new DeleteAlignmentInstitutionalToPND({
-        alignmentRepository: alignmentRepo,
-        institutionalObjectiveRepository: institutionalRepo,
-        pndObjectiveRepository: pndRepo,
-      })
+          return alignmentRepo.findMany({
+            institutionalObjectiveId: institutionalObjective.id,
+            pndObjectiveId: pndObjective.id,
+          })
+        },
+        getAfterSnapshot: async ({ input }, _result, { db }) => {
+          const alignmentRepo = getAlignmentInstitutionalToPNDRepository(db)
+          const institutionalRepo = getInstitutionalObjectiveRepository(db)
+          const pndRepo = getObjectivePNDRepository(db)
+          const [institutionalObjective, pndObjective] = await Promise.all([
+            institutionalRepo.findByUidOrThrow(input.institutionalObjectiveUid),
+            pndRepo.findByUidOrThrow(input.pndObjectiveUid),
+          ])
 
-      await useCase.execute({
-        institutionalObjectiveUid: input.institutionalObjectiveUid,
-        pndObjectiveUid: input.pndObjectiveUid,
-      })
+          return alignmentRepo.findMany({
+            institutionalObjectiveId: institutionalObjective.id,
+            pndObjectiveId: pndObjective.id,
+          })
+        },
+      },
+      async (_, { input }, { db }) => {
+        const alignmentRepo = getAlignmentInstitutionalToPNDRepository(db)
+        const institutionalRepo = getInstitutionalObjectiveRepository(db)
+        const pndRepo = getObjectivePNDRepository(db)
 
-      return true
-    },
+        const useCase = new DeleteAlignmentInstitutionalToPND({
+          alignmentRepository: alignmentRepo,
+          institutionalObjectiveRepository: institutionalRepo,
+          pndObjectiveRepository: pndRepo,
+        })
+
+        await useCase.execute({
+          institutionalObjectiveUid: input.institutionalObjectiveUid,
+          pndObjectiveUid: input.pndObjectiveUid,
+        })
+
+        return true
+      },
+    ),
   }),
 )

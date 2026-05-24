@@ -3,6 +3,7 @@ import {
   getIndicatorRepository,
   getUserRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
+import { withAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { IndicatorMutations } from './root'
 
@@ -28,18 +29,30 @@ builder.objectField(IndicatorMutations, 'delete', (t) =>
         required: true,
       }),
     },
-    resolve: async (_, { input }, { db, user }) => {
-      const indicatorRepo = getIndicatorRepository(db)
-      const userRepo = getUserRepository(db)
+    resolve: withAuditedMutation(
+      {
+        action: 'delete',
+        resourceType: 'indicator',
+        getRequestPayload: ({ input }) => input,
+        getInitialResourceUid: ({ input }) => input.uid,
+        loadBefore: async ({ input }, { db }) =>
+          getIndicatorRepository(db).findByUid(input.uid),
+        getAfterSnapshot: async ({ input }, _result, { db }) =>
+          getIndicatorRepository(db).findByUid(input.uid),
+      },
+      async (_, { input }, { db, user }) => {
+        const indicatorRepo = getIndicatorRepository(db)
+        const userRepo = getUserRepository(db)
 
-      const useCase = new DeleteIndicator({
-        indicatorRepository: indicatorRepo,
-        userRepository: userRepo,
-      })
+        const useCase = new DeleteIndicator({
+          indicatorRepository: indicatorRepo,
+          userRepository: userRepo,
+        })
 
-      await useCase.execute({ uid: input.uid }, user.uid)
+        await useCase.execute({ uid: input.uid }, user.uid)
 
-      return true
-    },
+        return true
+      },
+    ),
   }),
 )

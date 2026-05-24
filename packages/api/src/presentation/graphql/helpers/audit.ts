@@ -7,18 +7,46 @@ import {
 } from '~/infrastructure/persistence/drizzle/repositories'
 import type { AppContext } from '../schema/context'
 
-interface ExecuteAuditedMutationOptions<TResult> {
-  context: AppContext
-  info: GraphQLResolveInfo
+type GraphQLResolver<TArgs, TResult> = (
+  parent: unknown,
+  args: TArgs,
+  context: AppContext,
+  info: GraphQLResolveInfo,
+) => Promise<TResult>
+
+type AnyGraphQLResolver = GraphQLResolver<any, any>
+type ResolverArgs<TResolver extends AnyGraphQLResolver> =
+  Parameters<TResolver>[1]
+type ResolverResult<TResolver extends AnyGraphQLResolver> = Awaited<
+  ReturnType<TResolver>
+>
+
+interface AuditedMutationConfig<TResolver extends AnyGraphQLResolver> {
   action: string
   resourceType: AuditResourceType
-  requestPayload?: unknown
-  resourceUid?: string | null
-  actorLabel?: string | null
-  beforeSnapshot?: (() => Promise<unknown> | unknown) | unknown
-  afterSnapshot?: ((result: TResult) => Promise<unknown> | unknown) | unknown
-  getResourceUid?: (result: TResult) => string | null | undefined
-  run: () => Promise<TResult>
+  getRequestPayload?: (args: ResolverArgs<TResolver>) => unknown
+  getInitialResourceUid?: (
+    args: ResolverArgs<TResolver>,
+    context: AppContext,
+  ) => Promise<string | null | undefined> | string | null | undefined
+  getActorLabel?: (
+    args: ResolverArgs<TResolver>,
+    context: AppContext,
+  ) => Promise<string | null | undefined> | string | null | undefined
+  getResourceUid?: (
+    args: ResolverArgs<TResolver>,
+    result: ResolverResult<TResolver>,
+    context: AppContext,
+  ) => Promise<string | null | undefined> | string | null | undefined
+  loadBefore?: (
+    args: ResolverArgs<TResolver>,
+    context: AppContext,
+  ) => Promise<unknown> | unknown
+  getAfterSnapshot?: (
+    args: ResolverArgs<TResolver>,
+    result: ResolverResult<TResolver>,
+    context: AppContext,
+  ) => Promise<unknown> | unknown
 }
 
 function getRequestMetadata(context: AppContext) {
@@ -47,25 +75,42 @@ export function createGraphQLAuditMetadata(
   }
 }
 
-export async function executeAuditedMutation<TResult>(
-  options: ExecuteAuditedMutationOptions<TResult>,
-): Promise<TResult> {
-  const executor = new AuditActionExecutor({
-    auditEventRepository: getAuditEventRepository(options.context.db),
-    userRepository: getUserRepository(options.context.db),
-  })
+export function withAuditedMutation<TResolver extends AnyGraphQLResolver>(
+  config: AuditedMutationConfig<TResolver>,
+  resolver: TResolver,
+): TResolver {
+  return (async (parent, args, context, info) => {
+    const executor = new AuditActionExecutor({
+      auditEventRepository: getAuditEventRepository(context.db),
+      userRepository: getUserRepository(context.db),
+    })
 
-  return executor.execute({
-    action: options.action,
-    resourceType: options.resourceType,
-    resourceUid: options.resourceUid ?? null,
-    actorUserUid: options.context.user.uid || null,
-    actorLabel: options.actorLabel ?? null,
-    requestPayload: options.requestPayload,
-    beforeSnapshot: options.beforeSnapshot,
-    afterSnapshot: options.afterSnapshot,
-    getResourceUid: options.getResourceUid,
-    metadata: createGraphQLAuditMetadata(options.context, options.info),
-    run: options.run,
-  })
+    return executor.execute<ResolverResult<TResolver>>({
+      action: config.action,
+      resourceType: config.resourceType,
+      resourceUid: config.getInitialResourceUid
+        ? ((await config.getInitialResourceUid(args, context)) ?? null)
+        : null,
+      actorUserUid: context.user.uid || null,
+      actorLabel: config.getActorLabel
+        ? ((await config.getActorLabel(args, context)) ?? null)
+        : null,
+      requestPayload: config.getRequestPayload
+        ? config.getRequestPayload(args)
+        : args,
+      beforeSnapshot: config.loadBefore
+        ? () => config.loadBefore!(args, context)
+        : null,
+      afterSnapshot: config.getAfterSnapshot
+        ? (result: ResolverResult<TResolver>) =>
+            config.getAfterSnapshot!(args, result, context)
+        : (result: ResolverResult<TResolver>) => result,
+      getResourceUid: config.getResourceUid
+        ? (result: ResolverResult<TResolver>) =>
+            config.getResourceUid!(args, result, context)
+        : undefined,
+      metadata: createGraphQLAuditMetadata(context, info),
+      run: () => resolver(parent, args, context, info),
+    })
+  }) as TResolver
 }

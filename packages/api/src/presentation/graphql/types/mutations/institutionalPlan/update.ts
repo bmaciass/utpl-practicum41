@@ -3,6 +3,7 @@ import {
   getInstitutionalPlanRepository,
   getUserRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
+import { withAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { InstitutionalPlan } from '../../objects/InstitutionalPlan'
 import { InstitutionalPlanMutations } from './root'
@@ -51,38 +52,48 @@ builder.objectField(InstitutionalPlanMutations, 'update', (t) =>
       where: t.arg({ type: UpdateInstitutionalPlanWhereInput, required: true }),
       data: t.arg({ type: UpdateInstitutionalPlanDataInput, required: true }),
     },
-    resolve: async (_, { data, where }, { db, user }) => {
-      const institutionalPlanRepository = getInstitutionalPlanRepository(db)
-      const userRepository = getUserRepository(db)
-      const updatePlan = new UpdateInstitutionalPlan({
-        institutionalPlanRepository,
-        userRepository,
-      })
+    resolve: withAuditedMutation(
+      {
+        action: 'update',
+        resourceType: 'institutional_plan',
+        getRequestPayload: ({ where, data }) => ({ where, data }),
+        getInitialResourceUid: ({ where }) => where.uid,
+        loadBefore: async ({ where }, { db }) =>
+          getInstitutionalPlanRepository(db).findByUid(where.uid),
+      },
+      async (_, { data, where }, { db, user }) => {
+        const institutionalPlanRepository = getInstitutionalPlanRepository(db)
+        const userRepository = getUserRepository(db)
+        const updatePlan = new UpdateInstitutionalPlan({
+          institutionalPlanRepository,
+          userRepository,
+        })
 
-      const plan = await updatePlan.execute(
-        {
-          uid: where.uid,
-          data: {
-            name: data.name ?? undefined,
-            active: data.active ?? undefined,
-            year: data.year ?? undefined,
-            description: data.description ?? undefined,
-            url: data.url,
+        const plan = await updatePlan.execute(
+          {
+            uid: where.uid,
+            data: {
+              name: data.name ?? undefined,
+              active: data.active ?? undefined,
+              year: data.year ?? undefined,
+              description: data.description ?? undefined,
+              url: data.url,
+            },
           },
-        },
-        user.uid,
-      )
+          user.uid,
+        )
 
-      return {
-        uid: plan.uid,
-        name: plan.name,
-        active: plan.active,
-        url: plan.url,
-        year: plan.year,
-        description: plan.description,
-        deletedAt: plan.deletedAt,
-        institutionId: plan.institutionId,
-      }
-    },
+        return {
+          uid: plan.uid,
+          name: plan.name,
+          active: plan.active,
+          url: plan.url,
+          year: plan.year,
+          description: plan.description,
+          deletedAt: plan.deletedAt,
+          institutionId: plan.institutionId,
+        }
+      },
+    ),
   }),
 )

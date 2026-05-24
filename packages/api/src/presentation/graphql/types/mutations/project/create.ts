@@ -5,6 +5,7 @@ import {
   getProjectRepository,
   getUserRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
+import { withAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { ProjectStatusEnum } from '../../enums/ProjectStatus'
 import { Project } from '../../objects/Project'
@@ -39,41 +40,49 @@ builder.objectField(ProjectMutations, 'create', (t) =>
     args: {
       data: t.arg({ type: CreateProjectDataInput, required: true }),
     },
-    resolve: async (_, { data }, { db, user }) => {
-      const programRepository = getProgramRepository(db)
-      const projectRepository = getProjectRepository(db)
-      const userRepository = getUserRepository(db)
-      const createProject = new CreateProject({
-        programRepository,
-        projectRepository,
-        userRepository,
-      })
-      const project = await createProject.execute(
-        {
-          name: data.name,
-          description: data.description,
-          status: data.status,
-          startDate: data.startDate,
-          endDate: data.endDate,
-          responsibleUid: data.responsibleUid,
-          programUid: data.programUid,
-        },
-        user.uid,
-      )
+    resolve: withAuditedMutation(
+      {
+        action: 'create',
+        resourceType: 'project',
+        getRequestPayload: ({ data }) => data,
+        getResourceUid: (_args, result) => result.uid,
+      },
+      async (_, { data }, { db, user }) => {
+        const programRepository = getProgramRepository(db)
+        const projectRepository = getProjectRepository(db)
+        const userRepository = getUserRepository(db)
+        const createProject = new CreateProject({
+          programRepository,
+          projectRepository,
+          userRepository,
+        })
+        const project = await createProject.execute(
+          {
+            name: data.name,
+            description: data.description,
+            status: data.status,
+            startDate: data.startDate,
+            endDate: data.endDate,
+            responsibleUid: data.responsibleUid,
+            programUid: data.programUid,
+          },
+          user.uid,
+        )
 
-      return {
-        id: project.id,
-        uid: project.uid,
-        name: project.name,
-        description: project.description,
-        status: project.status,
-        startDate: project.startDate,
-        endDate: project.endDate,
-        active: project.active,
-        deletedAt: project.deletedAt,
-        programId: project.programId,
-        responsibleId: project.responsibleId,
-      }
-    },
+        return {
+          id: project.id,
+          uid: project.uid,
+          name: project.name,
+          description: project.description,
+          status: project.status,
+          startDate: project.startDate,
+          endDate: project.endDate,
+          active: project.active,
+          deletedAt: project.deletedAt,
+          programId: project.programId,
+          responsibleId: project.responsibleId,
+        }
+      },
+    ),
   }),
 )

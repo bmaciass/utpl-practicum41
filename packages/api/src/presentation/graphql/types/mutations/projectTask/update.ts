@@ -5,6 +5,7 @@ import {
   getProjectTasksRepository,
   getUserRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
+import { withAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { ProjectTaskStatusEnum } from '../../enums/ProjectTaskStatus'
 import { ProjectTask } from '../../objects/ProjectTask'
@@ -55,42 +56,52 @@ builder.objectField(ProjectTaskMutations, 'update', (t) =>
       where: t.arg({ type: UpdateProjectTaskWhereInput, required: true }),
       data: t.arg({ type: UpdateProjectTaskDataInput, required: true }),
     },
-    resolve: async (_, { data, where }, { db, user }) => {
-      const projectTaskRepository = getProjectTasksRepository(db)
-      const userRepository = getUserRepository(db)
-      const updateProjectTask = new UpdateProjectTask({
-        projectTaskRepository,
-        userRepository,
-      })
+    resolve: withAuditedMutation(
+      {
+        action: 'update',
+        resourceType: 'project_task',
+        getRequestPayload: ({ where, data }) => ({ where, data }),
+        getInitialResourceUid: ({ where }) => where.uid,
+        loadBefore: async ({ where }, { db }) =>
+          getProjectTasksRepository(db).findByUid(where.uid),
+      },
+      async (_, { data, where }, { db, user }) => {
+        const projectTaskRepository = getProjectTasksRepository(db)
+        const userRepository = getUserRepository(db)
+        const updateProjectTask = new UpdateProjectTask({
+          projectTaskRepository,
+          userRepository,
+        })
 
-      const task = await updateProjectTask.execute(
-        {
-          uid: where.uid,
-          data: {
-            name: data.name ?? undefined,
-            description: data.description ?? undefined,
-            status: data.status ?? undefined,
-            startDate: data.startDate ?? undefined,
-            endDate: data.endDate ?? undefined,
-            responsibleUid: data.responsibleUid ?? undefined,
-            active: data.active ?? undefined,
+        const task = await updateProjectTask.execute(
+          {
+            uid: where.uid,
+            data: {
+              name: data.name ?? undefined,
+              description: data.description ?? undefined,
+              status: data.status ?? undefined,
+              startDate: data.startDate ?? undefined,
+              endDate: data.endDate ?? undefined,
+              responsibleUid: data.responsibleUid ?? undefined,
+              active: data.active ?? undefined,
+            },
           },
-        },
-        user.uid,
-      )
+          user.uid,
+        )
 
-      return {
-        uid: task.uid,
-        name: task.name,
-        description: task.description,
-        status: task.status,
-        startDate: task.startDate,
-        endDate: task.endDate,
-        active: task.active,
-        projectId: task.projectId,
-        responsibleId: task.responsibleId,
-        deletedAt: task.deletedAt,
-      }
-    },
+        return {
+          uid: task.uid,
+          name: task.name,
+          description: task.description,
+          status: task.status,
+          startDate: task.startDate,
+          endDate: task.endDate,
+          active: task.active,
+          projectId: task.projectId,
+          responsibleId: task.responsibleId,
+          deletedAt: task.deletedAt,
+        }
+      },
+    ),
   }),
 )

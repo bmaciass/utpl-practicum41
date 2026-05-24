@@ -4,6 +4,7 @@ import {
   getInstitutionalObjectiveRepository,
   getUserRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
+import { withAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { InstitutionalObjective } from '../../objects/InstitutionalObjective'
 import { InstitutionalObjectiveMutations } from './root'
@@ -56,40 +57,50 @@ builder.objectField(InstitutionalObjectiveMutations, 'update', (t) =>
         required: true,
       }),
     },
-    resolve: async (_, { data, where }, { db, user }) => {
-      const institutionalObjectiveRepository =
-        getInstitutionalObjectiveRepository(db)
-      const institutionRepository = getInstitutionRepository(db)
-      const userRepository = getUserRepository(db)
+    resolve: withAuditedMutation(
+      {
+        action: 'update',
+        resourceType: 'institutional_objective',
+        getRequestPayload: ({ where, data }) => ({ where, data }),
+        getInitialResourceUid: ({ where }) => where.uid,
+        loadBefore: async ({ where }, { db }) =>
+          getInstitutionalObjectiveRepository(db).findByUid(where.uid),
+      },
+      async (_, { data, where }, { db, user }) => {
+        const institutionalObjectiveRepository =
+          getInstitutionalObjectiveRepository(db)
+        const institutionRepository = getInstitutionRepository(db)
+        const userRepository = getUserRepository(db)
 
-      const updateObjective = new UpdateInstitutionalObjective({
-        institutionalObjectiveRepository,
-        institutionRepository,
-        userRepository,
-      })
+        const updateObjective = new UpdateInstitutionalObjective({
+          institutionalObjectiveRepository,
+          institutionRepository,
+          userRepository,
+        })
 
-      const objective = await updateObjective.execute(
-        {
-          uid: where.uid,
-          data: {
-            name: data.name ?? undefined,
-            description: data.description ?? undefined,
-            institutionUid: data.institutionId ?? undefined,
-            active: data.active ?? undefined,
+        const objective = await updateObjective.execute(
+          {
+            uid: where.uid,
+            data: {
+              name: data.name ?? undefined,
+              description: data.description ?? undefined,
+              institutionUid: data.institutionId ?? undefined,
+              active: data.active ?? undefined,
+            },
           },
-        },
-        user.uid,
-      )
+          user.uid,
+        )
 
-      return {
-        id: objective.id,
-        uid: objective.uid,
-        name: objective.name,
-        description: objective.description,
-        active: objective.active,
-        deletedAt: objective.deletedAt,
-        institutionId: objective.institutionId,
-      }
-    },
+        return {
+          id: objective.id,
+          uid: objective.uid,
+          name: objective.name,
+          description: objective.description,
+          active: objective.active,
+          deletedAt: objective.deletedAt,
+          institutionId: objective.institutionId,
+        }
+      },
+    ),
   }),
 )

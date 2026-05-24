@@ -7,6 +7,7 @@ import {
   getInstitutionRepository,
   getUserRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
+import { withAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { InstitutionAreaEnum } from '../../enums/InstitutionArea'
 import { InstitutionLevelEnum } from '../../enums/InstitutionLevel'
@@ -36,24 +37,32 @@ builder.objectField(InstitutionMutations, 'create', (t) =>
     args: {
       data: t.arg({ type: CreateInstitutionDataInput, required: true }),
     },
-    resolve: async (_, { data }, { db, user }) => {
-      const institutionRepository = getInstitutionRepository(db)
-      const userRepository = getUserRepository(db)
-      const createInstitution = new CreateInstitution({
-        institutionRepository,
-        userRepository,
-      })
+    resolve: withAuditedMutation(
+      {
+        action: 'create',
+        resourceType: 'institution',
+        getRequestPayload: ({ data }) => data,
+        getResourceUid: (_args, result) => result.uid,
+      },
+      async (_, { data }, { db, user }) => {
+        const institutionRepository = getInstitutionRepository(db)
+        const userRepository = getUserRepository(db)
+        const createInstitution = new CreateInstitution({
+          institutionRepository,
+          userRepository,
+        })
 
-      const institution = await createInstitution.execute(
-        {
-          name: data.name,
-          area: data.area,
-          level: data.level,
-        },
-        user.uid,
-      )
+        const institution = await createInstitution.execute(
+          {
+            name: data.name,
+            area: data.area,
+            level: data.level,
+          },
+          user.uid,
+        )
 
-      return { ...institution, objetives: [] }
-    },
+        return { ...institution, objetives: [] }
+      },
+    ),
   }),
 )

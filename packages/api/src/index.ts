@@ -8,6 +8,10 @@ export {
   REFRESH_SESSION_IDLE_TTL_MS,
 } from './application/use-cases/auth/authSessionConfig'
 export { AuditActionExecutor } from './application/services/AuditActionExecutor'
+export {
+  createRouteAuditMetadata,
+  withAuditedAction,
+} from './application/services/withAuditedAction'
 export { getJWKS } from './config/env'
 export { DrizzleAuditEventRepository } from './infrastructure/persistence/drizzle/repositories/DrizzleAuditEventRepository'
 export { DrizzleAuthSessionRepository } from './infrastructure/persistence/drizzle/repositories/DrizzleAuthSessionRepository'

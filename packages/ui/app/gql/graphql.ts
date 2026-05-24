@@ -95,6 +95,83 @@ export type AlignmentProjectObjectiveToOds = {
   projectObjectiveUid: Scalars['String']['output'];
 };
 
+export type AuditEvent = {
+  __typename?: 'AuditEvent';
+  action: Scalars['String']['output'];
+  actorLabel?: Maybe<Scalars['String']['output']>;
+  actorUser?: Maybe<User>;
+  afterSnapshot?: Maybe<Scalars['JSON']['output']>;
+  beforeSnapshot?: Maybe<Scalars['JSON']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  error?: Maybe<Scalars['JSON']['output']>;
+  metadata?: Maybe<Scalars['JSON']['output']>;
+  requestPayload?: Maybe<Scalars['JSON']['output']>;
+  resourceType: AuditResourceType;
+  resourceUid?: Maybe<Scalars['String']['output']>;
+  status: AuditEventStatus;
+  uid: Scalars['ID']['output'];
+};
+
+export type AuditEventFiltersInput = {
+  action?: InputMaybe<Scalars['String']['input']>;
+  actorLabel?: InputMaybe<Scalars['String']['input']>;
+  resourceType?: InputMaybe<AuditResourceType>;
+  resourceUid?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<AuditEventStatus>;
+};
+
+export type AuditEventListResponse = {
+  __typename?: 'AuditEventListResponse';
+  records: Array<AuditEvent>;
+  total: Scalars['Int']['output'];
+};
+
+export enum AuditEventStatus {
+  Failed = 'failed',
+  Pending = 'pending',
+  Succeeded = 'succeeded'
+}
+
+/** Audit queries */
+export type AuditQueries = {
+  __typename?: 'AuditQueries';
+  list: AuditEventListResponse;
+  one: AuditEvent;
+};
+
+
+/** Audit queries */
+export type AuditQueriesListArgs = {
+  filters?: InputMaybe<AuditEventFiltersInput>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+/** Audit queries */
+export type AuditQueriesOneArgs = {
+  uid: Scalars['String']['input'];
+};
+
+export enum AuditResourceType {
+  AlignmentInstitutionalPnd = 'alignment_institutional_pnd',
+  AlignmentPndOds = 'alignment_pnd_ods',
+  AlignmentProjectObjectiveOds = 'alignment_project_objective_ods',
+  AuthSession = 'auth_session',
+  Goal = 'goal',
+  Indicator = 'indicator',
+  Institution = 'institution',
+  InstitutionalObjective = 'institutional_objective',
+  InstitutionalPlan = 'institutional_plan',
+  ObjectiveOds = 'objective_ods',
+  ObjectivePnd = 'objective_pnd',
+  Program = 'program',
+  Project = 'project',
+  ProjectObjective = 'project_objective',
+  ProjectTask = 'project_task',
+  User = 'user'
+}
+
 export type AuthLoginInput = {
   password: Scalars['String']['input'];
   username: Scalars['String']['input'];
@@ -973,6 +1050,7 @@ export type ProjectsQueryResponse = {
 
 export type Query = {
   __typename?: 'Query';
+  audit: AuditQueries;
   goal: GoalQueries;
   hello?: Maybe<Scalars['String']['output']>;
   indicator: IndicatorQueries;
@@ -1278,6 +1356,22 @@ export type Alignment_UseDeleteProjectObjectiveToOdsMutationVariables = Exact<{
 
 
 export type Alignment_UseDeleteProjectObjectiveToOdsMutation = { __typename?: 'Mutation', alignment: { __typename?: 'AlignmentMutations', deleteProjectObjectiveToODS: boolean } };
+
+export type GetAuditList_UseAuditListQueryVariables = Exact<{
+  filters?: InputMaybe<AuditEventFiltersInput>;
+  limit: Scalars['Int']['input'];
+  offset: Scalars['Int']['input'];
+}>;
+
+
+export type GetAuditList_UseAuditListQuery = { __typename?: 'Query', audit: { __typename?: 'AuditQueries', list: { __typename?: 'AuditEventListResponse', total: number, records: Array<{ __typename?: 'AuditEvent', uid: string, createdAt: any, status: AuditEventStatus, action: string, resourceType: AuditResourceType, resourceUid?: string | null, actorLabel?: string | null, actorUser?: { __typename?: 'User', uid: string, name: string, person: { __typename?: 'Person', firstName: string, lastName: string } } | null }> } } };
+
+export type GetAudit_UseGetAuditQueryVariables = Exact<{
+  uid: Scalars['String']['input'];
+}>;
+
+
+export type GetAudit_UseGetAuditQuery = { __typename?: 'Query', audit: { __typename?: 'AuditQueries', one: { __typename?: 'AuditEvent', uid: string, createdAt: any, status: AuditEventStatus, action: string, resourceType: AuditResourceType, resourceUid?: string | null, actorLabel?: string | null, requestPayload?: any | null, beforeSnapshot?: any | null, afterSnapshot?: any | null, error?: any | null, metadata?: any | null, actorUser?: { __typename?: 'User', uid: string, name: string, person: { __typename?: 'Person', dni: string, firstName: string, lastName: string } } | null } } };
 
 export type Goal_UseCreateGoalMutationVariables = Exact<{
   data: CreateGoalDataInput;
@@ -1678,6 +1772,8 @@ export const Alignment_UseCreatePndToOdsDocument = {"kind":"Document","definitio
 export const Alignment_UseDeletePndToOdsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Alignment_useDeletePNDToODS"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteAlignmentPNDToODSInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"alignment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deletePNDToODS"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]}}]} as unknown as DocumentNode<Alignment_UseDeletePndToOdsMutation, Alignment_UseDeletePndToOdsMutationVariables>;
 export const Alignment_UseCreateProjectObjectiveToOdsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Alignment_useCreateProjectObjectiveToODS"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateAlignmentProjectObjectiveToODSInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"alignment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createProjectObjectiveToODS"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"projectObjectiveUid"}},{"kind":"Field","name":{"kind":"Name","value":"odsObjectiveUid"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]}}]} as unknown as DocumentNode<Alignment_UseCreateProjectObjectiveToOdsMutation, Alignment_UseCreateProjectObjectiveToOdsMutationVariables>;
 export const Alignment_UseDeleteProjectObjectiveToOdsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Alignment_useDeleteProjectObjectiveToODS"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteAlignmentProjectObjectiveToODSInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"alignment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteProjectObjectiveToODS"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]}}]} as unknown as DocumentNode<Alignment_UseDeleteProjectObjectiveToOdsMutation, Alignment_UseDeleteProjectObjectiveToOdsMutationVariables>;
+export const GetAuditList_UseAuditListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetAuditList_useAuditList"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filters"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"AuditEventFiltersInput"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"audit"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"list"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filters"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"records"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"resourceType"}},{"kind":"Field","name":{"kind":"Name","value":"resourceUid"}},{"kind":"Field","name":{"kind":"Name","value":"actorLabel"}},{"kind":"Field","name":{"kind":"Name","value":"actorUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetAuditList_UseAuditListQuery, GetAuditList_UseAuditListQueryVariables>;
+export const GetAudit_UseGetAuditDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetAudit_useGetAudit"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"audit"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"one"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"action"}},{"kind":"Field","name":{"kind":"Name","value":"resourceType"}},{"kind":"Field","name":{"kind":"Name","value":"resourceUid"}},{"kind":"Field","name":{"kind":"Name","value":"actorLabel"}},{"kind":"Field","name":{"kind":"Name","value":"actorUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dni"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"requestPayload"}},{"kind":"Field","name":{"kind":"Name","value":"beforeSnapshot"}},{"kind":"Field","name":{"kind":"Name","value":"afterSnapshot"}},{"kind":"Field","name":{"kind":"Name","value":"error"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}}]}}]}}]}}]} as unknown as DocumentNode<GetAudit_UseGetAuditQuery, GetAudit_UseGetAuditQueryVariables>;
 export const Goal_UseCreateGoalDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Goal_useCreateGoal"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateGoalDataInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"goal"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"create"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]}}]}}]} as unknown as DocumentNode<Goal_UseCreateGoalMutation, Goal_UseCreateGoalMutationVariables>;
 export const Goal_UseDeleteGoalDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Goal_useDeleteGoal"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteGoalInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"goal"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"delete"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]}}]} as unknown as DocumentNode<Goal_UseDeleteGoalMutation, Goal_UseDeleteGoalMutationVariables>;
 export const Goal_UseGetGoalDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Goal_useGetGoal"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"goal"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"one"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]}}]}}]} as unknown as DocumentNode<Goal_UseGetGoalQuery, Goal_UseGetGoalQueryVariables>;

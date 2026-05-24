@@ -3,7 +3,7 @@ import {
   getGoalRepository,
   getUserRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
-import { executeAuditedMutation } from '../../../helpers/audit'
+import { withAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { GoalMutations } from './root'
 
@@ -29,30 +29,29 @@ builder.objectField(GoalMutations, 'delete', (t) =>
         required: true,
       }),
     },
-    resolve: async (_, { input }, context, info) => {
-      const { db, user } = context
-      const goalRepo = getGoalRepository(db)
-      const userRepo = getUserRepository(db)
-
-      const useCase = new DeleteGoal({
-        goalRepository: goalRepo,
-        userRepository: userRepo,
-      })
-
-      return executeAuditedMutation({
-        context,
-        info,
+    resolve: withAuditedMutation(
+      {
         action: 'delete',
         resourceType: 'goal',
-        resourceUid: input.uid,
-        requestPayload: input,
-        beforeSnapshot: () => goalRepo.findByUid(input.uid),
-        afterSnapshot: async () => goalRepo.findByUid(input.uid),
-        run: async () => {
-          await useCase.execute({ uid: input.uid }, user.uid)
-          return true
-        },
-      })
-    },
+        getRequestPayload: ({ input }) => input,
+        getInitialResourceUid: ({ input }) => input.uid,
+        loadBefore: async ({ input }, { db }) =>
+          getGoalRepository(db).findByUid(input.uid),
+        getAfterSnapshot: async ({ input }, _result, { db }) =>
+          getGoalRepository(db).findByUid(input.uid),
+      },
+      async (_, { input }, { db, user }) => {
+        const goalRepo = getGoalRepository(db)
+        const userRepo = getUserRepository(db)
+
+        const useCase = new DeleteGoal({
+          goalRepository: goalRepo,
+          userRepository: userRepo,
+        })
+
+        await useCase.execute({ uid: input.uid }, user.uid)
+        return true
+      },
+    ),
   }),
 )

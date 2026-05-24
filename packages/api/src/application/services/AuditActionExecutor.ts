@@ -20,10 +20,12 @@ interface ExecuteAuditActionOptions<TResult> {
   actorUserUid?: string | null
   actorLabel?: string | null
   requestPayload?: unknown | null
-  metadata?: Record<string, unknown> | null
+  metadata?: unknown | null
   beforeSnapshot?: (() => Promise<unknown> | unknown) | unknown
   afterSnapshot?: ((result: TResult) => Promise<unknown> | unknown) | unknown
-  getResourceUid?: (result: TResult) => string | null | undefined
+  getResourceUid?: (
+    result: TResult,
+  ) => Promise<string | null | undefined> | string | null | undefined
   run: () => Promise<TResult>
 }
 
@@ -108,9 +110,11 @@ function normalizeAuditValue(value: unknown): JsonLike {
   if (typeof value === 'object') {
     const source = isPlainObject(value)
       ? value
-      : extractGetterObject(value) ?? (value as Record<string, unknown>)
+      : (extractGetterObject(value) ?? (value as Record<string, unknown>))
 
-    const entries = Object.entries(source).filter(([, item]) => item !== undefined)
+    const entries = Object.entries(source).filter(
+      ([, item]) => item !== undefined,
+    )
 
     return Object.fromEntries(
       entries.map(([key, item]) => [key, normalizeAuditValue(item)]),
@@ -214,11 +218,15 @@ export class AuditActionExecutor {
         typeof options.afterSnapshot === 'function'
           ? serializeAuditValue(await options.afterSnapshot(result))
           : serializeAuditValue(options.afterSnapshot)
+      const resourceUid = options.getResourceUid
+        ? ((await options.getResourceUid(result)) ??
+          options.resourceUid ??
+          null)
+        : (options.resourceUid ?? null)
 
       await this.markAuditEventSucceeded.execute({
         uid: auditEvent.uid,
-        resourceUid:
-          options.getResourceUid?.(result) ?? options.resourceUid ?? null,
+        resourceUid,
         beforeSnapshot,
         afterSnapshot,
         metadata: serializeAuditValue(options.metadata),

@@ -5,6 +5,7 @@ import {
   getProjectObjectiveRepository,
   getUserRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
+import { withAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { AlignmentProjectObjectiveToODS } from '../../objects/AlignmentProjectObjectiveToODS'
 import { AlignmentMutations } from './root'
@@ -35,35 +36,44 @@ builder.objectField(AlignmentMutations, 'createProjectObjectiveToODS', (t) =>
         required: true,
       }),
     },
-    resolve: async (_, { input }, { db, user }) => {
-      const alignmentRepo = getAlignmentProjectObjectiveToODSRepository(db)
-      const projectObjectiveRepo = getProjectObjectiveRepository(db)
-      const odsRepo = getObjectiveODSRepository(db)
-      const userRepo = getUserRepository(db)
+    resolve: withAuditedMutation(
+      {
+        action: 'create',
+        resourceType: 'alignment_project_objective_ods',
+        getRequestPayload: ({ input }) => input,
+        getResourceUid: ({ input }) =>
+          `${input.projectObjectiveUid}:${input.odsObjectiveUid}`,
+      },
+      async (_, { input }, { db, user }) => {
+        const alignmentRepo = getAlignmentProjectObjectiveToODSRepository(db)
+        const projectObjectiveRepo = getProjectObjectiveRepository(db)
+        const odsRepo = getObjectiveODSRepository(db)
+        const userRepo = getUserRepository(db)
 
-      const useCase = new CreateAlignmentProjectObjectiveToODS({
-        alignmentRepository: alignmentRepo,
-        projectObjectiveRepository: projectObjectiveRepo,
-        odsObjectiveRepository: odsRepo,
-        userRepository: userRepo,
-      })
+        const useCase = new CreateAlignmentProjectObjectiveToODS({
+          alignmentRepository: alignmentRepo,
+          projectObjectiveRepository: projectObjectiveRepo,
+          odsObjectiveRepository: odsRepo,
+          userRepository: userRepo,
+        })
 
-      const result = await useCase.execute(
-        {
-          projectObjectiveUid: input.projectObjectiveUid,
-          odsObjectiveUid: input.odsObjectiveUid,
-        },
-        user.uid,
-      )
+        const result = await useCase.execute(
+          {
+            projectObjectiveUid: input.projectObjectiveUid,
+            odsObjectiveUid: input.odsObjectiveUid,
+          },
+          user.uid,
+        )
 
-      return {
-        id: result.id,
-        projectObjectiveId: result.projectObjective.id,
-        odsObjectiveId: result.odsObjective.id,
-        projectObjectiveUid: result.projectObjective.uid,
-        odsObjectiveUid: result.odsObjective.uid,
-        createdAt: result.createdAt,
-      }
-    },
+        return {
+          id: result.id,
+          projectObjectiveId: result.projectObjective.id,
+          odsObjectiveId: result.odsObjective.id,
+          projectObjectiveUid: result.projectObjective.uid,
+          odsObjectiveUid: result.odsObjective.uid,
+          createdAt: result.createdAt,
+        }
+      },
+    ),
   }),
 )

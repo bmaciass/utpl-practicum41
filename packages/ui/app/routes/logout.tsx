@@ -1,5 +1,10 @@
 import { type LoaderFunction, redirect } from '@remix-run/cloudflare'
-import { DrizzleAuthSessionRepository, getDefaultJWTService } from '@sigep/api'
+import {
+  DrizzleAuthSessionRepository,
+  getDefaultJWTService,
+  LogoutUseCase,
+  withAuditedAction,
+} from '@sigep/api'
 import { getDBConnection } from '@sigep/db'
 import { getAccessTokenCookie } from '~/cookies/access-token.server'
 import { getAccessTokenExpiryCookie } from '~/cookies/access-token-expiry.server'
@@ -16,20 +21,46 @@ export const loader: LoaderFunction = async ({ context, request }) => {
   const accessTokenCookie = getAccessTokenCookie(secret)
   const refreshTokenCookie = getRefreshTokenCookie(secret)
 
-  const { client, db } = await getDBConnection(context.cloudflare.env.DATABASE_URL)
+  const { client, db } = await getDBConnection(
+    context.cloudflare.env.DATABASE_URL,
+  )
   await client.connect()
+  const authSessionRepository = new DrizzleAuthSessionRepository(db)
+  const jwtService = await getDefaultJWTService()
 
   try {
     const cookieHeader = request.headers.get('Cookie')
     if (cookieHeader) {
       const refreshToken = await refreshTokenCookie.parse(cookieHeader)
       if (refreshToken) {
-        const jwtService = await getDefaultJWTService()
-        const payload = await jwtService.verifyRefreshToken(refreshToken)
+        const logout = withAuditedAction(
+          {
+            action: 'logout',
+            resourceType: 'auth_session',
+            routeName: 'logout',
+            getInitialResourceUid: async (input) =>
+              (await jwtService.verifyRefreshToken(input.refreshToken))
+                ?.sessionId ?? null,
+            getActorUserUid: async (input) =>
+              (await jwtService.verifyRefreshToken(input.refreshToken))?.sub ??
+              null,
+            getResourceUid: async (input) =>
+              (await jwtService.verifyRefreshToken(input.refreshToken))
+                ?.sessionId ?? null,
+          },
+          (input) =>
+            new LogoutUseCase({
+              authSessionRepository,
+              jwtService,
+            }).execute(input),
+        )
 
-        if (payload?.sessionId) {
-          await new DrizzleAuthSessionRepository(db).revoke(payload.sessionId)
-        }
+        await logout(
+          {
+            refreshToken,
+          },
+          { db, request },
+        )
       }
     }
   } finally {

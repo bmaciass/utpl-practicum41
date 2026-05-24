@@ -7,6 +7,7 @@ import {
   getInstitutionRepository,
   getUserRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
+import { withAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { InstitutionAreaEnum } from '../../enums/InstitutionArea'
 import { InstitutionLevelEnum } from '../../enums/InstitutionLevel'
@@ -51,28 +52,38 @@ builder.objectField(InstitutionMutations, 'update', (t) =>
       where: t.arg({ type: UpdateInstitutionWhereInput, required: true }),
       data: t.arg({ type: UpdateInstitutionDataInput, required: true }),
     },
-    resolve: async (_, { data, where }, { db, user }) => {
-      const institutionRepository = getInstitutionRepository(db)
-      const userRepository = getUserRepository(db)
-      const updateInstitution = new UpdateInstitution({
-        institutionRepository,
-        userRepository,
-      })
+    resolve: withAuditedMutation(
+      {
+        action: 'update',
+        resourceType: 'institution',
+        getRequestPayload: ({ where, data }) => ({ where, data }),
+        getInitialResourceUid: ({ where }) => where.id,
+        loadBefore: async ({ where }, { db }) =>
+          getInstitutionRepository(db).findByUid(where.id),
+      },
+      async (_, { data, where }, { db, user }) => {
+        const institutionRepository = getInstitutionRepository(db)
+        const userRepository = getUserRepository(db)
+        const updateInstitution = new UpdateInstitution({
+          institutionRepository,
+          userRepository,
+        })
 
-      const institution = await updateInstitution.execute(
-        {
-          uid: where.id,
-          data: {
-            name: data.name ?? undefined,
-            area: data.area ?? undefined,
-            level: data.level ?? undefined,
-            active: data.active ?? undefined,
+        const institution = await updateInstitution.execute(
+          {
+            uid: where.id,
+            data: {
+              name: data.name ?? undefined,
+              area: data.area ?? undefined,
+              level: data.level ?? undefined,
+              active: data.active ?? undefined,
+            },
           },
-        },
-        user.uid,
-      )
+          user.uid,
+        )
 
-      return { ...institution, objetives: [] }
-    },
+        return { ...institution, objetives: [] }
+      },
+    ),
   }),
 )

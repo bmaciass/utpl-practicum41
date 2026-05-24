@@ -3,6 +3,7 @@ import {
   getObjectivePNDRepository,
   getUserRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
+import { withAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { ObjectivePND } from '../../objects/ObjectivePND'
 import { ObjectivePNDMutations } from './root'
@@ -31,31 +32,39 @@ builder.objectField(ObjectivePNDMutations, 'create', (t) =>
         required: true,
       }),
     },
-    resolve: async (_, { data }, { db, user }) => {
-      const objectivePNDRepository = getObjectivePNDRepository(db)
-      const userRepository = getUserRepository(db)
+    resolve: withAuditedMutation(
+      {
+        action: 'create',
+        resourceType: 'objective_pnd',
+        getRequestPayload: ({ data }) => data,
+        getResourceUid: (_args, result) => result.uid,
+      },
+      async (_, { data }, { db, user }) => {
+        const objectivePNDRepository = getObjectivePNDRepository(db)
+        const userRepository = getUserRepository(db)
 
-      const createObjective = new CreateObjectivePND({
-        objectivePNDRepository,
-        userRepository,
-      })
+        const createObjective = new CreateObjectivePND({
+          objectivePNDRepository,
+          userRepository,
+        })
 
-      const objective = await createObjective.execute(
-        {
-          name: data.name,
-          description: data.description,
-        },
-        user.uid,
-      )
+        const objective = await createObjective.execute(
+          {
+            name: data.name,
+            description: data.description,
+          },
+          user.uid,
+        )
 
-      return {
-        id: objective.id,
-        uid: objective.uid,
-        name: objective.name,
-        description: objective.description,
-        active: objective.active,
-        deletedAt: objective.deletedAt,
-      }
-    },
+        return {
+          id: objective.id,
+          uid: objective.uid,
+          name: objective.name,
+          description: objective.description,
+          active: objective.active,
+          deletedAt: objective.deletedAt,
+        }
+      },
+    ),
   }),
 )

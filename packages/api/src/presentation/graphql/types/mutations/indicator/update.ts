@@ -4,6 +4,7 @@ import {
   getIndicatorRepository,
   getUserRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
+import { withAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { IndicatorTypeEnum } from '../../enums/IndicatorType'
 import { Indicator } from '../../objects/Indicator'
@@ -61,33 +62,43 @@ builder.objectField(IndicatorMutations, 'update', (t) =>
         required: true,
       }),
     },
-    resolve: async (_, { where, data }, { db, user }) => {
-      const indicatorRepo = getIndicatorRepository(db)
-      const goalRepo = getGoalRepository(db)
-      const userRepo = getUserRepository(db)
+    resolve: withAuditedMutation(
+      {
+        action: 'update',
+        resourceType: 'indicator',
+        getRequestPayload: ({ where, data }) => ({ where, data }),
+        getInitialResourceUid: ({ where }) => where.uid,
+        loadBefore: async ({ where }, { db }) =>
+          getIndicatorRepository(db).findByUid(where.uid),
+      },
+      async (_, { where, data }, { db, user }) => {
+        const indicatorRepo = getIndicatorRepository(db)
+        const goalRepo = getGoalRepository(db)
+        const userRepo = getUserRepository(db)
 
-      const useCase = new UpdateIndicator({
-        indicatorRepository: indicatorRepo,
-        goalRepository: goalRepo,
-        userRepository: userRepo,
-      })
+        const useCase = new UpdateIndicator({
+          indicatorRepository: indicatorRepo,
+          goalRepository: goalRepo,
+          userRepository: userRepo,
+        })
 
-      return await useCase.execute(
-        {
-          uid: where.uid,
-          data: {
-            name: data.name ?? undefined,
-            description: data.description ?? undefined,
-            type: data.type ?? undefined,
-            unitType: data.unitType ?? undefined,
-            minValue: data.minValue ?? undefined,
-            maxValue: data.maxValue ?? undefined,
-            goalUid: data.goalUid ?? undefined,
-            active: data.active ?? undefined,
+        return useCase.execute(
+          {
+            uid: where.uid,
+            data: {
+              name: data.name ?? undefined,
+              description: data.description ?? undefined,
+              type: data.type ?? undefined,
+              unitType: data.unitType ?? undefined,
+              minValue: data.minValue ?? undefined,
+              maxValue: data.maxValue ?? undefined,
+              goalUid: data.goalUid ?? undefined,
+              active: data.active ?? undefined,
+            },
           },
-        },
-        user.uid,
-      )
-    },
+          user.uid,
+        )
+      },
+    ),
   }),
 )

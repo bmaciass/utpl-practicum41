@@ -4,7 +4,7 @@ import {
   getInstitutionalObjectiveRepository,
   getUserRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
-import { executeAuditedMutation } from '../../../helpers/audit'
+import { withAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { Goal } from '../../objects/Goal'
 import { GoalMutations } from './root'
@@ -53,38 +53,37 @@ builder.objectField(GoalMutations, 'update', (t) =>
         required: true,
       }),
     },
-    resolve: async (_, { where, data }, context, info) => {
-      const { db, user } = context
-      const goalRepo = getGoalRepository(db)
-      const institutionalObjectiveRepo = getInstitutionalObjectiveRepository(db)
-      const userRepo = getUserRepository(db)
-
-      const useCase = new UpdateGoal({
-        goalRepository: goalRepo,
-        institutionalObjectiveRepository: institutionalObjectiveRepo,
-        userRepository: userRepo,
-      })
-
-      return executeAuditedMutation({
-        context,
-        info,
+    resolve: withAuditedMutation(
+      {
         action: 'update',
         resourceType: 'goal',
-        resourceUid: where.uid,
-        requestPayload: { where, data },
-        beforeSnapshot: () => goalRepo.findByUid(where.uid),
-        afterSnapshot: (result) => result,
-        run: () =>
-          useCase.execute(
-            {
-              uid: where.uid,
-              data: {
-                active: data.active ?? undefined,
-              },
+        getRequestPayload: ({ where, data }) => ({ where, data }),
+        getInitialResourceUid: ({ where }) => where.uid,
+        loadBefore: async ({ where }, { db }) =>
+          getGoalRepository(db).findByUid(where.uid),
+      },
+      async (_, { where, data }, { db, user }) => {
+        const goalRepo = getGoalRepository(db)
+        const institutionalObjectiveRepo =
+          getInstitutionalObjectiveRepository(db)
+        const userRepo = getUserRepository(db)
+
+        const useCase = new UpdateGoal({
+          goalRepository: goalRepo,
+          institutionalObjectiveRepository: institutionalObjectiveRepo,
+          userRepository: userRepo,
+        })
+
+        return useCase.execute(
+          {
+            uid: where.uid,
+            data: {
+              active: data.active ?? undefined,
             },
-            user.uid,
-          ),
-      })
-    },
+          },
+          user.uid,
+        )
+      },
+    ),
   }),
 )

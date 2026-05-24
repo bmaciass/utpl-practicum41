@@ -3,6 +3,7 @@ import {
   getObjectivePNDRepository,
   getUserRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
+import { withAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { ObjectivePND } from '../../objects/ObjectivePND'
 import { ObjectivePNDMutations } from './root'
@@ -49,35 +50,45 @@ builder.objectField(ObjectivePNDMutations, 'update', (t) =>
         required: true,
       }),
     },
-    resolve: async (_, { data, where }, { db, user }) => {
-      const objectivePNDRepository = getObjectivePNDRepository(db)
-      const userRepository = getUserRepository(db)
+    resolve: withAuditedMutation(
+      {
+        action: 'update',
+        resourceType: 'objective_pnd',
+        getRequestPayload: ({ where, data }) => ({ where, data }),
+        getInitialResourceUid: ({ where }) => where.uid,
+        loadBefore: async ({ where }, { db }) =>
+          getObjectivePNDRepository(db).findByUid(where.uid),
+      },
+      async (_, { data, where }, { db, user }) => {
+        const objectivePNDRepository = getObjectivePNDRepository(db)
+        const userRepository = getUserRepository(db)
 
-      const updateObjective = new UpdateObjectivePND({
-        objectivePNDRepository,
-        userRepository,
-      })
+        const updateObjective = new UpdateObjectivePND({
+          objectivePNDRepository,
+          userRepository,
+        })
 
-      const objective = await updateObjective.execute(
-        {
-          uid: where.uid,
-          data: {
-            name: data.name ?? undefined,
-            description: data.description ?? undefined,
-            active: data.active ?? undefined,
+        const objective = await updateObjective.execute(
+          {
+            uid: where.uid,
+            data: {
+              name: data.name ?? undefined,
+              description: data.description ?? undefined,
+              active: data.active ?? undefined,
+            },
           },
-        },
-        user.uid,
-      )
+          user.uid,
+        )
 
-      return {
-        id: objective.id,
-        uid: objective.uid,
-        name: objective.name,
-        description: objective.description,
-        active: objective.active,
-        deletedAt: objective.deletedAt,
-      }
-    },
+        return {
+          id: objective.id,
+          uid: objective.uid,
+          name: objective.name,
+          description: objective.description,
+          active: objective.active,
+          deletedAt: objective.deletedAt,
+        }
+      },
+    ),
   }),
 )
