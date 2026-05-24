@@ -4,6 +4,7 @@ import {
   getInstitutionalObjectiveRepository,
   getUserRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
+import { executeAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { Goal } from '../../objects/Goal'
 import { GoalMutations } from './root'
@@ -34,7 +35,8 @@ builder.objectField(GoalMutations, 'create', (t) =>
         required: true,
       }),
     },
-    resolve: async (_, { data }, { db, user }) => {
+    resolve: async (_, { data }, context, info) => {
+      const { db, user } = context
       const goalRepo = getGoalRepository(db)
       const institutionalObjectiveRepo = getInstitutionalObjectiveRepository(db)
       const userRepo = getUserRepository(db)
@@ -45,7 +47,16 @@ builder.objectField(GoalMutations, 'create', (t) =>
         userRepository: userRepo,
       })
 
-      return await useCase.execute(data, user.uid)
+      return executeAuditedMutation({
+        context,
+        info,
+        action: 'create',
+        resourceType: 'goal',
+        requestPayload: data,
+        afterSnapshot: (result) => result,
+        getResourceUid: (result) => result.uid,
+        run: () => useCase.execute(data, user.uid),
+      })
     },
   }),
 )

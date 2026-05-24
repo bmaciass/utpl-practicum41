@@ -26,10 +26,19 @@ export type AppDataloaders = {
   projectByProgramId: ReturnType<typeof createProjectByProgramLoader>
 }
 
+export type AuthFailureReason =
+  | 'missing_access_cookie'
+  | 'invalid_access_cookie'
+  | 'invalid_access_token'
+
 export type AppContext = {
   db: Db
   client: Client
+  request: Request
   authenticated: boolean
+  auth: {
+    failureReason: AuthFailureReason | null
+  }
   user: {
     uid: string
   }

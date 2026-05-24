@@ -6,4 +6,6 @@ export interface LoginUseCaseInputDTO {
 export interface LoginUseCaseResponseDTO {
   accessToken: string
   refreshToken: string
+  accessTokenExpiresAt: Date
+  refreshTokenExpiresAt: Date
 }

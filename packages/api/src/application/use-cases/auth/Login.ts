@@ -1,7 +1,13 @@
 import { type IPublicUseCase, NotFoundError } from '@sigep/shared'
+import {
+  REFRESH_SESSION_ABSOLUTE_TTL_MS,
+  REFRESH_SESSION_IDLE_TTL_MS,
+} from '~/application/use-cases/auth/authSessionConfig'
 import { formatPermission } from '~/domain/entities/Permission'
+import type { IAuthSessionRepository } from '~/domain/repositories/IAuthSessionRepository'
 import type { IRoleRepository } from '~/domain/repositories/IRoleRepository'
 import type { IUserRepository } from '~/domain/repositories/IUserRepository'
+import type { IJWTService } from '~/domain/services/IJWTService'
 import { getDefaultJWTService } from '~/infrastructure/services/JWTService'
 import { PasswordService } from '~/infrastructure/services/PasswordService'
 import type {
@@ -10,6 +16,8 @@ import type {
 } from '../../dto/auth/LoginDTO'
 
 export interface LoginUseCaseDeps {
+  authSessionRepository: IAuthSessionRepository
+  jwtService?: IJWTService
   roleRepository: IRoleRepository
   userRepository: IUserRepository
 }
@@ -33,14 +41,42 @@ export class LoginUseCase
     const roles = await this.deps.roleRepository.findByUserId(user.id)
     const permissions = roles.flatMap((role) => role.permissions)
 
-    const session = await getDefaultJWTService()
-    const { accessToken, refreshToken } = await session.createTokens(user.uid, {
-      roles: roles.map((role) => role.name),
-      permissions: permissions.map((permission) =>
-        formatPermission(permission),
-      ),
+    const session = this.deps.jwtService ?? (await getDefaultJWTService())
+    const now = new Date()
+    const refreshTokenId = crypto.randomUUID()
+    const authSession = await this.deps.authSessionRepository.create({
+      userId: user.id,
+      tokenHash: await session.hashToken(refreshTokenId),
+      expiresAt: new Date(now.getTime() + REFRESH_SESSION_ABSOLUTE_TTL_MS),
+      idleExpiresAt: new Date(now.getTime() + REFRESH_SESSION_IDLE_TTL_MS),
+      lastUsedAt: now,
     })
 
-    return { accessToken, refreshToken }
+    const {
+      accessToken,
+      refreshToken,
+      accessTokenExpiresAt,
+      refreshTokenExpiresAt,
+    } = await session.createTokens(
+      user.uid,
+      {
+        roles: roles.map((role) => role.name),
+        permissions: permissions.map((permission) =>
+          formatPermission(permission),
+        ),
+      },
+      {
+        sessionId: authSession.uid,
+        tokenId: refreshTokenId,
+        expiresAt: authSession.expiresAt,
+      },
+    )
+
+    return {
+      accessToken,
+      refreshToken,
+      accessTokenExpiresAt,
+      refreshTokenExpiresAt,
+    }
   }
 }

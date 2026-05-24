@@ -5,4 +5,6 @@ export interface RefreshTokenInputDTO {
 export interface RefreshTokenResponseDTO {
   accessToken: string
   refreshToken: string
+  accessTokenExpiresAt: Date
+  refreshTokenExpiresAt: Date
 }

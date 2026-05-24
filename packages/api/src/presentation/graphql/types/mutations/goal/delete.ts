@@ -3,6 +3,7 @@ import {
   getGoalRepository,
   getUserRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
+import { executeAuditedMutation } from '../../../helpers/audit'
 import builder from '../../../schema/builder'
 import { GoalMutations } from './root'
 
@@ -28,7 +29,8 @@ builder.objectField(GoalMutations, 'delete', (t) =>
         required: true,
       }),
     },
-    resolve: async (_, { input }, { db, user }) => {
+    resolve: async (_, { input }, context, info) => {
+      const { db, user } = context
       const goalRepo = getGoalRepository(db)
       const userRepo = getUserRepository(db)
 
@@ -37,9 +39,20 @@ builder.objectField(GoalMutations, 'delete', (t) =>
         userRepository: userRepo,
       })
 
-      await useCase.execute({ uid: input.uid }, user.uid)
-
-      return true
+      return executeAuditedMutation({
+        context,
+        info,
+        action: 'delete',
+        resourceType: 'goal',
+        resourceUid: input.uid,
+        requestPayload: input,
+        beforeSnapshot: () => goalRepo.findByUid(input.uid),
+        afterSnapshot: async () => goalRepo.findByUid(input.uid),
+        run: async () => {
+          await useCase.execute({ uid: input.uid }, user.uid)
+          return true
+        },
+      })
     },
   }),
 )

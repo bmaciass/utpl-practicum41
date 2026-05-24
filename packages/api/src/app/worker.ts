@@ -17,6 +17,7 @@ import { createUserLoader } from '~/presentation/graphql/dataloaders/userLoader'
 import { useResponse } from '~/presentation/graphql/plugins/onResponse'
 import schema from '~/presentation/graphql/schema'
 import type {
+  AuthFailureReason,
   AppContext,
   AppDataloaders,
 } from '~/presentation/graphql/schema/context'
@@ -31,31 +32,86 @@ export const getAccessTokenCookie = (secret: string) =>
     secrets: [secret],
   })
 
-async function createContext(request: Request, env: Env): Promise<AppContext> {
-  // Connect to database
-  const { db, client } = await getDBConnection(env.DATABASE_URL)
-  await client.connect()
+type AccessTokenPayload = NonNullable<
+  Awaited<ReturnType<Awaited<ReturnType<typeof getDefaultJWTService>>['verifyAccessToken']>>
+>
 
-  const cookie = await request.cookieStore?.get('access-token-cookie')
-  if (!cookie) throw new Error('cookie not found')
+type AuthenticationResult =
+  | {
+      payload: AccessTokenPayload
+      failureReason: null
+    }
+  | {
+      payload: null
+      failureReason: AuthFailureReason
+    }
+
+function logAuthFailure(
+  request: Request,
+  failureReason: AuthFailureReason,
+  extra?: Record<string, unknown>,
+) {
+  const cookieHeader = request.headers.get('cookie')
+  const cookieNames =
+    cookieHeader
+      ?.split(';')
+      .map((entry) => entry.trim().split('=')[0])
+      .filter(Boolean) ?? []
+
+  console.warn('GraphQL authentication failed', {
+    failureReason,
+    url: request.url,
+    method: request.method,
+    hasCookieHeader: cookieHeader !== null,
+    cookieNames,
+    ...extra,
+  })
+}
+
+async function authenticateRequest(
+  request: Request,
+): Promise<AuthenticationResult> {
+  const cookieHeader = request.headers.get('cookie')
+  if (!cookieHeader) {
+    logAuthFailure(request, 'missing_access_cookie')
+    return { payload: null, failureReason: 'missing_access_cookie' }
+  }
 
   const accessCookie = getAccessTokenCookie('cookie-secret')
-  const tokenString = await accessCookie.parse(
-    `access-token-cookie=${cookie.value}`,
-  )
-  if (!tokenString) throw new Error('token not found')
+  const tokenString = await accessCookie.parse(cookieHeader)
+
+  if (!tokenString) {
+    logAuthFailure(request, 'invalid_access_cookie')
+    return { payload: null, failureReason: 'invalid_access_cookie' }
+  }
 
   const payload = await (await getDefaultJWTService()).verifyAccessToken(
     tokenString,
   )
-  if (!payload) throw new Error('invalid token')
+  if (!payload) {
+    logAuthFailure(request, 'invalid_access_token')
+    return { payload: null, failureReason: 'invalid_access_token' }
+  }
 
+  return { payload, failureReason: null }
+}
+
+async function createContext(
+  env: Env,
+  auth: AuthenticationResult,
+  request: Request,
+): Promise<AppContext> {
+  // Connect to database
+  const { db, client } = await getDBConnection(env.DATABASE_URL)
+  await client.connect()
+
+  const payload = auth.payload
   const token = {
-    permissions: payload.permissions ?? [],
-    roles: payload.roles ?? [],
+    permissions: payload?.permissions ?? [],
+    roles: payload?.roles ?? [],
   } satisfies AppContext['token']
   const user = {
-    uid: payload.sub,
+    uid: payload?.sub ?? '',
   } satisfies AppContext['user']
 
   // Create DataLoaders for this request
@@ -74,7 +130,11 @@ async function createContext(request: Request, env: Env): Promise<AppContext> {
   } satisfies AppDataloaders
 
   return {
-    authenticated: true,
+    request,
+    authenticated: auth.payload !== null,
+    auth: {
+      failureReason: auth.failureReason,
+    },
     db,
     client,
     token,
@@ -85,10 +145,12 @@ async function createContext(request: Request, env: Env): Promise<AppContext> {
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
+    const auth = await authenticateRequest(request)
+
     const yoga = createYoga({
       schema,
       context: () => {
-        return createContext(request, env)
+        return createContext(env, auth, request)
       },
       graphiql: async (req) => {
         // Always available in development

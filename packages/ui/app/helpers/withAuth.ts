@@ -6,6 +6,7 @@ import {
 } from '@remix-run/cloudflare'
 import { getDefaultJWTService } from '@sigep/api'
 import { getAccessTokenCookie } from '~/cookies/access-token.server'
+import { getRefreshTokenCookie } from '~/cookies/refresh-token.server'
 
 type ProtectedLoader<LR = unknown> = (
   args: LoaderFunctionArgs,
@@ -24,19 +25,25 @@ async function getAuthPayloadResult(
 ): Promise<AuthPayload | Response> {
   const { context, request } = args
   const cookieString = request.headers.get('Cookie')
+  const currentUrl = new URL(request.url)
+  const redirectTo = encodeURIComponent(currentUrl.pathname + currentUrl.search)
 
   // No cookies? Redirect to login
   if (!cookieString) {
     return redirect('/login')
   }
 
-  const accessCookie = getAccessTokenCookie(
-    context.cloudflare.env.UI_AUTH_COOKIE_SECRET,
-  )
+  const secret = context.cloudflare.env.UI_AUTH_COOKIE_SECRET
+  const accessCookie = getAccessTokenCookie(secret)
+  const refreshCookie = getRefreshTokenCookie(secret)
 
   // Parse access token from cookie
   const token = await accessCookie.parse(cookieString)
+  const refreshToken = await refreshCookie.parse(cookieString)
   if (!token) {
+    if (refreshToken) {
+      return redirect(`/refresh?redirectTo=${redirectTo}`)
+    }
     return redirect('/login')
   }
 
@@ -44,14 +51,10 @@ async function getAuthPayloadResult(
   const payload = await jwtService.verifyAccessToken(token)
 
   if (!payload) {
-    // Access token expired/invalid - attempt refresh
-    const currentPath = new URL(request.url).pathname
-    const currentSearch = new URL(request.url).search
-    const redirectTo = encodeURIComponent(currentPath + currentSearch)
-
-    return redirect(`/refresh?redirectTo=${redirectTo}`, {
-      status: 303, // See Other - forces POST to GET redirect
-    })
+    if (refreshToken) {
+      return redirect(`/refresh?redirectTo=${redirectTo}`)
+    }
+    return redirect('/login')
   }
 
   return payload

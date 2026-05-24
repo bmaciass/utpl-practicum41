@@ -2,13 +2,16 @@ import { type JWK, SignJWT, createLocalJWKSet, jwtVerify } from 'jose'
 import { webcrypto } from 'node:crypto'
 import type {
   IJWTService,
+  RefreshTokenPayload,
   TokenPair,
   TokenPayload,
 } from '~/domain/services/IJWTService'
+import {
+  ACCESS_TOKEN_TTL_MS,
+  REFRESH_SESSION_ABSOLUTE_TTL_MS,
+} from '~/application/use-cases/auth/authSessionConfig'
 
 const ISSUER = 'auth.utpl-practicum.com'
-const ACCESS_TOKEN_EXP = '10m'
-const REFRESH_TOKEN_EXP = '1w'
 
 /**
  * Servicio de JWT que implementa la creación y verificación de tokens.
@@ -44,34 +47,66 @@ class JWTService implements IJWTService {
     })
   }
 
+  async hashToken(token: string): Promise<string> {
+    const digest = await webcrypto.subtle.digest(
+      'SHA-256',
+      new TextEncoder().encode(token),
+    )
+    return Buffer.from(digest).toString('hex')
+  }
+
+  async compareTokenHash(token: string, hash: string): Promise<boolean> {
+    return (await this.hashToken(token)) === hash
+  }
+
   async createTokens(
     userId: string,
     claims?: { roles?: string[]; permissions?: string[] },
+    refreshSession?: {
+      sessionId: string
+      tokenId: string
+      expiresAt: Date
+    },
   ): Promise<TokenPair> {
     const privateKey = await this.getPrivateKey()
-    const now = Date.now()
+    const now = new Date()
+    const accessTokenExpiresAt = new Date(now.getTime() + ACCESS_TOKEN_TTL_MS)
+    const fallbackRefreshExpiresAt = new Date(
+      now.getTime() + REFRESH_SESSION_ABSOLUTE_TTL_MS,
+    )
+    const refreshTokenExpiresAt =
+      refreshSession?.expiresAt ?? fallbackRefreshExpiresAt
+    const sessionId = refreshSession?.sessionId ?? crypto.randomUUID()
+    const tokenId = refreshSession?.tokenId ?? crypto.randomUUID()
 
     const accessToken = await new SignJWT({
       sub: userId,
-      iat: now,
+      iat: Math.floor(now.getTime() / 1000),
       roles: claims?.roles ?? [],
       permissions: claims?.permissions ?? [],
     })
-      .setExpirationTime(ACCESS_TOKEN_EXP)
+      .setExpirationTime(accessTokenExpiresAt)
       .setProtectedHeader({ alg: 'EdDSA' })
       .setIssuer(ISSUER)
       .sign(privateKey)
 
     const refreshToken = await new SignJWT({
       sub: userId,
-      iat: now,
+      sid: sessionId,
+      jti: tokenId,
+      iat: Math.floor(now.getTime() / 1000),
     })
-      .setExpirationTime(REFRESH_TOKEN_EXP)
+      .setExpirationTime(refreshTokenExpiresAt)
       .setProtectedHeader({ alg: 'EdDSA' })
       .setIssuer(ISSUER)
       .sign(privateKey)
 
-    return { accessToken, refreshToken }
+    return {
+      accessToken,
+      refreshToken,
+      accessTokenExpiresAt,
+      refreshTokenExpiresAt,
+    }
   }
 
   async verifyAccessToken(token: string): Promise<TokenPayload | null> {
@@ -89,11 +124,23 @@ class JWTService implements IJWTService {
     }
   }
 
-  async verifyRefreshToken(token: string): Promise<{ sub: string } | null> {
+  async verifyRefreshToken(token: string): Promise<RefreshTokenPayload | null> {
     try {
       const jwks = await this.getPublicJWKSet()
       const result = await jwtVerify(token, jwks, { issuer: ISSUER })
-      return result.payload.sub ? { sub: result.payload.sub as string } : null
+      const sub = result.payload.sub
+      const sessionId = result.payload.sid
+      const tokenId = result.payload.jti
+
+      if (
+        typeof sub !== 'string' ||
+        typeof sessionId !== 'string' ||
+        typeof tokenId !== 'string'
+      ) {
+        return null
+      }
+
+      return { sub, sessionId, tokenId }
     } catch {
       return null
     }
@@ -107,7 +154,7 @@ class JWTService implements IJWTService {
       throw new Error('Invalid refresh token: missing subject')
     }
 
-    return this.createTokens(result.payload.sub)
+    return this.createTokens(result.payload.sub as string)
   }
 }
 
