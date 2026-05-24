@@ -38,4 +38,27 @@ describeIntegration('GraphQL worker', () => {
     expect(body.errors).toBeUndefined()
     expect(body.data?.__typename).toBe('Query')
   })
+
+  it('returns an explicit auth error when the access cookie is missing', async () => {
+    const response = await SELF.fetch('http://example.com/graphql', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: 'query { program { list { records { uid } } } }',
+      }),
+    })
+
+    expect(response.status).toBe(200)
+    const body = (await response.json()) as {
+      data?: { program?: { list?: { records?: Array<{ uid: string }> } } }
+      errors?: Array<{ message?: string }>
+    }
+
+    expect(body.data).toBeNull()
+    expect(body.errors?.[0]?.message).toBe(
+      'Authentication required: access-token-cookie was missing from the request',
+    )
+  })
 })

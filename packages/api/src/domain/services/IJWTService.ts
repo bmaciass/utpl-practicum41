@@ -13,6 +13,14 @@ export interface TokenPayload {
 export interface TokenPair {
   accessToken: string
   refreshToken: string
+  accessTokenExpiresAt: Date
+  refreshTokenExpiresAt: Date
+}
+
+export interface RefreshTokenPayload {
+  sub: string
+  sessionId: string
+  tokenId: string
 }
 
 /**
@@ -28,6 +36,11 @@ export interface IJWTService {
   createTokens(
     userId: string,
     claims?: { roles?: string[]; permissions?: string[] },
+    refreshSession?: {
+      sessionId: string
+      tokenId: string
+      expiresAt: Date
+    },
   ): Promise<TokenPair>
 
   /**
@@ -42,7 +55,10 @@ export interface IJWTService {
    * @param token - Refresh token a verificar
    * @returns Objeto con sub (user ID) o null si es inválido
    */
-  verifyRefreshToken(token: string): Promise<{ sub: string } | null>
+  verifyRefreshToken(token: string): Promise<RefreshTokenPayload | null>
+
+  hashToken(token: string): Promise<string>
+  compareTokenHash(token: string, hash: string): Promise<boolean>
 
   /**
    * DEPRECATED: Usar verifyRefreshToken + createTokens en su lugar.

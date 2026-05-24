@@ -15,6 +15,7 @@ const builder = new SchemaBuilder<{
   AuthScopes: {
     public: boolean
     protected: boolean
+    admin: boolean
   }
   Scalars: {
     JSON: {
@@ -44,19 +45,36 @@ const builder = new SchemaBuilder<{
     treatErrorsAsUnauthorized: true,
 
     // Custom error messages
-    unauthorizedError: (parent, context, info, result) => {
-      if (!context.token) {
-        return new Error('Authentication required')
+    unauthorizedError: (parent, context) => {
+      if (!context.authenticated) {
+        switch (context.auth.failureReason) {
+          case 'missing_access_cookie':
+            return new Error(
+              'Authentication required: access-token-cookie was missing from the request',
+            )
+          case 'invalid_access_cookie':
+            return new Error(
+              'Authentication required: access-token-cookie could not be verified',
+            )
+          case 'invalid_access_token':
+            return new Error(
+              'Authentication required: access token verification failed',
+            )
+          default:
+            return new Error('Authentication required')
+        }
       }
+
       return new Error('Insufficient permissions')
     },
 
-    // Define auth scopes
     authScopes: async (context) => {
       return {
-        // Public endpoints (always allowed)
         public: true,
         protected: context.authenticated,
+        admin:
+          context.authenticated === true &&
+          context.token.roles.includes('admin'),
       }
     },
   },

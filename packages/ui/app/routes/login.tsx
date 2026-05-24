@@ -1,6 +1,7 @@
 import { type ActionFunctionArgs, data } from '@remix-run/cloudflare'
 import { useActionData, useNavigate, useSubmit } from '@remix-run/react'
 import {
+  DrizzleAuthSessionRepository,
   DrizzleRoleRepository,
   DrizzleUserRepository,
   LoginUseCase,
@@ -14,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import { getAccessTokenCookie } from '~/cookies/access-token.server'
+import { getAccessTokenExpiryCookie } from '~/cookies/access-token-expiry.server'
 import { getRefreshTokenCookie } from '~/cookies/refresh-token.server'
 import { notFound } from '~/helpers/notFound'
 
@@ -35,29 +37,40 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
   const userRepository = new DrizzleUserRepository(db)
   const roleRepository = new DrizzleRoleRepository(db)
 
-  const { accessToken, refreshToken } = await new LoginUseCase({
-    roleRepository,
-    userRepository,
-  }).execute({
-    username: username.toString(),
-    password: password.toString(),
-  })
+  try {
+    const { accessToken, refreshToken, accessTokenExpiresAt } =
+      await new LoginUseCase({
+        authSessionRepository: new DrizzleAuthSessionRepository(db),
+        roleRepository,
+        userRepository,
+      }).execute({
+        username: username.toString(),
+        password: password.toString(),
+      })
 
-  const accessCookie = getAccessTokenCookie(
-    context.cloudflare.env.UI_AUTH_COOKIE_SECRET,
-  )
-  const serializedAccessCookie = await accessCookie.serialize(accessToken)
+    const accessCookie = getAccessTokenCookie(
+      context.cloudflare.env.UI_AUTH_COOKIE_SECRET,
+    )
+    const serializedAccessCookie = await accessCookie.serialize(accessToken)
+    const accessExpiryCookie = getAccessTokenExpiryCookie()
+    const serializedAccessExpiryCookie = await accessExpiryCookie.serialize(
+      `${accessTokenExpiresAt.getTime()}`,
+    )
 
-  const refreshCookie = getRefreshTokenCookie(
-    context.cloudflare.env.UI_AUTH_COOKIE_SECRET,
-  )
-  const serializedRefreshCookie = await refreshCookie.serialize(refreshToken)
+    const refreshCookie = getRefreshTokenCookie(
+      context.cloudflare.env.UI_AUTH_COOKIE_SECRET,
+    )
+    const serializedRefreshCookie = await refreshCookie.serialize(refreshToken)
 
-  const headers = new Headers()
-  headers.append('Set-Cookie', serializedAccessCookie)
-  headers.append('Set-Cookie', serializedRefreshCookie)
+    const headers = new Headers()
+    headers.append('Set-Cookie', serializedAccessCookie)
+    headers.append('Set-Cookie', serializedAccessExpiryCookie)
+    headers.append('Set-Cookie', serializedRefreshCookie)
 
-  return data({ error: null }, { headers })
+    return data({ error: null }, { headers })
+  } finally {
+    await client.end()
+  }
 }
 
 function Login() {

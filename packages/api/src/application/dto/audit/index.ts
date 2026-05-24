@@ -1,0 +1,6 @@
+export * from './AuditEventDTO'
+export * from './CreatePendingAuditEventDTO'
+export * from './GetAuditEventDTO'
+export * from './ListAuditEventsDTO'
+export * from './MarkAuditEventFailedDTO'
+export * from './MarkAuditEventSucceededDTO'

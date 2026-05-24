@@ -1,0 +1,4 @@
+export const ACCESS_TOKEN_TTL_MS = 10 * 60 * 1000
+export const ACCESS_TOKEN_REFRESH_BUFFER_MS = 2 * 60 * 1000
+export const REFRESH_SESSION_IDLE_TTL_MS = 30 * 24 * 60 * 60 * 1000
+export const REFRESH_SESSION_ABSOLUTE_TTL_MS = 90 * 24 * 60 * 60 * 1000

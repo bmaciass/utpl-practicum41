@@ -1,3 +1,5 @@
+import type { LinksFunction, LoaderFunctionArgs } from '@remix-run/cloudflare'
+import { data } from '@remix-run/cloudflare'
 import {
   Links,
   Meta,
@@ -6,12 +8,10 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from '@remix-run/react'
-import type { LinksFunction } from '@remix-run/cloudflare'
 
 import './tailwind.css'
-import { AppEnvProvider, useAppEnv } from './context/AppEnv'
-// import * as pkg from '@apollo/client'
-import { pick } from 'lodash-es'
+import { AuthSessionManager } from './components/globals/AuthSessionManager'
+import { AppEnvProvider } from './context/AppEnv'
 
 export const links: LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -26,13 +26,15 @@ export const links: LinksFunction = () => [
   },
 ]
 
-export const loader = () => {
-  return {
-    apiUrl: process.env.API_GRAPHQL_URL,
-  }
+export const loader = ({ context }: LoaderFunctionArgs) => {
+  return data({
+    apiUrl: context.cloudflare.env.API_GRAPHQL_URL,
+  })
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const loaderData = useLoaderData<typeof loader>()
+
   return (
     <html lang='en'>
       <head>
@@ -43,6 +45,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.__APP_ENV__ = ${JSON.stringify(loaderData)};`,
+          }}
+        />
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -63,11 +70,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
 // }
 
 export default function App() {
-  // const loaderData = useLoaderData<typeof loader>()
+  const loaderData = useLoaderData<typeof loader>()
+
   return (
-    <Outlet />
-    // <AppEnvProvider data={pick(loaderData, 'apiUrl')}>
-    //   <Outlet />
-    // </AppEnvProvider>
+    <AppEnvProvider data={loaderData}>
+      <AuthSessionManager />
+      <Outlet />
+    </AppEnvProvider>
   )
 }
