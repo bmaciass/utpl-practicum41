@@ -10,5 +10,6 @@ export interface ProgramResponseDTO {
   estimatedInversion: number | null
   active: boolean
   deletedAt: Date | null
+  institutionId: number
   responsibleId: number
 }

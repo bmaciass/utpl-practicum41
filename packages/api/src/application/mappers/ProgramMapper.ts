@@ -14,6 +14,7 @@ export class ProgramMapper {
       estimatedInversion: program.estimatedInversion ?? null,
       active: program.active,
       deletedAt: program.deletedAt,
+      institutionId: program.institutionId,
       responsibleId: program.responsibleId,
     }
   }

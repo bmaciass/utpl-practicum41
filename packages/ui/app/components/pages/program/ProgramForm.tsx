@@ -5,6 +5,7 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Alert } from '~/components/globals/Alert'
+import { InstitutionSelect } from '~/components/selects/InstitutionSelect'
 import { UserSelect } from '~/components/selects/UserSelect'
 
 import { Button } from '~/components/ui/button'
@@ -32,6 +33,9 @@ const formSchema = z.object({
   startDate: z.string().optional(),
   endDate: z.string().optional(),
   estimatedInversion: z.string().optional(),
+  institutionUid: z.string().min(1, {
+    error: 'Debe seleccionar una institución',
+  }),
   responsibleUid: z.string().nonoptional(),
 })
 
@@ -71,6 +75,7 @@ export function ProgramForm(props: {
       startDate: '',
       endDate: '',
       estimatedInversion: '',
+      institutionUid: '',
       responsibleUid: '',
     },
   })
@@ -91,6 +96,7 @@ export function ProgramForm(props: {
           program.estimatedInversion !== undefined
             ? String(program.estimatedInversion)
             : '',
+        institutionUid: program.institution?.uid ?? '',
         responsibleUid: program.responsible.uid,
       })
     }
@@ -131,6 +137,7 @@ export function ProgramForm(props: {
       variables: {
         data: {
           ...payload,
+          institutionUid: values.institutionUid,
           responsibleUid: values.responsibleUid,
         },
       },
@@ -221,6 +228,22 @@ export function ProgramForm(props: {
               />
             </div>
           </div>
+          <FormField
+            control={form.control}
+            name='institutionUid'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Institución</FormLabel>
+                <FormControl>
+                  <InstitutionSelect
+                    onValueChange={field.onChange}
+                    {...omit(field, 'onChange')}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name='responsibleUid'

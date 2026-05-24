@@ -1,4 +1,4 @@
-import { Link, Outlet } from '@remix-run/react'
+import { Link } from '@remix-run/react'
 import { isEmpty } from 'lodash-es'
 import { Alert } from '~/components/globals/Alert'
 import { Title } from '~/components/typography/Headers'
@@ -36,23 +36,14 @@ const InstitutionsSection = () => {
 
 export const InstitutionsPage = () => {
   return (
-    <div className='grid grid-cols-6 gap-4'>
-      <div className='col-span-2 col-start-1 p-4'>
-        <div className='flex'>
-          <div className='grow'>
-            <Title variant='h4'>Instituciones</Title>
-          </div>
-          <div className='flex-none'>
-            <Link to={'/institutions/new'}>
-              <Button>Nuevo</Button>
-            </Link>
-          </div>
-        </div>
-        <InstitutionsSection />
+    <div className='p-4'>
+      <div className='flex items-center justify-between mb-6'>
+        <Title variant='h4'>Instituciones</Title>
+        <Link to='/institutions/new'>
+          <Button>Nuevo</Button>
+        </Link>
       </div>
-      <div className='col-span-4 col-start-3 p-4'>
-        <Outlet />
-      </div>
+      <InstitutionsSection />
     </div>
   )
 }

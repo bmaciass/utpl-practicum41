@@ -1,6 +1,7 @@
 import type { ProgramRecord } from '@sigep/db'
 import type { Project as ProjectDomain } from '~/domain/entities/Project'
 import builder from '../../schema/builder'
+import { Institution } from './Institution'
 import { ProjectRef } from './Project'
 import { User } from './User'
 
@@ -14,6 +15,7 @@ export type TProgram = Pick<
   | 'estimatedInversion'
   | 'description'
   | 'deletedAt'
+  | 'institutionId'
   | 'responsibleId'
 > & {
   active: boolean
@@ -37,6 +39,12 @@ export const Program = ProgramRef.implement({
     active: t.field({
       type: 'Boolean',
       resolve: (program) => program.deletedAt === null,
+    }),
+    institution: t.field({
+      type: Institution,
+      resolve: async (program, _args, { loaders }) => {
+        return await loaders.institution.load(program.institutionId)
+      },
     }),
 
     // Field resolver - only executes when client requests this field

@@ -98,6 +98,7 @@ builder.objectField(ProgramMutations, 'update', (t) =>
           estimatedInversion: program.estimatedInversion,
           active: program.active,
           deletedAt: program.deletedAt,
+          institutionId: program.institutionId,
           responsibleId: program.responsibleId,
         }
       },

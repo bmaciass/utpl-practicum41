@@ -35,6 +35,7 @@ builder.objectField(ProgramQueries, 'one', (t) =>
         endDate: program.endDate,
         estimatedInversion: program.estimatedInversion,
         active: program.active,
+        institutionId: program.institutionId,
         responsibleId: program.responsibleId,
         deletedAt: program.deletedAt,
       } satisfies TProgram

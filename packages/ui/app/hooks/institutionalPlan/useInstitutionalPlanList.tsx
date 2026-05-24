@@ -2,12 +2,13 @@ import { useQuery } from '@apollo/client/react/index.js'
 import { graphql } from '~/gql'
 
 export const query = graphql(`
-  query GetInstitutionalPlan_useInstitutionalPlanList ($institutionUid: String!, $active: Boolean!) {
+  query GetInstitutionalPlans_UseInstitutionalPlanList($institutionUid: String!, $active: Boolean!) {
     institutionalPlan {
-      list (institutionUid: $institutionUid, active: $active) {
+      list(institutionUid: $institutionUid, active: $active) {
         records {
           uid
           name
+          year
         }
       }
     }

@@ -2,8 +2,12 @@ import type { IListableRepository, PaginationOptions } from '@sigep/shared'
 import type { Program } from '../entities/Program'
 
 export interface ProgramFilters {
-  name?: string
+  name?: {
+    contains?: string
+    equals?: string
+  }
   active?: boolean
+  institutionId?: number
 }
 
 export interface FindManyProgramsOptions {

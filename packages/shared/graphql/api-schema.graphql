@@ -149,6 +149,7 @@ input CreateProgramDataInput {
   description: String!
   endDate: Date
   estimatedInversion: Decimal
+  institutionUid: String!
   name: String!
   responsibleUid: String!
   startDate: Date
@@ -469,6 +470,7 @@ type Program {
   description: String
   endDate: Date
   estimatedInversion: Decimal
+  institution: Institution!
   name: String!
   projects: [Project!]!
   responsible: User!
@@ -484,7 +486,7 @@ type ProgramMutations {
 
 """Program queries"""
 type ProgramQueries {
-  list(active: Boolean, name: StringFilter): ProgramsQueryResponse!
+  list(active: Boolean, institutionUid: String, name: StringFilter): ProgramsQueryResponse!
   one(id: String!): Program
 }
 

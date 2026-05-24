@@ -4,5 +4,6 @@ export interface CreateProgramDTO {
   startDate?: Date | null
   endDate?: Date | null
   estimatedInversion?: number | null
+  institutionUid: string
   responsibleUid: string
 }

@@ -67,17 +67,16 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
     return redirect('/login', { headers })
   }
 
-  // Connect to database
   const { client, db } = await getDBConnection(
     context.cloudflare.env.DATABASE_URL,
   )
-  await client.connect()
-  const authSessionRepository = new DrizzleAuthSessionRepository(db)
-  const userRepository = new DrizzleUserRepository(db)
-  const roleRepository = new DrizzleRoleRepository(db)
-  const jwtService = await getDefaultJWTService()
 
   try {
+    await client.connect()
+    const authSessionRepository = new DrizzleAuthSessionRepository(db)
+    const userRepository = new DrizzleUserRepository(db)
+    const roleRepository = new DrizzleRoleRepository(db)
+    const jwtService = await getDefaultJWTService()
     const refreshSession = withAuditedAction(
       {
         action: 'refresh',
@@ -138,6 +137,7 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
     const redirectTo = url.searchParams.get('redirectTo') || '/'
     return redirect(redirectTo, { headers })
   } catch (error) {
+    console.error('[refresh] token refresh failed:', error)
     const headers = await clearAuthCookies(secret)
     if (shouldReturnJson) {
       return new Response(null, { status: 401, headers })
