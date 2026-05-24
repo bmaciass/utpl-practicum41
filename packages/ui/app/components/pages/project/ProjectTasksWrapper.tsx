@@ -1,5 +1,5 @@
-import { ProjectTaskCard } from './ProjectTaskCard'
 import type { ProjectTask_UseProjectTaskListQuery } from '~/gql/graphql'
+import { ProjectTaskCard } from './ProjectTaskCard'
 
 export const ProjectTasksWrapper = ({
   title,
@@ -21,7 +21,7 @@ export const ProjectTasksWrapper = ({
       </h3>
       <div className='space-y-2'>
         {tasks.length === 0 ? (
-          <p className='text-sm text-gray-500'>No hay tareas</p>
+          <p className='text-sm text-muted-foreground'>No hay tareas</p>
         ) : (
           tasks.map((task) => (
             <ProjectTaskCard

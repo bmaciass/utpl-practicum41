@@ -45,10 +45,10 @@ const ODSPage = () => {
   })
 
   return (
-    <div className='p-4 max-w-4xl mx-auto'>
+    <div className='mx-auto max-w-4xl p-4'>
       <div className='mb-6'>
         <Title variant='h4'>Objetivos de Desarrollo Sostenible (ODS)</Title>
-        <Paragraph className='mt-2 text-gray-600'>
+        <Paragraph className='mt-2 text-left text-muted-foreground'>
           Agenda 2030 de las Naciones Unidas - {odsList.length} Objetivos
           Globales
         </Paragraph>

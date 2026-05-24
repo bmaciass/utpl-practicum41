@@ -33,18 +33,18 @@ export const ProjectTaskCard = ({
 
   return (
     <Card
-      className='cursor-pointer hover:bg-gray-50 transition-colors'
+      className='cursor-pointer transition-colors hover:bg-accent/35'
       onClick={() => onView(task)}
     >
       <CardHeader className='p-3'>
         <div className='flex justify-between items-start gap-2'>
           <div className='flex-1 min-w-0'>
             <h4 className='text-sm font-semibold truncate'>{task.name}</h4>
-            <div className='text-xs text-gray-600 mt-1'>
+            <div className='mt-1 text-xs text-muted-foreground'>
               {task.responsible?.name || 'Sin asignar'}
             </div>
             {(task.startDate || task.endDate) && (
-              <div className='text-xs text-gray-500 mt-1'>
+              <div className='mt-1 text-xs text-muted-foreground/80'>
                 {formatDateRange(task.startDate, task.endDate)}
               </div>
             )}
@@ -63,7 +63,10 @@ export const ProjectTaskCard = ({
               align='end'
               onClick={(e) => e.stopPropagation()}
             >
-              <DropdownMenuItem onClick={handleDelete} className='text-red-600'>
+              <DropdownMenuItem
+                onClick={handleDelete}
+                className='text-destructive'
+              >
                 Eliminar
               </DropdownMenuItem>
             </DropdownMenuContent>

@@ -1,7 +1,7 @@
 import { Link } from '@remix-run/react'
 import { useState } from 'react'
 import { Button } from '~/components/ui/button'
-import { Card, CardHeader, CardTitle, CardContent } from '~/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import {
   Dialog,
   DialogContent,
@@ -59,17 +59,21 @@ export const ProjectDetailsSection = ({
       <CardContent>
         <dl className='grid grid-cols-1 md:grid-cols-2 gap-4'>
           <div>
-            <dt className='font-semibold text-sm text-gray-600'>Descripción</dt>
+            <dt className='text-sm font-semibold text-muted-foreground'>
+              Descripción
+            </dt>
             <dd className='mt-1'>{project.description || 'Sin descripción'}</dd>
           </div>
           <div>
-            <dt className='font-semibold text-sm text-gray-600'>Responsable</dt>
+            <dt className='text-sm font-semibold text-muted-foreground'>
+              Responsable
+            </dt>
             <dd className='mt-1'>
               {project.responsible?.name || 'Sin asignar'}
             </dd>
           </div>
           <div>
-            <dt className='font-semibold text-sm text-gray-600'>
+            <dt className='text-sm font-semibold text-muted-foreground'>
               Fecha de inicio
             </dt>
             <dd className='mt-1'>
@@ -79,7 +83,7 @@ export const ProjectDetailsSection = ({
             </dd>
           </div>
           <div>
-            <dt className='font-semibold text-sm text-gray-600'>
+            <dt className='text-sm font-semibold text-muted-foreground'>
               Fecha de fin
             </dt>
             <dd className='mt-1'>
@@ -87,7 +91,9 @@ export const ProjectDetailsSection = ({
             </dd>
           </div>
           <div>
-            <dt className='font-semibold text-sm text-gray-600'>Estado</dt>
+            <dt className='text-sm font-semibold text-muted-foreground'>
+              Estado
+            </dt>
             <dd className='mt-1'>{translateProjectStatus(project.status)}</dd>
           </div>
         </dl>

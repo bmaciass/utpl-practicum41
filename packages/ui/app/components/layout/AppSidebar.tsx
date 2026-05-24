@@ -11,6 +11,7 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -45,15 +46,30 @@ export function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
   }
 
   return (
-    <Sidebar>
-      <SidebarHeader>
-        <div className='px-4 py-4'>
-          <h2 className='text-lg font-semibold'>UTPL Practicum</h2>
+    <Sidebar className='border-none shadow-2xl shadow-sidebar-primary/10'>
+      <SidebarHeader className='border-b border-sidebar-border/80 px-4 py-5'>
+        <div className='rounded-2xl border border-sidebar-border bg-gradient-to-br from-sidebar-accent to-sidebar p-4 shadow-inner shadow-black/10'>
+          <div className='flex items-center gap-3'>
+            <div className='flex h-11 w-11 items-center justify-center rounded-xl bg-sidebar-primary font-semibold tracking-[0.18em] text-sidebar-primary-foreground shadow-lg shadow-sidebar-primary/20'>
+              UT
+            </div>
+            <div className='min-w-0'>
+              <h2 className='truncate text-lg font-semibold tracking-tight text-sidebar-foreground'>
+                UTPL Practicum
+              </h2>
+              <p className='text-xs text-sidebar-foreground/65'>
+                Control institucional
+              </p>
+            </div>
+          </div>
         </div>
       </SidebarHeader>
 
       <SidebarContent>
         <SidebarGroup>
+          <SidebarGroupLabel className='px-2 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-sidebar-foreground/55'>
+            Navegacion
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {filteredNavigation.map((item) => (
@@ -114,7 +130,10 @@ export function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={handleLogout}>
+            <SidebarMenuButton
+              className='border border-sidebar-border/80 bg-sidebar-accent/70 text-sidebar-foreground hover:bg-sidebar-accent'
+              onClick={handleLogout}
+            >
               <LogOut className='h-4 w-4' />
               <span>Cerrar Sesión</span>
             </SidebarMenuButton>

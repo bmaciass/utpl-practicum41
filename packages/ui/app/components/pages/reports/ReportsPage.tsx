@@ -62,7 +62,7 @@ export const ReportsPage = () => {
       </div>
       <div
         ref={containerRef}
-        className='grid grid-cols-1 gap-6 md:grid-cols-2 bg-white p-2 rounded-md'
+        className='grid grid-cols-1 gap-6 rounded-2xl border border-border/70 bg-card p-3 shadow-sm md:grid-cols-2'
       >
         <ProjectStatusChart />
         <TaskStatusChart />

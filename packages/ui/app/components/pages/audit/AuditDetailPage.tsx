@@ -58,7 +58,7 @@ function JsonSection(props: { title: string; value: unknown }) {
       </CardHeader>
       <CardContent>
         {props.value !== null && props.value !== undefined ? (
-          <pre className='overflow-x-auto rounded-md bg-slate-950 p-4 text-sm text-slate-50'>
+          <pre className='overflow-x-auto rounded-xl border border-sidebar-border bg-sidebar p-4 text-sm text-sidebar-foreground shadow-inner'>
             {formatJsonValue(props.value)}
           </pre>
         ) : (
