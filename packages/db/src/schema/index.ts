@@ -5,11 +5,11 @@
 
 // exporting tables
 export * from './tables/Goal'
-export * from './tables/auditEvent'
-export * from './tables/authSession'
 export * from './tables/alignmentObjectiveEstrategicWithPND'
 export * from './tables/alignmentObjectivePNDWithODS'
 export * from './tables/alignmentProjectObjectiveWithODS'
+export * from './tables/auditEvent'
+export * from './tables/authSession'
 export * from './tables/indicator'
 export * from './tables/institution'
 export * from './tables/institutionalClassification'

@@ -20,6 +20,7 @@
 - `pnpm -F @sigep/db migrate`: apply DB migrations.
 - `pnpm -F @sigep/db gen`: refresh types and migrations.
 - `pnpm -F @sigep/db gen -- <name>`: create a new Drizzle migration after schema changes.
+- For new Drizzle migrations, always use `pnpm --filter @sigep/db gen <migration-name>`. Do not hand-create migration SQL, edit Drizzle snapshots/journal manually, or stitch migration history together by hand.
 - `pnpm -F @sigep/seeders seed:local`: run local seeders after generating `.env`.
 - `pnpm -F @sigep/api dev`: run the Worker API locally with Wrangler.
 - `pnpm -F @sigep/api codegen`: regenerate API-side generated files.

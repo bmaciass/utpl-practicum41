@@ -6,7 +6,7 @@ import {
   pgTable,
   varchar,
 } from 'drizzle-orm/pg-core'
-import { idColumn, timestampColumns, uidColumn } from '../../helpers/column.helpers'
+import { idColumn, timestampColumns } from '../../helpers/column.helpers'
 import { User } from './user'
 
 export const auditEventStatusEnum = pgEnum('AuditEventStatus', [
@@ -19,7 +19,7 @@ export const AuditEvent = pgTable(
   'AuditEvent',
   {
     ...idColumn,
-    ...uidColumn,
+    uid: varchar({ length: 64 }).unique().notNull(),
     status: auditEventStatusEnum().notNull().default('pending'),
     action: varchar({ length: 128 }).notNull(),
     resourceType: varchar({ length: 128 }).notNull(),
