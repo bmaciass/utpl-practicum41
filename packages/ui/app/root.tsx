@@ -7,6 +7,7 @@ import {
   Scripts,
   ScrollRestoration,
   useLoaderData,
+  useRouteLoaderData,
 } from '@remix-run/react'
 
 import './tailwind.css'
@@ -33,7 +34,7 @@ export const loader = ({ context }: LoaderFunctionArgs) => {
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  const loaderData = useLoaderData<typeof loader>()
+  const loaderData = useRouteLoaderData<typeof loader>('root')
 
   return (
     <html lang='en'>
@@ -47,7 +48,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {children}
         <script
           dangerouslySetInnerHTML={{
-            __html: `window.__APP_ENV__ = ${JSON.stringify(loaderData)};`,
+            __html: `window.__APP_ENV__ = ${JSON.stringify(loaderData ?? {})};`,
           }}
         />
         <ScrollRestoration />

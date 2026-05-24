@@ -8,6 +8,7 @@ import {
 const baseProps: CreateProgramProps = {
   name: 'Community outreach',
   description: 'Expand community outreach in local regions.',
+  institutionId: 3,
   responsibleId: 8,
   createdBy: 4,
 }
@@ -17,5 +18,11 @@ describe('Program entity', () => {
     expect(() => Program.create({ ...baseProps, name: 'No' })).toThrow(
       ValidationError,
     )
+  })
+
+  it('stores the institution id on creation', () => {
+    const program = Program.create(baseProps)
+
+    expect(program.institutionId).toBe(3)
   })
 })

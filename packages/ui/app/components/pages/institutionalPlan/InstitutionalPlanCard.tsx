@@ -7,7 +7,7 @@ export const InstitutionalPlanCard = (data: {
   institutionalPlan: GetInstitutionalPlans_UseInstitutionalPlanListQuery['institutionalPlan']['list']['records'][number]
   institutionUid: string
 }) => {
-  const { uid, name, year, version } = data.institutionalPlan
+  const { uid, name, year } = data.institutionalPlan
   const { institutionUid } = data
   const navigate = useNavigate()
 
@@ -25,7 +25,7 @@ export const InstitutionalPlanCard = (data: {
     >
       <CardHeader>
         <CardTitle>
-          {capitalize(name)} - {year} (v{version})
+          {capitalize(name)} - {year}
         </CardTitle>
       </CardHeader>
     </Card>

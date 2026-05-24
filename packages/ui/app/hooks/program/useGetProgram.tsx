@@ -11,10 +11,19 @@ const query = graphql(`
         startDate
         endDate
         estimatedInversion
+        active
+        institution {
+          uid
+          name
+        }
         responsible {
           uid
+          name
+          person {
+            firstName
+            lastName
+          }
         }
-        active
       }
     }
   }

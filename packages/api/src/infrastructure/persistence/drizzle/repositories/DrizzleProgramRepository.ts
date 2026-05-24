@@ -1,7 +1,7 @@
 import type { Db } from '@sigep/db'
 import { Program as ProgramTable } from '@sigep/db'
 import { NotFoundError } from '@sigep/shared'
-import { type SQL, eq, isNotNull, isNull, like } from 'drizzle-orm'
+import { type SQL, eq, ilike, isNotNull, isNull } from 'drizzle-orm'
 import { compact, isNil } from 'lodash-es'
 import type { Program } from '~/domain/entities/Program'
 import type {
@@ -99,7 +99,13 @@ export class DrizzleProgramRepository implements IProgramRepository {
           ? isNull(ProgramTable.deletedAt)
           : isNotNull(ProgramTable.deletedAt)
         : null,
-      where.name ? like(ProgramTable.name, `%${where.name}%`) : null,
+      where.name?.contains
+        ? ilike(ProgramTable.name, `%${where.name.contains}%`)
+        : null,
+      where.name?.equals ? eq(ProgramTable.name, where.name.equals) : null,
+      !isNil(where.institutionId)
+        ? eq(ProgramTable.institutionId, where.institutionId)
+        : null,
     ])
   }
 }

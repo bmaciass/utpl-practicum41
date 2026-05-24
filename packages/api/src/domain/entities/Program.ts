@@ -7,6 +7,7 @@ export interface CreateProgramProps {
   startDate?: Date | null
   endDate?: Date | null
   estimatedInversion?: number | null
+  institutionId: number
   responsibleId: number
   createdBy: number
 }
@@ -19,6 +20,7 @@ export interface ProgramProps {
   startDate: Date | null
   endDate: Date | null
   estimatedInversion: number | null
+  institutionId: number
   responsibleId: number
   deletedAt: Date | null
   createdBy: number
@@ -34,6 +36,7 @@ export class Program extends Entity {
   private _startDate: Date | null = null
   private _endDate: Date | null = null
   private _estimatedInversion: number | null = null
+  private _institutionId: number
   private _responsibleId: number
   private _deletedAt: Date | null
   private _createdByUserId: number
@@ -47,6 +50,7 @@ export class Program extends Entity {
     this._startDate = props.startDate
     this._endDate = props.endDate
     this._estimatedInversion = props.estimatedInversion // ? new Decimal(props.estimatedInversion) : null
+    this._institutionId = props.institutionId
     this._responsibleId = props.responsibleId
     this._deletedAt = props.deletedAt
     this._createdByUserId = props.createdBy
@@ -65,6 +69,7 @@ export class Program extends Entity {
       startDate: props.startDate ?? null,
       endDate: props.endDate ?? null,
       estimatedInversion: props.estimatedInversion ?? null,
+      institutionId: props.institutionId,
       responsibleId: props.responsibleId,
       deletedAt: null,
       createdBy: props.createdBy,
@@ -172,6 +177,9 @@ export class Program extends Entity {
   }
   get estimatedInversion(): number | null {
     return this._estimatedInversion //? this._estimatedInversion.toNumber() : null
+  }
+  get institutionId(): number {
+    return this._institutionId
   }
   get responsibleId(): number {
     return this._responsibleId

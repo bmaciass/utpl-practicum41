@@ -1,6 +1,7 @@
 import type { ProgramPayload } from '@sigep/db'
 import { CreateProgram } from '~/application/use-cases/program'
 import {
+  getInstitutionRepository,
   getProgramRepository,
   getUserRepository,
 } from '~/infrastructure/persistence/drizzle/repositories'
@@ -13,6 +14,7 @@ type TCreateProgramDataInput = Pick<
   ProgramPayload,
   'name' | 'description' | 'startDate' | 'endDate' | 'estimatedInversion'
 > & {
+  institutionUid: string
   responsibleUid: string
 }
 
@@ -25,6 +27,7 @@ export const CreateProgramDataInput = builder
       startDate: t.field({ type: 'Date', required: false }),
       endDate: t.field({ type: 'Date', required: false }),
       estimatedInversion: t.field({ type: 'Decimal', required: false }),
+      institutionUid: t.string(),
       responsibleUid: t.string(),
     }),
   })
@@ -44,9 +47,11 @@ builder.objectField(ProgramMutations, 'create', (t) =>
         getResourceUid: (_args, result) => result.uid,
       },
       async (_, { data }, { db, user }) => {
+        const institutionRepository = getInstitutionRepository(db)
         const programRepository = getProgramRepository(db)
         const userRepository = getUserRepository(db)
         const createProgram = new CreateProgram({
+          institutionRepository,
           programRepository,
           userRepository,
         })
@@ -58,6 +63,7 @@ builder.objectField(ProgramMutations, 'create', (t) =>
             startDate: data.startDate,
             endDate: data.endDate,
             estimatedInversion: data.estimatedInversion,
+            institutionUid: data.institutionUid,
             responsibleUid: data.responsibleUid,
           },
           user.uid,
@@ -73,6 +79,7 @@ builder.objectField(ProgramMutations, 'create', (t) =>
           estimatedInversion: program.estimatedInversion,
           active: program.active,
           deletedAt: program.deletedAt,
+          institutionId: program.institutionId,
           responsibleId: program.responsibleId,
         }
       },

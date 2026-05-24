@@ -106,6 +106,7 @@ export const apiClient = new ApolloClient({
     dataIdFromObject: (object: any) => object.uid || null,
     typePolicies: {
       ProgramQueries: { merge: false },
+      ReportsQueries: { merge: false },
     },
   }),
 })

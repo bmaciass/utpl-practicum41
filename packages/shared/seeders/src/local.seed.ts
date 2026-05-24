@@ -219,6 +219,7 @@ async function seedOrganizationData(db: Db): Promise<{
         name: 'Programa de Transformacion digital',
         description:
           'Modernizacion de plataformas, datos, interoperabilidad y experiencia de servicios institucionales.',
+        institutionId: institution.id,
         responsibleId: userByName.get('maria')!.id,
         startDate: new Date('2025-01-01'),
         endDate: new Date('2026-12-31'),
@@ -230,6 +231,7 @@ async function seedOrganizationData(db: Db): Promise<{
         name: 'Programa de Permanencia Estudiantil',
         description:
           'Intervenciones para permanencia, acompañamiento oportuno y cierre de brechas de riesgo estudiantil.',
+        institutionId: institution.id,
         responsibleId: userByName.get('ana')!.id,
         startDate: new Date('2025-01-01'),
         endDate: new Date('2026-06-30'),
@@ -241,6 +243,7 @@ async function seedOrganizationData(db: Db): Promise<{
         name: 'Programa de Innovacion y Vinculacion',
         description:
           'Articulacion de proyectos aplicados, transferencia y trabajo conjunto con territorio y sector productivo.',
+        institutionId: institution.id,
         responsibleId: userByName.get('sofia')!.id,
         startDate: new Date('2025-03-01'),
         endDate: new Date('2026-12-31'),
