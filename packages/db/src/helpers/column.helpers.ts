@@ -23,10 +23,6 @@ export const idColumn = {
   id: serial().primaryKey(),
 }
 
-export const uidColumn = {
-  uid: varchar({ length: 64 }).unique().notNull(),
-}
-
 export const deletedAtColumn = {
   deletedAt: timestamp({ withTimezone: false }),
 }

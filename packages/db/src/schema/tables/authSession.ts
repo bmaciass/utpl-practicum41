@@ -1,10 +1,10 @@
 import { integer, pgTable, timestamp, varchar } from 'drizzle-orm/pg-core'
-import { idColumn, timestampColumns, uidColumn } from '../../helpers/column.helpers'
+import { idColumn, timestampColumns } from '../../helpers/column.helpers'
 import { User } from './user'
 
 export const AuthSession = pgTable('AuthSession', {
   ...idColumn,
-  ...uidColumn,
+  uid: varchar({ length: 64 }).unique().notNull(),
   userId: integer()
     .references(() => User.id)
     .notNull(),
