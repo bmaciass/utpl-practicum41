@@ -16,22 +16,27 @@ export const loader = async (args: LoaderFunctionArgs) => {
 }
 
 export default function Layout() {
-  const { roles } = useLoaderData<typeof loader>()
+  const { roles } = useLoaderData<typeof loader>() as { roles: string[] }
   const isAdmin = roles.includes('admin')
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className='min-h-screen flex w-full'>
+      <div className='flex min-h-screen w-full bg-background'>
         <AppSidebar isAdmin={isAdmin} />
-        <div className='flex-1 flex flex-col'>
+        <div className='flex flex-1 flex-col'>
           {/* Mobile header with hamburger menu */}
-          <header className='md:hidden bg-white shadow px-4 py-3 flex items-center'>
-            <SidebarTrigger />
-            <h1 className='ml-4 font-semibold'>UTPL Practicum</h1>
+          <header className='flex items-center border-b border-border/70 bg-card/95 px-4 py-3 shadow-sm backdrop-blur-sm md:hidden'>
+            <SidebarTrigger className='text-foreground hover:bg-accent/80' />
+            <div className='ml-4 flex flex-col'>
+              <h1 className='font-semibold tracking-tight'>UTPL Practicum</h1>
+              <p className='text-xs text-muted-foreground'>
+                Control institucional
+              </p>
+            </div>
           </header>
 
           {/* Main content area */}
-          <main className='flex-1 bg-gray-50 p-6'>
+          <main className='flex-1 bg-background p-6'>
             <Outlet />
           </main>
         </div>

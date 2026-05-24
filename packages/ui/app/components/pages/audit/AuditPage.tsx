@@ -194,7 +194,7 @@ export function AuditPage() {
       </div>
 
       <form
-        className='grid grid-cols-1 gap-4 rounded-lg border bg-white p-4 md:grid-cols-2 xl:grid-cols-5'
+        className='grid grid-cols-1 gap-4 rounded-2xl border border-border/70 bg-card p-4 shadow-sm md:grid-cols-2 xl:grid-cols-5'
         onSubmit={handleApplyFilters}
       >
         <div className='space-y-2'>
@@ -329,7 +329,7 @@ export function AuditPage() {
           No hay eventos de auditoria para los filtros seleccionados
         </Paragraph>
       ) : (
-        <div className='rounded-lg border bg-white'>
+        <div className='overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm'>
           <Table>
             <TableHeader>
               <TableRow>
