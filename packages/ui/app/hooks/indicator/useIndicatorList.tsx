@@ -51,11 +51,12 @@ export function useIndicatorList(
       limit,
       offset,
     },
+    fetchPolicy: 'cache-and-network',
     skip: !goalUid,
   })
 
   return {
-    list: data?.indicator.list.records ?? [],
+    list: data?.indicator?.list?.records ?? [],
     loading,
     error,
     refetch,

@@ -43,8 +43,12 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export function TaskStatusChart() {
-  const { records } = useTaskStatusReport()
+export function TaskStatusChart({
+  institutionUid,
+}: {
+  institutionUid?: string
+}) {
+  const { records } = useTaskStatusReport({ institutionUid })
 
   const chartData = records.map((record) => ({
     status: record.status,

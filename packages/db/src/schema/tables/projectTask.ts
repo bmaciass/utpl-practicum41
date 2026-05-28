@@ -15,7 +15,7 @@ import {
 import { Project } from './project'
 import { User } from './user'
 
-export const projectTaskStatusEnum = pgEnum('ProjectGoalStatus', [
+export const projectTaskStatusEnum = pgEnum('ProjectTaskStatus', [
   'pending',
   'in_progress',
   'reviewing',

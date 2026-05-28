@@ -765,6 +765,16 @@ export type ObjectivePndQueryResponse = {
   records: Array<ObjectivePnd>;
 };
 
+export type OverdueProjects = {
+  __typename?: 'OverdueProjects';
+  count: Scalars['Int']['output'];
+};
+
+export type OverdueTasks = {
+  __typename?: 'OverdueTasks';
+  count: Scalars['Int']['output'];
+};
+
 export type Person = {
   __typename?: 'Person';
   active: Scalars['Boolean']['output'];
@@ -828,6 +838,11 @@ export type ProgramQueriesListArgs = {
 /** Program queries */
 export type ProgramQueriesOneArgs = {
   id: Scalars['String']['input'];
+};
+
+export type ProgramsNearEndDate = {
+  __typename?: 'ProgramsNearEndDate';
+  count: Scalars['Int']['output'];
 };
 
 export type ProgramsQueryResponse = {
@@ -1073,6 +1088,9 @@ export type Query = {
 /** Reports queries */
 export type ReportsQueries = {
   __typename?: 'ReportsQueries';
+  overdueProjects: OverdueProjects;
+  overdueTasks: OverdueTasks;
+  programsNearEndDate: ProgramsNearEndDate;
   projectCompletion?: Maybe<ProjectCompletionReport>;
   projectStatus: ProjectStatusReport;
   taskStatus: TaskStatusReport;
@@ -1080,8 +1098,44 @@ export type ReportsQueries = {
 
 
 /** Reports queries */
+export type ReportsQueriesOverdueProjectsArgs = {
+  institutionUid?: InputMaybe<Scalars['String']['input']>;
+  programUid?: InputMaybe<Scalars['String']['input']>;
+  referenceDate?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** Reports queries */
+export type ReportsQueriesOverdueTasksArgs = {
+  institutionUid?: InputMaybe<Scalars['String']['input']>;
+  programUid?: InputMaybe<Scalars['String']['input']>;
+  referenceDate?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** Reports queries */
+export type ReportsQueriesProgramsNearEndDateArgs = {
+  fromDate?: InputMaybe<Scalars['String']['input']>;
+  institutionUid?: InputMaybe<Scalars['String']['input']>;
+  toDate?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** Reports queries */
 export type ReportsQueriesProjectCompletionArgs = {
   projectUid: Scalars['String']['input'];
+};
+
+
+/** Reports queries */
+export type ReportsQueriesProjectStatusArgs = {
+  institutionUid?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+/** Reports queries */
+export type ReportsQueriesTaskStatusArgs = {
+  institutionUid?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type StringFilter = {
@@ -1716,6 +1770,33 @@ export type ProjectTask_UseUpdateProjectTaskMutationVariables = Exact<{
 
 export type ProjectTask_UseUpdateProjectTaskMutation = { __typename?: 'Mutation', projectTask: { __typename?: 'ProjectTaskMutations', update: { __typename?: 'ProjectTask', uid: string, name: string, description?: string | null, status: ProjectTaskStatus, active: boolean, responsible: { __typename?: 'User', uid: string, name: string } } } };
 
+export type Reports_UseOverdueProjectsReportQueryVariables = Exact<{
+  referenceDate?: InputMaybe<Scalars['String']['input']>;
+  institutionUid?: InputMaybe<Scalars['String']['input']>;
+  programUid?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type Reports_UseOverdueProjectsReportQuery = { __typename?: 'Query', reports: { __typename?: 'ReportsQueries', overdueProjects: { __typename?: 'OverdueProjects', count: number } } };
+
+export type Reports_UseOverdueTasksReportQueryVariables = Exact<{
+  referenceDate?: InputMaybe<Scalars['String']['input']>;
+  institutionUid?: InputMaybe<Scalars['String']['input']>;
+  programUid?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type Reports_UseOverdueTasksReportQuery = { __typename?: 'Query', reports: { __typename?: 'ReportsQueries', overdueTasks: { __typename?: 'OverdueTasks', count: number } } };
+
+export type Reports_UseProgramsNearEndDateReportQueryVariables = Exact<{
+  fromDate?: InputMaybe<Scalars['String']['input']>;
+  toDate?: InputMaybe<Scalars['String']['input']>;
+  institutionUid?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type Reports_UseProgramsNearEndDateReportQuery = { __typename?: 'Query', reports: { __typename?: 'ReportsQueries', programsNearEndDate: { __typename?: 'ProgramsNearEndDate', count: number } } };
+
 export type Reports_UseProjectCompletionReportQueryVariables = Exact<{
   projectUid: Scalars['String']['input'];
 }>;
@@ -1723,12 +1804,16 @@ export type Reports_UseProjectCompletionReportQueryVariables = Exact<{
 
 export type Reports_UseProjectCompletionReportQuery = { __typename?: 'Query', reports: { __typename?: 'ReportsQueries', projectCompletion?: { __typename?: 'ProjectCompletionReport', completed: number, total: number, percentage: number } | null } };
 
-export type Reports_UseProjectStatusReportQueryVariables = Exact<{ [key: string]: never; }>;
+export type Reports_UseProjectStatusReportQueryVariables = Exact<{
+  institutionUid?: InputMaybe<Scalars['String']['input']>;
+}>;
 
 
 export type Reports_UseProjectStatusReportQuery = { __typename?: 'Query', reports: { __typename?: 'ReportsQueries', projectStatus: { __typename?: 'ProjectStatusReport', records: Array<{ __typename?: 'ProjectStatusCount', status: ProjectStatus, count: number }> } } };
 
-export type Reports_UseTaskStatusReportQueryVariables = Exact<{ [key: string]: never; }>;
+export type Reports_UseTaskStatusReportQueryVariables = Exact<{
+  institutionUid?: InputMaybe<Scalars['String']['input']>;
+}>;
 
 
 export type Reports_UseTaskStatusReportQuery = { __typename?: 'Query', reports: { __typename?: 'ReportsQueries', taskStatus: { __typename?: 'TaskStatusReport', records: Array<{ __typename?: 'TaskStatusCount', status: ProjectTaskStatus, count: number }> } } };
@@ -1825,9 +1910,12 @@ export const ProjectTask_UseCreateProjectTaskDocument = {"kind":"Document","defi
 export const ProjectTask_UseGetProjectTaskDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ProjectTask_useGetProjectTask"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"uid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"projectTask"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"one"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"uid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"uid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"responsible"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]}}]}}]} as unknown as DocumentNode<ProjectTask_UseGetProjectTaskQuery, ProjectTask_UseGetProjectTaskQueryVariables>;
 export const ProjectTask_UseProjectTaskListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ProjectTask_useProjectTaskList"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectUid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"projectTask"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"list"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"projectUid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectUid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"records"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"responsible"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<ProjectTask_UseProjectTaskListQuery, ProjectTask_UseProjectTaskListQueryVariables>;
 export const ProjectTask_UseUpdateProjectTaskDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ProjectTask_useUpdateProjectTask"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateProjectTaskDataInput"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateProjectTaskWhereInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"projectTask"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"update"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}},{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"responsible"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]}}]}}]} as unknown as DocumentNode<ProjectTask_UseUpdateProjectTaskMutation, ProjectTask_UseUpdateProjectTaskMutationVariables>;
+export const Reports_UseOverdueProjectsReportDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Reports_useOverdueProjectsReport"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"referenceDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"institutionUid"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"programUid"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"overdueProjects"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"referenceDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"referenceDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"institutionUid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"institutionUid"}}},{"kind":"Argument","name":{"kind":"Name","value":"programUid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"programUid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<Reports_UseOverdueProjectsReportQuery, Reports_UseOverdueProjectsReportQueryVariables>;
+export const Reports_UseOverdueTasksReportDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Reports_useOverdueTasksReport"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"referenceDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"institutionUid"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"programUid"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"overdueTasks"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"referenceDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"referenceDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"institutionUid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"institutionUid"}}},{"kind":"Argument","name":{"kind":"Name","value":"programUid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"programUid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<Reports_UseOverdueTasksReportQuery, Reports_UseOverdueTasksReportQueryVariables>;
+export const Reports_UseProgramsNearEndDateReportDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Reports_useProgramsNearEndDateReport"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"fromDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"toDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"institutionUid"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"programsNearEndDate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"fromDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"fromDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"toDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"toDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"institutionUid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"institutionUid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]} as unknown as DocumentNode<Reports_UseProgramsNearEndDateReportQuery, Reports_UseProgramsNearEndDateReportQueryVariables>;
 export const Reports_UseProjectCompletionReportDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Reports_useProjectCompletionReport"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"projectUid"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"projectCompletion"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"projectUid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"projectUid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"completed"}},{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"percentage"}}]}}]}}]}}]} as unknown as DocumentNode<Reports_UseProjectCompletionReportQuery, Reports_UseProjectCompletionReportQueryVariables>;
-export const Reports_UseProjectStatusReportDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Reports_useProjectStatusReport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"projectStatus"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"records"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Reports_UseProjectStatusReportQuery, Reports_UseProjectStatusReportQueryVariables>;
-export const Reports_UseTaskStatusReportDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Reports_useTaskStatusReport"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"taskStatus"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"records"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Reports_UseTaskStatusReportQuery, Reports_UseTaskStatusReportQueryVariables>;
+export const Reports_UseProjectStatusReportDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Reports_useProjectStatusReport"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"institutionUid"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"projectStatus"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"institutionUid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"institutionUid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"records"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Reports_UseProjectStatusReportQuery, Reports_UseProjectStatusReportQueryVariables>;
+export const Reports_UseTaskStatusReportDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Reports_useTaskStatusReport"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"institutionUid"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reports"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"taskStatus"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"institutionUid"},"value":{"kind":"Variable","name":{"kind":"Name","value":"institutionUid"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"records"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"count"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Reports_UseTaskStatusReportQuery, Reports_UseTaskStatusReportQueryVariables>;
 export const CreateUser_UseCreateUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateUser_useCreateUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateUserDataInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"create"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"dni"}}]}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]}}]}}]} as unknown as DocumentNode<CreateUser_UseCreateUserMutation, CreateUser_UseCreateUserMutationVariables>;
 export const DeleteUser_UseDeleteUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteUser_useDeleteUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeleteUserInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"delete"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]}}]} as unknown as DocumentNode<DeleteUser_UseDeleteUserMutation, DeleteUser_UseDeleteUserMutationVariables>;
 export const GetUsers_UseGetUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUsers_useGetUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"one"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dni"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]}}]}}]} as unknown as DocumentNode<GetUsers_UseGetUserQuery, GetUsers_UseGetUserQueryVariables>;

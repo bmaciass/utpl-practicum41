@@ -301,7 +301,7 @@ async function main() {
     await seedInstitutionalObjectives(tx, adminUserId, institutionId)
     await seedAlignmentStrategicPND(tx, adminUserId)
     await seedGoals(tx, adminUserId, institutionId)
-    await seedIndicators(tx, adminUserId, institutionId)
+    await seedIndicators(tx, adminUserId, institutionId, userIds)
   })
   await client.end()
 }

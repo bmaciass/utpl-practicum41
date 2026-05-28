@@ -17,11 +17,11 @@ import {
 } from '~/components/ui/form'
 import { Input } from '~/components/ui/input'
 import { Textarea } from '~/components/ui/textarea'
-import { IndicatorType } from '~/gql/graphql'
 import type {
   Indicator_UseGetIndicatorQuery,
   Indicator_UseIndicatorListQuery,
 } from '~/gql/graphql'
+import { IndicatorType } from '~/gql/graphql'
 import { useCreateIndicator } from '~/hooks/indicator/useCreateIndicator'
 import { useDeleteIndicator } from '~/hooks/indicator/useDeleteIndicator'
 import { useUpdateIndicator } from '~/hooks/indicator/useUpdateIndicator'
@@ -50,7 +50,7 @@ const normalizeText = (value?: string) => {
   return trimmed.length > 0 ? trimmed : null
 }
 
-export function IndicatorForm(props: {
+export function IndicatorForm (props: {
   indicator?: IndicatorRecord | null
   institutionUid: string
   objectiveUid: string
@@ -136,7 +136,7 @@ export function IndicatorForm(props: {
 
     if (created) {
       navigate(
-        `/institutions/${institutionUid}/objectives/${objectiveUid}/goals/${goalUid}/indicators/${created.uid}`,
+        `/institutions/${institutionUid}/objectives/${objectiveUid}/goals`,
       )
     }
   }
@@ -149,13 +149,13 @@ export function IndicatorForm(props: {
     if (!confirmed) return
     await deleteIndicator(indicator.uid)
     navigate(
-      `/institutions/${institutionUid}/objectives/${objectiveUid}/goals/${goalUid}/indicators?deleted=success`,
+      `/institutions/${institutionUid}/objectives/${objectiveUid}/goals`,
     )
   }
 
   const handleCancel = () => {
     navigate(
-      `/institutions/${institutionUid}/objectives/${objectiveUid}/goals/${goalUid}/indicators`,
+      `/institutions/${institutionUid}/objectives/${objectiveUid}/goals`,
     )
   }
 

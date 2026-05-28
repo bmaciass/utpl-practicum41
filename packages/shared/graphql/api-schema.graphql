@@ -456,6 +456,14 @@ type ObjectivePNDQueryResponse {
   records: [ObjectivePND!]!
 }
 
+type OverdueProjects {
+  count: Int!
+}
+
+type OverdueTasks {
+  count: Int!
+}
+
 type Person {
   active: Boolean!
   dni: String!
@@ -488,6 +496,10 @@ type ProgramMutations {
 type ProgramQueries {
   list(active: Boolean, institutionUid: String, name: StringFilter): ProgramsQueryResponse!
   one(id: String!): Program
+}
+
+type ProgramsNearEndDate {
+  count: Int!
 }
 
 type ProgramsQueryResponse {
@@ -635,9 +647,12 @@ type Query {
 
 """Reports queries"""
 type ReportsQueries {
+  overdueProjects(institutionUid: String, programUid: String, referenceDate: String): OverdueProjects!
+  overdueTasks(institutionUid: String, programUid: String, referenceDate: String): OverdueTasks!
+  programsNearEndDate(fromDate: String, institutionUid: String, toDate: String): ProgramsNearEndDate!
   projectCompletion(projectUid: String!): ProjectCompletionReport
-  projectStatus: ProjectStatusReport!
-  taskStatus: TaskStatusReport!
+  projectStatus(institutionUid: String): ProjectStatusReport!
+  taskStatus(institutionUid: String): TaskStatusReport!
 }
 
 input StringFilter {

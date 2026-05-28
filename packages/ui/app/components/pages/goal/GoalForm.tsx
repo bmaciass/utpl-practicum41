@@ -31,7 +31,7 @@ const schema = z.object({
     .min(4, 'Descripción debe tener al menos 4 caracteres'),
 })
 
-export function GoalForm(props: {
+export function GoalForm (props: {
   goal?: GoalRecord | null
   institutionUid: string
   objectiveUid: string
@@ -79,7 +79,7 @@ export function GoalForm(props: {
 
     if (created) {
       navigate(
-        `/institutions/${institutionUid}/objectives/${objectiveUid}/goals/${created.uid}`,
+        `/institutions/${institutionUid}/objectives/${objectiveUid}`,
       )
     }
   }
@@ -92,12 +92,12 @@ export function GoalForm(props: {
     if (!confirmed) return
     await deleteGoal(goal.uid)
     navigate(
-      `/institutions/${institutionUid}/objectives/${objectiveUid}/goals?deleted=success`,
+      `/institutions/${institutionUid}/objectives/${objectiveUid}`,
     )
   }
 
   const handleCancel = () => {
-    navigate(`/institutions/${institutionUid}/objectives/${objectiveUid}/goals`)
+    navigate(`/institutions/${institutionUid}/objectives/${objectiveUid}`)
   }
 
   return (

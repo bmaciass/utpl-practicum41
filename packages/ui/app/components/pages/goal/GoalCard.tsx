@@ -11,18 +11,19 @@ export function GoalCard(props: {
   goal: GoalRecord
   institutionUid: string
   objectiveUid: string
+  cardTo?: (goalUid: string) => string
 }) {
-  const { goal, institutionUid, objectiveUid } = props
+  const { goal, institutionUid, objectiveUid, cardTo } = props
   const navigate = useNavigate()
+
+  const target = cardTo
+    ? cardTo(goal.uid)
+    : `/institutions/${institutionUid}/objectives/${objectiveUid}/goals/${goal.uid}`
 
   return (
     <Card
       className='cursor-pointer transition hover:border-primary'
-      onClick={() =>
-        navigate(
-          `/institutions/${institutionUid}/objectives/${objectiveUid}/goals/${goal.uid}`,
-        )
-      }
+      onClick={() => navigate(target)}
     >
       <CardHeader>
         <div className='flex items-start justify-between gap-2'>

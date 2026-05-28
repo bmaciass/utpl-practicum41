@@ -1,8 +1,7 @@
-import { Link, useParams } from '@remix-run/react'
-import { GoalForm } from '~/components/pages/goal/GoalForm'
+import { useParams } from '@remix-run/react'
 import { Alert } from '~/components/globals/Alert'
+import { GoalForm } from '~/components/pages/goal/GoalForm'
 import { Title } from '~/components/typography/Headers'
-import { Button } from '~/components/ui/button'
 import { Skeleton } from '~/components/ui/skeleton'
 import { withAuth } from '~/helpers/withAuth'
 import { useGetGoal } from '~/hooks/goal/useGetGoal'
@@ -10,7 +9,7 @@ import { ClientOnly } from '~/utils/ClientOnly'
 
 export const loader = withAuth()
 
-function GoalDetailInner() {
+function GoalDetailInner () {
   const { institutionUid, objectiveUid, uid } = useParams()
   const { goal, loading, error } = useGetGoal(uid)
 
@@ -39,9 +38,6 @@ function GoalDetailInner() {
     <div className='flex flex-col gap-4'>
       <div className='flex items-center justify-between'>
         <Title variant='h4'>{goal.name}</Title>
-        <Link to='indicators'>
-          <Button variant='secondary'>Indicadores</Button>
-        </Link>
       </div>
       <GoalForm
         goal={goal}
@@ -52,6 +48,6 @@ function GoalDetailInner() {
   )
 }
 
-export default function GoalDetailRoute() {
+export default function GoalDetailRoute () {
   return <ClientOnly>{() => <GoalDetailInner />}</ClientOnly>
 }

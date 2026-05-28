@@ -7,6 +7,10 @@ type GoalSeed = {
   objectiveName: string
   name: string
   description: string
+  period: 'annual' | 'multiannual'
+  targetValue: number | null
+  startDate: Date | null
+  endDate: Date | null
 }
 
 const goalSeeds: GoalSeed[] = [
@@ -15,84 +19,140 @@ const goalSeeds: GoalSeed[] = [
     name: 'Actualizar mallas curriculares',
     description:
       'Revisar y actualizar el 100% de las mallas curriculares priorizadas para alinearlas con estándares nacionales e internacionales.',
+    period: 'annual',
+    targetValue: 100,
+    startDate: new Date('2025-01-01'),
+    endDate: new Date('2025-12-31'),
   },
   {
     objectiveName: 'Excelencia Académica',
     name: 'Formación docente continua',
     description:
       'Implementar un plan anual de formación docente en metodologías activas, evaluación auténtica y uso de tecnología educativa.',
+    period: 'annual',
+    targetValue: 500,
+    startDate: new Date('2025-01-01'),
+    endDate: new Date('2025-12-31'),
   },
   {
     objectiveName: 'Investigación e Innovación',
     name: 'Convocatoria de proyectos aplicados',
     description:
       'Lanzar una convocatoria semestral de proyectos de investigación aplicada con financiamiento semilla y mentoría.',
+    period: 'annual',
+    targetValue: 60,
+    startDate: new Date('2025-01-01'),
+    endDate: new Date('2025-12-31'),
   },
   {
     objectiveName: 'Investigación e Innovación',
     name: 'Laboratorios de innovación abierta',
     description:
       'Habilitar laboratorios de innovación abierta para prototipar soluciones con empresas y gobiernos locales.',
+    period: 'multiannual',
+    targetValue: 30,
+    startDate: new Date('2025-01-01'),
+    endDate: new Date('2027-12-31'),
   },
   {
     objectiveName: 'Vinculación con la Sociedad',
     name: 'Programa de prácticas comunitarias',
     description:
       'Diseñar prácticas preprofesionales y proyectos de servicio comunitario coordinados con gobiernos locales y ONG.',
+    period: 'annual',
+    targetValue: null,
+    startDate: new Date('2025-01-01'),
+    endDate: new Date('2025-12-31'),
   },
   {
     objectiveName: 'Vinculación con la Sociedad',
     name: 'Portafolio de proyectos territoriales',
     description:
       'Consolidar un portafolio anual de proyectos territoriales cocreados con municipios, comunidades y sector productivo.',
+    period: 'annual',
+    targetValue: 80,
+    startDate: new Date('2025-01-01'),
+    endDate: new Date('2025-12-31'),
   },
   {
     objectiveName: 'Gestión Institucional Eficiente',
     name: 'Digitalizar trámites clave',
     description:
       'Digitalizar los trámites académicos y administrativos de mayor demanda para reducir tiempos de respuesta.',
+    period: 'multiannual',
+    targetValue: 100,
+    startDate: new Date('2025-01-01'),
+    endDate: new Date('2026-12-31'),
   },
   {
     objectiveName: 'Gestión Institucional Eficiente',
     name: 'Tablero integral de seguimiento institucional',
     description:
       'Implementar un tablero institucional con seguimiento mensual de hitos, presupuesto, riesgos y cumplimiento.',
+    period: 'annual',
+    targetValue: 100,
+    startDate: new Date('2025-01-01'),
+    endDate: new Date('2025-12-31'),
   },
   {
     objectiveName: 'Internacionalización',
     name: 'Red de convenios y dobles titulaciones',
     description:
       'Ampliar la red de convenios internacionales y establecer al menos un programa de doble titulación por facultad.',
+    period: 'multiannual',
+    targetValue: 120,
+    startDate: new Date('2025-01-01'),
+    endDate: new Date('2027-12-31'),
   },
   {
     objectiveName: 'Internacionalización',
     name: 'Movilidad saliente y entrante',
     description:
       'Incrementar la movilidad estudiantil y docente mediante convocatorias semestrales y acuerdos activos.',
+    period: 'annual',
+    targetValue: 1000,
+    startDate: new Date('2025-01-01'),
+    endDate: new Date('2025-12-31'),
   },
   {
     objectiveName: 'Bienestar Universitario',
     name: 'Programa integral de salud mental',
     description:
       'Implementar servicios de acompañamiento psicoemocional, talleres y campañas de autocuidado para la comunidad.',
+    period: 'annual',
+    targetValue: 3000,
+    startDate: new Date('2025-01-01'),
+    endDate: new Date('2025-12-31'),
   },
   {
     objectiveName: 'Bienestar Universitario',
     name: 'Plan de permanencia y acompañamiento',
     description:
       'Fortalecer tutorías, acompañamiento socioeconómico y alertas tempranas para mejorar retención estudiantil.',
+    period: 'annual',
+    targetValue: 15000,
+    startDate: new Date('2025-01-01'),
+    endDate: new Date('2025-12-31'),
   },
   {
     objectiveName: 'Sostenibilidad y Responsabilidad Ambiental',
     name: 'Plan de gestión de residuos y eficiencia energética',
     description:
       'Implementar gestión de residuos, reciclaje y eficiencia energética con metas de reducción anual de consumo.',
+    period: 'multiannual',
+    targetValue: null,
+    startDate: new Date('2025-01-01'),
+    endDate: new Date('2027-12-31'),
   },
   {
     objectiveName: 'Sostenibilidad y Responsabilidad Ambiental',
     name: 'Campus sostenible y movilidad limpia',
     description:
       'Ejecutar acciones de movilidad sostenible, compras responsables y sensibilización ambiental en campus.',
+    period: 'multiannual',
+    targetValue: 100,
+    startDate: new Date('2025-01-01'),
+    endDate: new Date('2027-12-31'),
   },
 ]
 
@@ -119,6 +179,10 @@ export async function seedGoals(db: Db, userId: number, institutionId: number) {
         uid: nanoid(),
         name: seed.name,
         description: seed.description,
+        period: seed.period,
+        targetValue: seed.targetValue,
+        startDate: seed.startDate,
+        endDate: seed.endDate,
         institutionalObjectiveId: objective.id,
         createdBy: userId,
       }
@@ -127,6 +191,10 @@ export async function seedGoals(db: Db, userId: number, institutionId: number) {
     uid: string
     name: string
     description: string
+    period: 'annual' | 'multiannual'
+    targetValue: number | null
+    startDate: Date | null
+    endDate: Date | null
     institutionalObjectiveId: number
     createdBy: number
   }>

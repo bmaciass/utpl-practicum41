@@ -6,6 +6,7 @@ import {
   timestampColumns,
 } from '../../helpers/column.helpers'
 import { Goal } from './Goal'
+import { User } from './user'
 
 export const indicatorType = pgEnum('indicatorType', ['number', 'percentage'])
 
@@ -16,10 +17,14 @@ export const Indicator = pgTable('Indicator', {
   description: text(),
   type: indicatorType(),
   unitType: varchar(),
+  formula: text(),
   minValue: integer(),
   maxValue: integer(),
   goalId: integer()
     .references(() => Goal.id)
+    .notNull(),
+  responsibleId: integer()
+    .references(() => User.id)
     .notNull(),
   ...deletedAtColumn,
   ...byColumns,

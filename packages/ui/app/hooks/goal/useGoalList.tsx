@@ -51,11 +51,12 @@ export function useGoalList(
       limit,
       offset,
     },
+    fetchPolicy: 'cache-and-network',
     skip: !institutionalObjectiveUid,
   })
 
   return {
-    list: data?.goal.list.records ?? [],
+    list: data?.goal?.list?.records ?? [],
     loading,
     error,
     refetch,

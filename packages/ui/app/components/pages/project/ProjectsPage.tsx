@@ -1,4 +1,4 @@
-import { Link, Outlet, useParams, useSearchParams } from '@remix-run/react'
+import { Link, useParams, useSearchParams } from '@remix-run/react'
 import { isEmpty } from 'lodash-es'
 import { ArrowLeft } from 'lucide-react'
 import { Alert } from '~/components/globals/Alert'
@@ -46,38 +46,27 @@ export const ProjectsPage = () => {
   }
 
   return (
-    <div className='grid grid-cols-8 gap-4'>
-      <div className='col-span-2 col-start-1 p-4'>
-        {deleteStatus === 'success' && (
-          <Alert
-            closable
-            variant='success'
-            description='Proyecto eliminado exitosamente'
-            onClose={() => setSearchParams({})}
-          />
-        )}
-        <div className='flex items-center gap-2'>
-          <div className='flex-none'>
-            <Link to={`/programs/${programUid}`}>
-              <Button variant='ghost' size='icon'>
-                <ArrowLeft className='h-4 w-4' />
-              </Button>
-            </Link>
-          </div>
-          <div className='grow'>
-            <Title variant='h4'>Proyectos</Title>
-          </div>
-          <div className='flex-none'>
-            <Link to={`/programs/${programUid}/projects/new`}>
-              <Button>Nuevo</Button>
-            </Link>
-          </div>
-        </div>
-        <ProjectsSection programUid={programUid} />
+    <div className='p-4 space-y-4'>
+      {deleteStatus === 'success' && (
+        <Alert
+          closable
+          variant='success'
+          description='Proyecto eliminado exitosamente'
+          onClose={() => setSearchParams({})}
+        />
+      )}
+      <div className='flex items-center gap-2'>
+        <Link to={`/programs/${programUid}`}>
+          <Button variant='ghost' size='icon'>
+            <ArrowLeft className='h-4 w-4' />
+          </Button>
+        </Link>
+        <div className='grow'><Title variant='h4'>Proyectos</Title></div>
+        <Link to={`/programs/${programUid}/projects/new`}>
+          <Button>Nuevo</Button>
+        </Link>
       </div>
-      <div className='col-span-6 col-start-3 p-4'>
-        <Outlet />
-      </div>
+      <ProjectsSection programUid={programUid} />
     </div>
   )
 }

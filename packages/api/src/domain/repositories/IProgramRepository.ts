@@ -23,6 +23,11 @@ export interface IProgramRepository
   findByUidOrThrow(uid: string): Promise<Program>
   findMany(options?: FindManyProgramsOptions): Promise<Program[]>
   count(where?: ProgramFilters): Promise<number>
+  countNearingEndDate(options?: {
+    fromDate?: Date
+    toDate?: Date
+    institutionUid?: string
+  }): Promise<number>
   save(program: Program): Promise<Program>
   delete(uid: string): Promise<void>
 }

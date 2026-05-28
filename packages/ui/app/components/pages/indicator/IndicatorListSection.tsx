@@ -1,4 +1,5 @@
 import { isEmpty } from 'lodash-es'
+import { useEffect, useState } from 'react'
 import { Alert } from '~/components/globals/Alert'
 import { Paragraph } from '~/components/typography/Paragraph'
 import { Skeleton } from '~/components/ui/skeleton'
@@ -17,10 +18,24 @@ export function IndicatorListSection(props: {
 }) {
   const { goalUid, institutionUid, objectiveUid, onLoaded } = props
   const { list, loading, error } = useIndicatorList(goalUid)
+  const [visibleList, setVisibleList] = useState(list)
 
-  if (loading) return <Skeleton className='h-full w-full' />
+  useEffect(() => {
+    if (list.length > 0) {
+      setVisibleList(list)
+      return
+    }
 
-  if (error) {
+    if (!loading) {
+      setVisibleList([])
+    }
+  }, [list, loading])
+
+  if (loading && isEmpty(visibleList)) {
+    return <Skeleton className='h-full w-full' />
+  }
+
+  if (error && isEmpty(visibleList)) {
     return (
       <Alert
         variant='error'
@@ -31,15 +46,15 @@ export function IndicatorListSection(props: {
     )
   }
 
-  if (isEmpty(list)) {
+  if (isEmpty(visibleList)) {
     return <Paragraph>No hay indicadores creados</Paragraph>
   }
 
-  if (onLoaded) onLoaded(list)
+  if (onLoaded) onLoaded(visibleList)
 
   return (
     <IndicatorList
-      list={list}
+      list={visibleList}
       goalUid={goalUid}
       institutionUid={institutionUid}
       objectiveUid={objectiveUid}

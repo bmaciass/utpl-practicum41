@@ -1,4 +1,5 @@
 import { isEmpty } from 'lodash-es'
+import { useEffect, useState } from 'react'
 import { Alert } from '~/components/globals/Alert'
 import { Paragraph } from '~/components/typography/Paragraph'
 import { Skeleton } from '~/components/ui/skeleton'
@@ -12,13 +13,28 @@ export function GoalListSection(props: {
   institutionUid: string
   objectiveUid: string
   onLoaded?: (list: GoalRecord[]) => void
+  cardTo?: (goalUid: string) => string
 }) {
-  const { institutionUid, objectiveUid, onLoaded } = props
+  const { institutionUid, objectiveUid, onLoaded, cardTo } = props
   const { list, loading, error } = useGoalList(objectiveUid)
+  const [visibleList, setVisibleList] = useState(list)
 
-  if (loading) return <Skeleton className='h-full w-full' />
+  useEffect(() => {
+    if (list.length > 0) {
+      setVisibleList(list)
+      return
+    }
 
-  if (error) {
+    if (!loading) {
+      setVisibleList([])
+    }
+  }, [list, loading])
+
+  if (loading && isEmpty(visibleList)) {
+    return <Skeleton className='h-full w-full' />
+  }
+
+  if (error && isEmpty(visibleList)) {
     return (
       <Alert
         variant='error'
@@ -29,17 +45,18 @@ export function GoalListSection(props: {
     )
   }
 
-  if (isEmpty(list)) {
+  if (isEmpty(visibleList)) {
     return <Paragraph>No hay metas creadas</Paragraph>
   }
 
-  if (onLoaded) onLoaded(list)
+  if (onLoaded) onLoaded(visibleList)
 
   return (
     <GoalList
-      list={list}
+      list={visibleList}
       institutionUid={institutionUid}
       objectiveUid={objectiveUid}
+      cardTo={cardTo}
     />
   )
 }

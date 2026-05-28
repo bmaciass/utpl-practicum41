@@ -35,7 +35,10 @@ export class DrizzleAuthSessionRepository implements IAuthSessionRepository {
     return record ?? null
   }
 
-  async rotate(uid: string, input: RotateAuthSessionInput): Promise<AuthSession> {
+  async rotate(
+    uid: string,
+    input: RotateAuthSessionInput,
+  ): Promise<AuthSession> {
     const [record] = await this.db
       .update(AuthSessionTable)
       .set({

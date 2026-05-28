@@ -14,6 +14,8 @@ type IndicatorSeed = {
   description: string
   type: 'number' | 'percentage'
   unitType: string
+  formula: string
+  responsibleUserName: string
   minValue?: number
   maxValue?: number
 }
@@ -25,6 +27,8 @@ const indicatorSeeds: IndicatorSeed[] = [
     description: 'Porcentaje de mallas actualizadas respecto al plan anual.',
     type: 'percentage',
     unitType: '%',
+    formula: '(mallas_actualizadas / mallas_priorizadas) * 100',
+    responsibleUserName: 'maria',
     minValue: 0,
     maxValue: 100,
   },
@@ -34,6 +38,8 @@ const indicatorSeeds: IndicatorSeed[] = [
     description: 'Numero de docentes certificados en metodologias activas.',
     type: 'number',
     unitType: 'docentes',
+    formula: 'count(docentes_certificados)',
+    responsibleUserName: 'luis',
     minValue: 0,
     maxValue: 500,
   },
@@ -43,6 +49,8 @@ const indicatorSeeds: IndicatorSeed[] = [
     description: 'Cantidad de proyectos de investigacion financiados.',
     type: 'number',
     unitType: 'proyectos',
+    formula: 'count(proyectos_financiados)',
+    responsibleUserName: 'sofia',
     minValue: 0,
     maxValue: 60,
   },
@@ -52,6 +60,8 @@ const indicatorSeeds: IndicatorSeed[] = [
     description: 'Porcentaje de tramites digitalizados en el periodo.',
     type: 'percentage',
     unitType: '%',
+    formula: '(tramites_digitalizados / tramites_totales) * 100',
+    responsibleUserName: 'bryan',
     minValue: 0,
     maxValue: 100,
   },
@@ -61,6 +71,8 @@ const indicatorSeeds: IndicatorSeed[] = [
     description: 'Numero de convenios internacionales activos.',
     type: 'number',
     unitType: 'convenios',
+    formula: 'count(convenios_internacionales_activos)',
+    responsibleUserName: 'maria',
     minValue: 0,
     maxValue: 120,
   },
@@ -70,6 +82,8 @@ const indicatorSeeds: IndicatorSeed[] = [
     description: 'Participantes en programas de salud mental y bienestar.',
     type: 'number',
     unitType: 'personas',
+    formula: 'count(participantes_bienestar)',
+    responsibleUserName: 'ana',
     minValue: 0,
     maxValue: 3000,
   },
@@ -80,6 +94,8 @@ const indicatorSeeds: IndicatorSeed[] = [
       'Cantidad de carreras con rediseño curricular validado por comités académicos.',
     type: 'number',
     unitType: 'carreras',
+    formula: 'count(carreras_redisenadas_validadas)',
+    responsibleUserName: 'maria',
     minValue: 0,
     maxValue: 40,
   },
@@ -90,6 +106,8 @@ const indicatorSeeds: IndicatorSeed[] = [
       'Numero de retos de innovación prototipados junto con empresas y gobiernos locales.',
     type: 'number',
     unitType: 'retos',
+    formula: 'count(retos_prototipados)',
+    responsibleUserName: 'sofia',
     minValue: 0,
     maxValue: 30,
   },
@@ -100,6 +118,8 @@ const indicatorSeeds: IndicatorSeed[] = [
       'Cantidad de convenios activos que respaldan proyectos territoriales vigentes.',
     type: 'number',
     unitType: 'convenios',
+    formula: 'count(convenios_territoriales_activos)',
+    responsibleUserName: 'sofia',
     minValue: 0,
     maxValue: 80,
   },
@@ -110,6 +130,8 @@ const indicatorSeeds: IndicatorSeed[] = [
       'Porcentaje de unidades que reportan avances mensuales en el tablero institucional.',
     type: 'percentage',
     unitType: '%',
+    formula: '(unidades_con_reporte_mensual / unidades_totales) * 100',
+    responsibleUserName: 'bryan',
     minValue: 0,
     maxValue: 100,
   },
@@ -120,6 +142,8 @@ const indicatorSeeds: IndicatorSeed[] = [
       'Cantidad de estudiantes y docentes participantes en movilidad internacional.',
     type: 'number',
     unitType: 'participantes',
+    formula: 'count(participantes_movilidad_internacional)',
+    responsibleUserName: 'maria',
     minValue: 0,
     maxValue: 1000,
   },
@@ -130,6 +154,8 @@ const indicatorSeeds: IndicatorSeed[] = [
       'Numero de estudiantes atendidos con tutorías, becas o alertas tempranas.',
     type: 'number',
     unitType: 'estudiantes',
+    formula: 'count(estudiantes_atendidos)',
+    responsibleUserName: 'ana',
     minValue: 0,
     maxValue: 15000,
   },
@@ -140,6 +166,9 @@ const indicatorSeeds: IndicatorSeed[] = [
       'Porcentaje de reducción de emisiones operativas asociadas a movilidad y consumo.',
     type: 'percentage',
     unitType: '%',
+    formula:
+      '((emisiones_base - emisiones_periodo) / emisiones_base) * 100',
+    responsibleUserName: 'luis',
     minValue: 0,
     maxValue: 100,
   },
@@ -149,6 +178,7 @@ export async function seedIndicators(
   db: Db,
   userId: number,
   institutionId: number,
+  userIds: Record<string, number>,
 ) {
   const objectives = await db
     .select()
@@ -181,15 +211,24 @@ export async function seedIndicators(
         console.warn(`Goal not found for indicator: ${seed.goalName}`)
         return null
       }
+      const responsibleId =
+        userIds[seed.responsibleUserName] ?? userId
+      if (!userIds[seed.responsibleUserName]) {
+        console.warn(
+          `Responsible user not found for indicator: ${seed.responsibleUserName}; defaulting to seeder user.`,
+        )
+      }
       return {
         uid: nanoid(),
         name: seed.name,
         description: seed.description,
         type: seed.type,
         unitType: seed.unitType,
+        formula: seed.formula,
         minValue: seed.minValue,
         maxValue: seed.maxValue,
         goalId: goal.id,
+        responsibleId,
         createdBy: userId,
       }
     })
@@ -199,9 +238,11 @@ export async function seedIndicators(
     description: string
     type: 'number' | 'percentage'
     unitType: string
+    formula: string
     minValue?: number
     maxValue?: number
     goalId: number
+    responsibleId: number
     createdBy: number
   }>
 

@@ -1,4 +1,4 @@
-import { Link, Outlet, useParams } from '@remix-run/react'
+import { Link, useParams } from '@remix-run/react'
 import { isEmpty } from 'lodash-es'
 import { ArrowLeft } from 'lucide-react'
 import { Alert } from '~/components/globals/Alert'
@@ -51,30 +51,21 @@ export const InstitutionalObjectivesPage = () => {
   }
 
   return (
-    <div className='grid grid-cols-8 gap-4'>
-      <div className='col-span-3 col-start-1 p-4'>
-        <div className='flex items-center gap-2'>
-          <div className='flex-none'>
-            <Link to={`/institutions/${institutionUid}`}>
-              <Button variant='ghost' size='icon'>
-                <ArrowLeft className='h-4 w-4' />
-              </Button>
-            </Link>
-          </div>
-          <div className='grow'>
-            <Title variant='h4'>Objetivos Institucionales</Title>
-          </div>
-          <div className='flex-none'>
-            <Link to={`/institutions/${institutionUid}/objectives/new`}>
-              <Button>Nuevo</Button>
-            </Link>
-          </div>
+    <div className='p-4 space-y-4'>
+      <div className='flex items-center gap-2'>
+        <Link to={`/institutions/${institutionUid}`}>
+          <Button variant='ghost' size='icon'>
+            <ArrowLeft className='h-4 w-4' />
+          </Button>
+        </Link>
+        <div className='grow'>
+          <Title variant='h4'>Objetivos Institucionales</Title>
         </div>
-        <InstitutionalObjectivesSection institutionUid={institutionUid} />
+        <Link to={`/institutions/${institutionUid}/objectives/new`}>
+          <Button>Nuevo</Button>
+        </Link>
       </div>
-      <div className='col-span-5 col-start-4 p-4'>
-        <Outlet />
-      </div>
+      <InstitutionalObjectivesSection institutionUid={institutionUid} />
     </div>
   )
 }

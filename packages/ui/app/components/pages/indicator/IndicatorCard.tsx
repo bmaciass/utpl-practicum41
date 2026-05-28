@@ -41,7 +41,7 @@ export function IndicatorCard(props: {
       className='cursor-pointer transition hover:border-primary'
       onClick={() =>
         navigate(
-          `/institutions/${institutionUid}/objectives/${objectiveUid}/goals/${goalUid}/indicators/${indicator.uid}`,
+          `/institutions/${institutionUid}/objectives/${objectiveUid}/goals/${goalUid}/indicator/${indicator.uid}`,
         )
       }
     >

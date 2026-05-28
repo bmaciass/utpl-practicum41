@@ -1,7 +1,22 @@
 import type { Db } from '@sigep/db'
-import { Program as ProgramTable } from '@sigep/db'
+import {
+  Institution as InstitutionTable,
+  Program as ProgramTable,
+  Project as ProjectTable,
+} from '@sigep/db'
 import { NotFoundError } from '@sigep/shared'
-import { type SQL, eq, ilike, isNotNull, isNull } from 'drizzle-orm'
+import {
+  type SQL,
+  and,
+  eq,
+  gte,
+  ilike,
+  inArray,
+  isNotNull,
+  isNull,
+  lte,
+  sql,
+} from 'drizzle-orm'
 import { compact, isNil } from 'lodash-es'
 import type { Program } from '~/domain/entities/Program'
 import type {
@@ -66,6 +81,49 @@ export class DrizzleProgramRepository implements IProgramRepository {
     })
 
     return records.length
+  }
+
+  async countNearingEndDate(options?: {
+    fromDate?: Date
+    toDate?: Date
+    institutionUid?: string
+  }): Promise<number> {
+    const today = new Date()
+    const thirtyDaysLater = new Date(today)
+    thirtyDaysLater.setDate(thirtyDaysLater.getDate() + 30)
+
+    const {
+      fromDate = today,
+      toDate = thirtyDaysLater,
+      institutionUid,
+    } = options ?? {}
+
+    const conditions = compact([
+      isNull(ProgramTable.deletedAt),
+      isNotNull(ProgramTable.endDate),
+      gte(ProgramTable.endDate, fromDate),
+      lte(ProgramTable.endDate, toDate),
+      institutionUid ? eq(InstitutionTable.uid, institutionUid) : null,
+    ])
+
+    const [result] = await this.db
+      .select({ count: sql<number>`count(distinct ${ProgramTable.id})` })
+      .from(ProgramTable)
+      .leftJoin(
+        InstitutionTable,
+        eq(ProgramTable.institutionId, InstitutionTable.id),
+      )
+      .innerJoin(
+        ProjectTable,
+        and(
+          eq(ProjectTable.programId, ProgramTable.id),
+          isNull(ProjectTable.deletedAt),
+          inArray(ProjectTable.status, ['pending', 'in_progress']),
+        ),
+      )
+      .where(and(...conditions))
+
+    return Number(result?.count ?? 0)
   }
 
   async save(program: Program): Promise<Program> {

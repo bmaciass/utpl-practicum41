@@ -2,9 +2,9 @@ import { gql, useQuery } from '@apollo/client'
 import type { ProjectTaskStatus } from '~/gql/graphql'
 
 const QUERY = gql`
-  query Reports_useTaskStatusReport {
+  query Reports_useTaskStatusReport($institutionUid: String) {
     reports {
-      taskStatus {
+      taskStatus(institutionUid: $institutionUid) {
         records {
           status
           count
@@ -27,8 +27,10 @@ const DEFAULT_RECORDS: TaskStatusRecord[] = [
   { status: 'cancelled', count: 0 },
 ]
 
-export function useTaskStatusReport() {
-  const { called, loading, data, error, refetch } = useQuery(QUERY)
+export function useTaskStatusReport(options?: { institutionUid?: string }) {
+  const { called, loading, data, error, refetch } = useQuery(QUERY, {
+    variables: options,
+  })
   const records = data?.reports.taskStatus.records ?? DEFAULT_RECORDS
 
   return { called, loading, records, error, refetch }

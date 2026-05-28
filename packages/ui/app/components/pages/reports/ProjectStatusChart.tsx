@@ -39,8 +39,12 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export function ProjectStatusChart() {
-  const { records } = useProjectStatusReport()
+export function ProjectStatusChart({
+  institutionUid,
+}: {
+  institutionUid?: string
+}) {
+  const { records } = useProjectStatusReport({ institutionUid })
 
   const chartData = records.map((record) => ({
     status: record.status,

@@ -22,6 +22,14 @@ export interface IProjectRepository
   findByProgramId(programId: number): Promise<Project[]>
   findMany(options?: FindManyProjectsOptions): Promise<Project[]>
   count(where?: ProjectFilters): Promise<number>
+  countOverdue(options?: {
+    referenceDate?: Date
+    institutionUid?: string
+    programUid?: string
+  }): Promise<number>
+  countByStatus(options?: { institutionUid?: string }): Promise<
+    Array<{ status: ProjectStatus; count: number }>
+  >
   save(project: Project): Promise<Project>
   delete(uid: string): Promise<void>
 }

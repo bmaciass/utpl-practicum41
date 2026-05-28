@@ -117,7 +117,9 @@ export class DrizzleAuditEventRepository implements IAuditEventRepository {
     }
 
     if (filters.actorLabel) {
-      conditions.push(ilike(AuditEventTable.actorLabel, `%${filters.actorLabel}%`))
+      conditions.push(
+        ilike(AuditEventTable.actorLabel, `%${filters.actorLabel}%`),
+      )
     }
 
     return conditions.length > 0 ? and(...conditions) : undefined

@@ -1,7 +1,21 @@
 import type { Db } from '@sigep/db'
-import { ProjectTask as ProjectGoalTable } from '@sigep/db'
+import {
+  Institution as InstitutionTable,
+  Program as ProgramTable,
+  Project as ProjectTable,
+  ProjectTask as ProjectGoalTable,
+} from '@sigep/db'
 import { NotFoundError } from '@sigep/shared'
-import { type SQL, eq, isNotNull, isNull } from 'drizzle-orm'
+import {
+  type SQL,
+  and,
+  count,
+  eq,
+  isNotNull,
+  isNull,
+  lt,
+  notInArray,
+} from 'drizzle-orm'
 import { compact, isNil } from 'lodash-es'
 import type { ProjectTask } from '~/domain/entities/ProjectTask'
 import type {
@@ -80,6 +94,65 @@ export class DrizzleProjectTaskRepository implements IProjectTaskRepository {
     })
 
     return records.length
+  }
+
+  async countOverdue(options?: {
+    referenceDate?: Date
+    institutionUid?: string
+    programUid?: string
+  }): Promise<number> {
+    const {
+      referenceDate = new Date(),
+      institutionUid,
+      programUid,
+    } = options ?? {}
+
+    const conditions = compact([
+      isNull(ProjectGoalTable.deletedAt),
+      isNotNull(ProjectGoalTable.endDate),
+      lt(ProjectGoalTable.endDate, referenceDate),
+      notInArray(ProjectGoalTable.status, ['done', 'cancelled']),
+      programUid ? eq(ProgramTable.uid, programUid) : null,
+      institutionUid ? eq(InstitutionTable.uid, institutionUid) : null,
+    ])
+
+    const [result] = await this.db
+      .select({ count: count() })
+      .from(ProjectGoalTable)
+      .leftJoin(ProjectTable, eq(ProjectGoalTable.projectId, ProjectTable.id))
+      .leftJoin(ProgramTable, eq(ProjectTable.programId, ProgramTable.id))
+      .leftJoin(
+        InstitutionTable,
+        eq(ProgramTable.institutionId, InstitutionTable.id),
+      )
+      .where(and(...conditions))
+
+    return Number(result?.count ?? 0)
+  }
+
+  async countByStatus(options?: {
+    institutionUid?: string
+  }): Promise<Array<{ status: ProjectTask['status']; count: number }>> {
+    const { institutionUid } = options ?? {}
+
+    const conditions = compact([
+      isNull(ProjectGoalTable.deletedAt),
+      institutionUid ? eq(InstitutionTable.uid, institutionUid) : null,
+    ])
+
+    const rows = await this.db
+      .select({ status: ProjectGoalTable.status, count: count() })
+      .from(ProjectGoalTable)
+      .leftJoin(ProjectTable, eq(ProjectGoalTable.projectId, ProjectTable.id))
+      .leftJoin(ProgramTable, eq(ProjectTable.programId, ProgramTable.id))
+      .leftJoin(
+        InstitutionTable,
+        eq(ProgramTable.institutionId, InstitutionTable.id),
+      )
+      .where(and(...conditions))
+      .groupBy(ProjectGoalTable.status)
+
+    return rows.map((row) => ({ status: row.status, count: Number(row.count) }))
   }
 
   async save(goal: ProjectTask): Promise<ProjectTask> {

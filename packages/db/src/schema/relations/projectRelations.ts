@@ -6,7 +6,7 @@ import { ProjectTask } from '../tables/projectTask'
 import { User } from '../tables/user'
 
 export const projectRelations = relations(Project, ({ one, many }) => ({
-  goals: many(ProjectTask),
+  tasks: many(ProjectTask),
   objectives: many(ProjectObjective),
   program: one(Program, {
     fields: [Project.programId],

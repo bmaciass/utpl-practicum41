@@ -38,16 +38,21 @@ builder.objectField(ReportsQueries, 'projectStatus', (t) =>
   t.field({
     type: ProjectStatusReport,
     authScopes: { protected: true },
-    resolve: async (_, __, { db }) => {
+    args: {
+      institutionUid: t.arg.string({ required: false }),
+    },
+    resolve: async (_, args, { db }) => {
       const projectRepository = getProjectRepository(db)
-      const projects = await projectRepository.findMany()
+      const rows = await projectRepository.countByStatus({
+        institutionUid: args.institutionUid ?? undefined,
+      })
 
       const counts = new Map<ProjectStatus, number>(
         PROJECT_STATUSES.map((status) => [status, 0]),
       )
 
-      for (const project of projects) {
-        counts.set(project.status, (counts.get(project.status) ?? 0) + 1)
+      for (const row of rows) {
+        counts.set(row.status, row.count)
       }
 
       return {
