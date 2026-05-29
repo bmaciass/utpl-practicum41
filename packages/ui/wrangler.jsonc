@@ -7,34 +7,48 @@
   "name": "utpl-practicum",
   "main": "./server.ts",
   "compatibility_date": "2025-03-10",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "observability": {
     "enabled": true
   },
   "assets": {
     "directory": "./build/client"
   },
-  "workers_dev": true,
-  "vars": {
-    "ENVIRONMENT": "development",
-    "API_GRAPHQL_URL": "http://localhost:6002/graphql",
-    "DATABASE_URL": "postgresql://root:root@127.0.0.1:6000/utpl_practicum",
-    "UI_AUTH_COOKIE_SECRET": "cookie-secret",
-    "PRIVATE_JWK": "{\"key_ops\":[\"sign\"],\"ext\":true,\"crv\":\"Ed25519\",\"d\":\"c1gkkvWRMaDKPKG8C7Zwp--Zvov1O3qj05cbdr5BEUo\",\"x\":\"d0giNKtlIrSFkNsDmF4lZiynvxKlJVxGmPXaeW5rqgc\",\"kty\":\"OKP\"}",
-    "PUBLIC_JWK": "{\"key_ops\":[\"verify\"],\"ext\":true,\"crv\":\"Ed25519\",\"x\":\"d0giNKtlIrSFkNsDmF4lZiynvxKlJVxGmPXaeW5rqgc\",\"kty\":\"OKP\"}"
-  },
+  "workers_dev": false,
   "env": {
+    "development": {
+      "vars": {
+        "ENVIRONMENT": "development",
+        "API_GRAPHQL_URL": "http://localhost:6002/graphql",
+        "DATABASE_URL": "postgresql://root:root@127.0.0.1:6000/utpl_practicum",
+        "UI_AUTH_COOKIE_SECRET": "cookie-secret",
+        "PRIVATE_JWK": "{\"key_ops\":[\"sign\"],\"ext\":true,\"crv\":\"Ed25519\",\"d\":\"c1gkkvWRMaDKPKG8C7Zwp--Zvov1O3qj05cbdr5BEUo\",\"x\":\"d0giNKtlIrSFkNsDmF4lZiynvxKlJVxGmPXaeW5rqgc\",\"kty\":\"OKP\"}",
+        "PUBLIC_JWK": "{\"key_ops\":[\"verify\"],\"ext\":true,\"crv\":\"Ed25519\",\"x\":\"d0giNKtlIrSFkNsDmF4lZiynvxKlJVxGmPXaeW5rqgc\",\"kty\":\"OKP\"}"
+      }
+    },
     "production": {
+      "routes": [
+        {
+          "custom_domain": true,
+          "pattern": "utpl-practicum.bmacias.dev"
+        }
+      ],
+      "secrets": {
+        "required": [
+          "DATABASE_URL",
+          "UI_AUTH_COOKIE_SECRET",
+          "PRIVATE_JWK",
+        ]
+      },
       "vars": {
         "ENVIRONMENT": "production",
-        "API_GRAPHQL_URL": "https://api.utpl-practicum.com/graphql",
-        "DATABASE_URL": "",
-        "UI_AUTH_COOKIE_SECRET": "cookie-secret",
-        "PRIVATE_JWK": "",
-        "PUBLIC_JWK": ""
+        "API_GRAPHQL_URL": "https://api.utpl-practicum.bmacias.dev/graphql",
+        "PUBLIC_JWK": "{\"key_ops\":[\"verify\"],\"ext\":true,\"crv\":\"Ed25519\",\"x\":\"h5AQut-33ZXIznMRP3204tb6X75nVl6qLbMv3Q6ZPqY\",\"kty\":\"OKP\"}"
       }
     }
-  }
+  },
   /**
    * Smart Placement
    * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement

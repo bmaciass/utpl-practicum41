@@ -9,6 +9,13 @@ import { RemixBrowser } from '@remix-run/react'
 import { StrictMode, startTransition } from 'react'
 import { hydrateRoot } from 'react-dom/client'
 import { apiClient } from './apollo/apiClient'
+import {
+  logUnhandledPromiseRejection,
+  logUnhandledWindowError,
+} from './helpers/applicationError'
+
+window.addEventListener('error', logUnhandledWindowError)
+window.addEventListener('unhandledrejection', logUnhandledPromiseRejection)
 
 startTransition(() => {
   hydrateRoot(

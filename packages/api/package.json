@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "main": "./src/index.ts",
+  "engines": {
+    "node": "22"
+  },
   "scripts": {
     "check": "tsc --noEmit",
     "codegen": "./scripts/generate",
@@ -25,7 +28,7 @@
     "typescript": "^5.5.2",
     "vitest": "~3.2.0",
     "vitest-tsconfig-paths": "^3.4.1",
-    "wrangler": "4.21.2"
+    "wrangler": "4.95.0"
   },
   "dependencies": {
     "@pothos/core": "^4.7.0",

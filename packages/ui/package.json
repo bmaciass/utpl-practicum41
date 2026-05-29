@@ -8,6 +8,7 @@
     "build:env": "./scripts/build-env",
     "check": "tsc --noEmit",
     "codegen": "gql-gen --config codegen.ts",
+    "deploy": "pnpm codegen && pnpm build && wrangler deploy",
     "dev": "remix vite:dev",
     "format": "biome format --write .",
     "start": "pnpm codegen && pnpm build && wrangler dev",
@@ -71,9 +72,9 @@
     "typescript": "^5.8.3",
     "vite": "^6.0.0",
     "vite-tsconfig-paths": "^4.2.1",
-    "wrangler": "4.21.2"
+    "wrangler": "4.95.0"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": "22"
   }
 }

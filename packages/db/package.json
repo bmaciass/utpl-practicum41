@@ -9,7 +9,7 @@
     "gen:env": "../../scripts/generate-local-env",
     "local": "./scripts/recreate-local-db && pnpm --filter seeders seed:local",
     "migrate": "pnpm gen:env && DOTENV_CONFIG_PATH=.env tsx -r dotenv/config src/migrate.ts",
-    "migrate:prod": "pnpm gen:env && DOTENV_CONFIG_PATH=.env tsx -r dotenv/config src/migrate.ts"
+    "migrate:prod": "tsx src/migrate.ts"
   },
   "keywords": [],
   "author": "",
