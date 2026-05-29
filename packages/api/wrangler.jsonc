@@ -4,32 +4,47 @@
  */
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "api",
+  "name": "sigep-api",
   "main": "src/app/worker.ts",
   "compatibility_date": "2025-06-20",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "observability": {
     "enabled": true
   },
+  "workers_dev": false,
   "dev": {
     "port": 6002
   },
-  "vars": {
-    "ENVIRONMENT": "development",
-    "DATABASE_URL": "postgres://root:root@127.0.0.1:6000/utpl_practicum",
-    "PRIVATE_JWK": "{\"key_ops\":[\"sign\"],\"ext\":true,\"crv\":\"Ed25519\",\"d\":\"c1gkkvWRMaDKPKG8C7Zwp--Zvov1O3qj05cbdr5BEUo\",\"x\":\"d0giNKtlIrSFkNsDmF4lZiynvxKlJVxGmPXaeW5rqgc\",\"kty\":\"OKP\"}",
-    "PUBLIC_JWK": "{\"key_ops\":[\"verify\"],\"ext\":true,\"crv\":\"Ed25519\",\"x\":\"d0giNKtlIrSFkNsDmF4lZiynvxKlJVxGmPXaeW5rqgc\",\"kty\":\"OKP\"}"
-  },
   "env": {
+    "development": {
+      "vars": {
+        "ENVIRONMENT": "development",
+        "DATABASE_URL": "postgres://root:root@127.0.0.1:6000/utpl_practicum",
+        "PRIVATE_JWK": "{\"key_ops\":[\"sign\"],\"ext\":true,\"crv\":\"Ed25519\",\"d\":\"c1gkkvWRMaDKPKG8C7Zwp--Zvov1O3qj05cbdr5BEUo\",\"x\":\"d0giNKtlIrSFkNsDmF4lZiynvxKlJVxGmPXaeW5rqgc\",\"kty\":\"OKP\"}",
+        "PUBLIC_JWK": "{\"key_ops\":[\"verify\"],\"ext\":true,\"crv\":\"Ed25519\",\"x\":\"d0giNKtlIrSFkNsDmF4lZiynvxKlJVxGmPXaeW5rqgc\",\"kty\":\"OKP\"}"
+      }
+    },
     "production": {
+      "routes": [
+        {
+          "custom_domain": true,
+          "pattern": "api.utpl-practicum.bmacias.dev"
+        }
+      ],
+      "secrets": {
+        "required": [
+          "DATABASE_URL",
+          "PRIVATE_JWK",
+        ]
+      },
       "vars": {
         "ENVIRONMENT": "production",
-        "DATABASE_URL": "",
-        "PRIVATE_JWK": "",
-        "PUBLIC_JWK": ""
+        "PUBLIC_JWK": "{\"key_ops\":[\"verify\"],\"ext\":true,\"crv\":\"Ed25519\",\"x\":\"h5AQut-33ZXIznMRP3204tb6X75nVl6qLbMv3Q6ZPqY\",\"kty\":\"OKP\"}"
       }
     }
-  }
+  },
   /**
    * Smart Placement
    * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement

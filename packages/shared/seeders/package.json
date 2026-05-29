@@ -4,7 +4,8 @@
   "description": "",
   "scripts": {
     "gen:env": "../../../scripts/generate-local-env",
-    "seed:local": "pnpm gen:env && tsx --env-file=.env src/local.seed.ts"
+    "seed:local": "pnpm gen:env && tsx --env-file=.env src/local.seed.ts",
+    "seed:prod": "tsx src/local.seed.ts"
   },
   "devDependencies": {
     "@sigep/api": "workspace:*",
