@@ -1,3 +1,10 @@
-if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is not defined')
+function getDirectDatabaseUrl() {
+  const directDatabaseUrl = process.env.DIRECT_DATABASE_URL
+  if (!directDatabaseUrl) {
+    throw new Error('DIRECT_DATABASE_URL is not defined')
+  }
 
-export const databaseUrl = process.env.DATABASE_URL
+  return directDatabaseUrl
+}
+
+export const directDatabaseUrl = getDirectDatabaseUrl()

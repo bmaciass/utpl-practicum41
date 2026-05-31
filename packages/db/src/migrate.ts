@@ -1,12 +1,22 @@
 import 'dotenv/config'
 import { getDBConnection } from './getDBConnection'
 import { executeMigration } from './migrator'
-console.log(`starting migrations at ${process.env.DATABASE_URL}`)
+
+function getDirectDatabaseUrl() {
+  const directDatabaseUrl = process.env.DIRECT_DATABASE_URL
+  if (!directDatabaseUrl) {
+    throw new Error('DIRECT_DATABASE_URL is not defined')
+  }
+
+  return directDatabaseUrl
+}
+
+const directDatabaseUrl = getDirectDatabaseUrl()
+
+console.log(`starting migrations at ${directDatabaseUrl}`)
 
 async function migrate() {
-  const { client, db } = await getDBConnection(
-    process.env.DATABASE_URL as string,
-  )
+  const { client, db } = await getDBConnection(directDatabaseUrl)
   await client.connect()
   await executeMigration(db)
   await client.end()

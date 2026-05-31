@@ -278,9 +278,13 @@ async function seedOrganizationData(db: Db): Promise<{
 }
 
 async function main() {
-  const { db, client } = await getDBConnection(
-    process.env.DATABASE_URL as string,
-  )
+  const directDatabaseUrl = process.env.DIRECT_DATABASE_URL
+
+  if (!directDatabaseUrl) {
+    throw new Error('DIRECT_DATABASE_URL is not defined')
+  }
+
+  const { db, client } = await getDBConnection(directDatabaseUrl)
 
   await client.connect()
 
@@ -306,7 +310,7 @@ async function main() {
   await client.end()
 }
 
-console.log(`Running local seed in ${process.env.DATABASE_URL}`)
+console.log(`Running local seed in ${process.env.DIRECT_DATABASE_URL}`)
 
 main()
   .then(() => {

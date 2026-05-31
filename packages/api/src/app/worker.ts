@@ -1,5 +1,5 @@
 import { createCookie } from '@remix-run/cloudflare'
-import { getDBConnection } from '@sigep/db'
+import { connectDBClient, getDBConnection } from '@sigep/db'
 import { useCookies } from '@whatwg-node/server-plugin-cookies'
 import { env } from 'cloudflare:workers'
 import { createYoga } from 'graphql-yoga'
@@ -33,7 +33,11 @@ export const getAccessTokenCookie = (secret: string) =>
   })
 
 type AccessTokenPayload = NonNullable<
-  Awaited<ReturnType<Awaited<ReturnType<typeof getDefaultJWTService>>['verifyAccessToken']>>
+  Awaited<
+    ReturnType<
+      Awaited<ReturnType<typeof getDefaultJWTService>>['verifyAccessToken']
+    >
+  >
 >
 
 type AuthenticationResult =
@@ -103,7 +107,7 @@ async function createContext(
 ): Promise<AppContext> {
   // Connect to database
   const { db, client } = await getDBConnection(env.DATABASE_URL)
-  await client.connect()
+  await connectDBClient(client, env.DATABASE_URL)
 
   const payload = auth.payload
   const token = {

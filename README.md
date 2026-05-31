@@ -26,7 +26,7 @@ docker compose -f packages/infra/local/docker-compose.yml up -d
 
 ### 2. Create the local database env
 
-This generates `packages/db/.env` and `packages/shared/seeders/.env` with the local `DATABASE_URL`.
+This generates `packages/db/.env` and `packages/shared/seeders/.env` with both `DATABASE_URL` and `DIRECT_DATABASE_URL` pointing at the local database.
 
 ```sh
 pnpm -F @sigep/db gen:env
@@ -61,6 +61,8 @@ The API runs as a Cloudflare Worker on port `6002`.
 ```sh
 pnpm -F @sigep/api dev
 ```
+
+Use `DATABASE_URL` for app/runtime connections and `DIRECT_DATABASE_URL` for migrations and seeders.
 
 ### 6. Start the UI
 
@@ -97,6 +99,8 @@ This regenerates schema exports, refreshes the local env, and writes a new SQL m
 ```sh
 pnpm -F @sigep/db migrate
 ```
+
+`@sigep/db` uses `DIRECT_DATABASE_URL` for Drizzle generation and migrations.
 
 If you need to rebuild from scratch after a schema change:
 

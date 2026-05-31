@@ -7,8 +7,8 @@ import { withAuth } from '~/helpers/withAuth'
 
 export const meta: MetaFunction = () => {
   return [
-    { title: 'New Remix App' },
-    { name: 'description', content: 'Welcome to Remix!' },
+    { title: 'SIGEP' },
+    { name: 'description', content: 'Sistema de Gestion de la Planificacion' },
   ]
 }
 
@@ -16,6 +16,6 @@ export const loader: LoaderFunction = withAuth(async () => {
   return redirect('/home')
 })
 
-export default function Index() {
+export default function Index () {
   return null
 }

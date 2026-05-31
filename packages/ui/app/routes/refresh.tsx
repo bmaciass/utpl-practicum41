@@ -3,16 +3,16 @@ import {
   DrizzleAuthSessionRepository,
   DrizzleRoleRepository,
   DrizzleUserRepository,
-  getDefaultJWTService,
   RefreshTokenUseCase,
+  getDefaultJWTService,
   withAuditedAction,
 } from '@sigep/api'
-import { getDBConnection } from '@sigep/db'
-import { getAccessTokenCookie } from '~/cookies/access-token.server'
+import { connectDBClient, getDBConnection } from '@sigep/db'
 import { getAccessTokenExpiryCookie } from '~/cookies/access-token-expiry.server'
+import { getAccessTokenCookie } from '~/cookies/access-token.server'
 import { getRefreshTokenCookie } from '~/cookies/refresh-token.server'
 
-function wantsJsonResponse(request: Request) {
+function wantsJsonResponse (request: Request) {
   const url = new URL(request.url)
   return (
     url.searchParams.get('mode') === 'json' ||
@@ -21,7 +21,7 @@ function wantsJsonResponse(request: Request) {
   )
 }
 
-async function clearAuthCookies(secret: string) {
+async function clearAuthCookies (secret: string) {
   const accessCookie = getAccessTokenCookie(secret)
   const accessExpiryCookie = getAccessTokenExpiryCookie()
   const refreshCookie = getRefreshTokenCookie(secret)
@@ -72,7 +72,7 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
   )
 
   try {
-    await client.connect()
+    await connectDBClient(client, context.cloudflare.env.DATABASE_URL)
     const authSessionRepository = new DrizzleAuthSessionRepository(db)
     const userRepository = new DrizzleUserRepository(db)
     const roleRepository = new DrizzleRoleRepository(db)
@@ -148,6 +148,6 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
   }
 }
 
-export default function Refresh() {
+export default function Refresh () {
   return null
 }

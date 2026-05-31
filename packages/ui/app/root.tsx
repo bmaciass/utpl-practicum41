@@ -1,21 +1,20 @@
 import type { LinksFunction, LoaderFunctionArgs } from '@remix-run/cloudflare'
 import { data } from '@remix-run/cloudflare'
 import {
-  isRouteErrorResponse,
-  Links,
   Link,
+  Links,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
-  useRouteError,
+  isRouteErrorResponse,
   useLoaderData,
+  useRouteError,
   useRouteLoaderData,
 } from '@remix-run/react'
 import { RefreshCcw, TriangleAlert } from 'lucide-react'
 import { useEffect } from 'react'
 
-import './tailwind.css'
 import { AuthSessionManager } from './components/globals/AuthSessionManager'
 import { Button } from './components/ui/button'
 import { AppEnvProvider } from './context/AppEnv'
@@ -23,6 +22,7 @@ import {
   getFriendlyApplicationError,
   logRouteErrorToConsole,
 } from './helpers/applicationError'
+import './tailwind.css'
 
 export const links: LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -43,7 +43,7 @@ export const loader = ({ context }: LoaderFunctionArgs) => {
   })
 }
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export function Layout ({ children }: { children: React.ReactNode }) {
   const loaderData = useRouteLoaderData<typeof loader>('root')
 
   return (
@@ -80,7 +80,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 //   )
 // }
 
-export default function App() {
+export default function App () {
   const loaderData = useLoaderData<typeof loader>()
 
   return (
@@ -91,7 +91,7 @@ export default function App() {
   )
 }
 
-export function ErrorBoundary() {
+export function ErrorBoundary () {
   const error = useRouteError()
   const friendlyError = getFriendlyApplicationError(error)
 
@@ -138,10 +138,11 @@ export function ErrorBoundary() {
               </div>
             ) : null}
 
-            <p className='text-sm text-slate-400'>
-              Open the browser developer tools to inspect the full{' '}
-              <code>console.error</code> details for this failure.
-            </p>
+            {friendlyError.requestId ? (
+              <p className='text-sm text-slate-400'>
+                Request ID: <code>{friendlyError.requestId}</code>
+              </p>
+            ) : null}
 
             <div className='flex flex-wrap gap-3'>
               <Button asChild size='lg'>

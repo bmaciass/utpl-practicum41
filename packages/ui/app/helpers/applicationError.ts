@@ -3,6 +3,7 @@ import { isRouteErrorResponse } from '@remix-run/react'
 type FriendlyApplicationError = {
   heading: string
   message: string
+  requestId?: string
   statusCode?: number
   statusText?: string
 }
@@ -52,9 +53,24 @@ export function getFriendlyApplicationError(
   error: unknown,
 ): FriendlyApplicationError {
   if (isRouteErrorResponse(error)) {
+    const routeErrorData =
+      typeof error.data === 'object' && error.data !== null ? error.data : null
+    const message =
+      routeErrorData && 'message' in routeErrorData
+        ? routeErrorData.message
+        : getRouteErrorMessage(error.status)
+    const requestId =
+      routeErrorData && 'requestId' in routeErrorData
+        ? routeErrorData.requestId
+        : undefined
+
     return {
       heading: error.status === 404 ? 'Page not found' : 'Request failed',
-      message: getRouteErrorMessage(error.status),
+      message:
+        typeof message === 'string'
+          ? message
+          : getRouteErrorMessage(error.status),
+      requestId: typeof requestId === 'string' ? requestId : undefined,
       statusCode: error.status,
       statusText: error.statusText,
     }

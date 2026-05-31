@@ -9,9 +9,9 @@
   "scripts": {
     "check": "tsc --noEmit",
     "codegen": "./scripts/generate",
-    "deploy": "wrangler deploy",
-    "dev": "wrangler dev",
-    "start": "wrangler dev",
+    "deploy": "wrangler deploy --env production",
+    "dev": "wrangler dev --env development",
+    "start": "wrangler dev --env development",
     "test": "vitest",
     "test:unit": "vitest --run test/unit",
     "test:integration": "RUN_INTEGRATION=1 vitest --run test/integration",

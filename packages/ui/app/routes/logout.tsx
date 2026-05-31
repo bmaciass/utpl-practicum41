@@ -1,16 +1,16 @@
 import { type LoaderFunction, redirect } from '@remix-run/cloudflare'
 import {
   DrizzleAuthSessionRepository,
-  getDefaultJWTService,
   LogoutUseCase,
+  getDefaultJWTService,
   withAuditedAction,
 } from '@sigep/api'
-import { getDBConnection } from '@sigep/db'
-import { getAccessTokenCookie } from '~/cookies/access-token.server'
+import { connectDBClient, getDBConnection } from '@sigep/db'
 import { getAccessTokenExpiryCookie } from '~/cookies/access-token-expiry.server'
+import { getAccessTokenCookie } from '~/cookies/access-token.server'
 import { getRefreshTokenCookie } from '~/cookies/refresh-token.server'
 
-export default function Index() {
+export default function Index () {
   return 'Redirecting...'
 }
 
@@ -24,7 +24,7 @@ export const loader: LoaderFunction = async ({ context, request }) => {
   const { client, db } = await getDBConnection(
     context.cloudflare.env.DATABASE_URL,
   )
-  await client.connect()
+  await connectDBClient(client, context.cloudflare.env.DATABASE_URL)
   const authSessionRepository = new DrizzleAuthSessionRepository(db)
   const jwtService = await getDefaultJWTService()
 

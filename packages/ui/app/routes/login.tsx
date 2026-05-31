@@ -8,7 +8,8 @@ import {
   LoginUseCase,
   withAuditedAction,
 } from '@sigep/api'
-import { getDBConnection } from '@sigep/db'
+import { getDBConnection, connectDBClient } from '@sigep/db'
+import { NotFoundError } from '@sigep/shared'
 import { isEmpty } from 'lodash-es'
 import { useEffect, useRef } from 'react'
 import { Alert, AlertDescription } from '~/components/ui/alert'
@@ -20,6 +21,13 @@ import { getAccessTokenCookie } from '~/cookies/access-token.server'
 import { getAccessTokenExpiryCookie } from '~/cookies/access-token-expiry.server'
 import { getRefreshTokenCookie } from '~/cookies/refresh-token.server'
 import { notFound } from '~/helpers/notFound'
+import { logServerError } from '~/helpers/serverError'
+
+type LoginActionData = {
+  error: string | null
+  errorCode?: 'INVALID_CREDENTIALS' | 'SERVER_ERROR'
+  requestId?: string
+}
 
 export const action = async ({ context, request }: ActionFunctionArgs) => {
   if (request.method !== 'POST') return notFound('Method not found')
@@ -27,21 +35,30 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
   const formData = await request.formData()
   const username = formData.get('username')
   const password = formData.get('password')
-  if (!username || !password) return { error: 'username or password not found' }
+  if (!username || !password) {
+    return data<LoginActionData>(
+      { error: 'Username or password not found' },
+      { status: 400 },
+    )
+  }
   if (isEmpty(username) || isEmpty(password))
-    return { error: 'username or password not found' }
+    return data<LoginActionData>(
+      { error: 'Username or password not found' },
+      { status: 400 },
+    )
 
   const { client, db } = await getDBConnection(
     context.cloudflare.env.DATABASE_URL,
   )
-  await client.connect()
-
-  const userRepository = new DrizzleUserRepository(db)
-  const roleRepository = new DrizzleRoleRepository(db)
-  const authSessionRepository = new DrizzleAuthSessionRepository(db)
-  const jwtService = await getDefaultJWTService()
 
   try {
+    await connectDBClient(client, context.cloudflare.env.DATABASE_URL)
+
+    const userRepository = new DrizzleUserRepository(db)
+    const roleRepository = new DrizzleRoleRepository(db)
+    const authSessionRepository = new DrizzleAuthSessionRepository(db)
+    const jwtService = await getDefaultJWTService()
+
     const login = withAuditedAction(
       {
         action: 'login',
@@ -89,7 +106,41 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
     headers.append('Set-Cookie', serializedAccessExpiryCookie)
     headers.append('Set-Cookie', serializedRefreshCookie)
 
-    return data({ error: null }, { headers })
+    return data<LoginActionData>({ error: null }, { headers })
+  } catch (error) {
+    if (
+      error instanceof NotFoundError ||
+      (error instanceof Error &&
+        error.message === 'username or password incorrect')
+    ) {
+      return data<LoginActionData>(
+        {
+          error: 'Credenciales incorrectas',
+          errorCode: 'INVALID_CREDENTIALS',
+        },
+        { status: 401 },
+      )
+    }
+
+    const requestId = logServerError(
+      '[ui] Login action failed',
+      request,
+      error,
+      {
+        routeName: 'login',
+        username: username.toString(),
+      },
+    )
+
+    return data<LoginActionData>(
+      {
+        error:
+          'No se pudo iniciar sesion por un error del servidor. Revisa los logs del Worker con el request ID.',
+        errorCode: 'SERVER_ERROR',
+        requestId,
+      },
+      { status: 500 },
+    )
   } finally {
     await client.end()
   }
@@ -159,7 +210,15 @@ function Login() {
       </Card>
       {error && (
         <Alert className='max-w-sm' variant={'destructive'}>
-          <AlertDescription>Credenciales incorrectas</AlertDescription>
+          <AlertDescription>
+            {error}
+            {actionData?.requestId ? (
+              <>
+                {' '}
+                Request ID: <code>{actionData.requestId}</code>
+              </>
+            ) : null}
+          </AlertDescription>
         </Alert>
       )}
     </div>
