@@ -124,6 +124,13 @@ function normalizeAuditValue(value: unknown): JsonLike {
   return String(value)
 }
 
+function getAuditLogRequestId(metadata: unknown): string | null {
+  if (!isPlainObject(metadata)) return null
+  const request = metadata.request
+  if (!isPlainObject(request)) return null
+  return typeof request.requestId === 'string' ? request.requestId : null
+}
+
 function redactAuditValue(value: JsonLike): JsonLike {
   if (value === null) {
     return null
@@ -191,9 +198,26 @@ export class AuditActionExecutor {
   async execute<TResult>(
     options: ExecuteAuditActionOptions<TResult>,
   ): Promise<TResult> {
+    const startedAt = Date.now()
+    const requestId = getAuditLogRequestId(options.metadata)
+    console.log('[audit] Action executor started', {
+      action: options.action,
+      resourceType: options.resourceType,
+      hasResourceUid: Boolean(options.resourceUid),
+      hasActorUserUid: Boolean(options.actorUserUid),
+      requestId,
+    })
+
     const actorUser = options.actorUserUid
       ? await this.deps.userRepository.findByUid(options.actorUserUid)
       : null
+    console.log('[audit] Action executor actor resolved', {
+      action: options.action,
+      resourceType: options.resourceType,
+      hasActorUser: Boolean(actorUser),
+      requestId,
+      durationMs: Date.now() - startedAt,
+    })
 
     const auditEvent = await this.createPendingAuditEvent.execute({
       action: options.action,
@@ -204,16 +228,37 @@ export class AuditActionExecutor {
       requestPayload: serializeAuditValue(options.requestPayload),
       metadata: serializeAuditValue(options.metadata),
     })
+    console.log('[audit] Action executor pending event created', {
+      action: options.action,
+      resourceType: options.resourceType,
+      auditEventUid: auditEvent.uid,
+      requestId,
+      durationMs: Date.now() - startedAt,
+    })
 
     let beforeSnapshot: JsonLike = null
 
     try {
+      console.log('[audit] Action executor running action', {
+        action: options.action,
+        resourceType: options.resourceType,
+        auditEventUid: auditEvent.uid,
+        requestId,
+        durationMs: Date.now() - startedAt,
+      })
       beforeSnapshot =
         typeof options.beforeSnapshot === 'function'
           ? serializeAuditValue(await options.beforeSnapshot())
           : serializeAuditValue(options.beforeSnapshot)
 
       const result = await options.run()
+      console.log('[audit] Action executor action returned', {
+        action: options.action,
+        resourceType: options.resourceType,
+        auditEventUid: auditEvent.uid,
+        requestId,
+        durationMs: Date.now() - startedAt,
+      })
       const afterSnapshot =
         typeof options.afterSnapshot === 'function'
           ? serializeAuditValue(await options.afterSnapshot(result))
@@ -231,15 +276,38 @@ export class AuditActionExecutor {
         afterSnapshot,
         metadata: serializeAuditValue(options.metadata),
       })
+      console.log('[audit] Action executor succeeded', {
+        action: options.action,
+        resourceType: options.resourceType,
+        auditEventUid: auditEvent.uid,
+        requestId,
+        durationMs: Date.now() - startedAt,
+      })
 
       return result
     } catch (error) {
+      console.error('[audit] Action executor action threw', {
+        action: options.action,
+        resourceType: options.resourceType,
+        auditEventUid: auditEvent.uid,
+        requestId,
+        durationMs: Date.now() - startedAt,
+        error,
+      })
       await this.markAuditEventFailed.execute({
         uid: auditEvent.uid,
         resourceUid: options.resourceUid ?? null,
         beforeSnapshot,
         error: serializeAuditError(error),
         metadata: serializeAuditValue(options.metadata),
+      })
+      console.error('[audit] Action executor failed', {
+        action: options.action,
+        resourceType: options.resourceType,
+        auditEventUid: auditEvent.uid,
+        requestId,
+        durationMs: Date.now() - startedAt,
+        error,
       })
 
       throw error

@@ -1,9 +1,11 @@
 import { useParams } from '@remix-run/react'
 import { Alert } from '~/components/globals/Alert'
 import { Skeleton } from '~/components/ui/skeleton'
+import { useRegisterBreadcrumbName } from '~/context/BreadcrumbNames'
 import { useGetProject } from '~/hooks/project/useGetProject'
 import { ProjectCompletionMetric } from './ProjectCompletionMetric'
 import { ProjectDetailsSection } from './ProjectDetailsSection'
+import { ProjectTaskCompletionMetric } from './ProjectTaskCompletionMetric'
 import { ProjectTasksSection } from './ProjectTasksSection'
 
 export const ProjectDetailPage = () => {
@@ -14,6 +16,7 @@ export const ProjectDetailPage = () => {
   }
 
   const { error, loading, project } = useGetProject(projectUid)
+  useRegisterBreadcrumbName(projectUid, project?.name)
 
   if (loading) return <Skeleton className='w-full h-96' />
 
@@ -32,10 +35,9 @@ export const ProjectDetailPage = () => {
 
   return (
     <div className='space-y-8'>
-      <div className='grid grid-cols-6'>
-        <div className='col-span-1'>
-          <ProjectCompletionMetric projectUid={projectUid} />
-        </div>
+      <div className='grid gap-4 md:grid-cols-2 xl:grid-cols-4'>
+        <ProjectCompletionMetric projectUid={projectUid} />
+        <ProjectTaskCompletionMetric projectUid={projectUid} />
       </div>
       <ProjectDetailsSection
         project={project}

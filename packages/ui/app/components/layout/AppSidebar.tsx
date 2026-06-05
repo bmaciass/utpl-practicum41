@@ -1,5 +1,5 @@
-import { Link, useLocation, useNavigate } from '@remix-run/react'
-import { ChevronRight, LogOut } from 'lucide-react'
+import { Link, useLocation } from '@remix-run/react'
+import { ChevronRight } from 'lucide-react'
 import {
   Collapsible,
   CollapsibleContent,
@@ -8,7 +8,6 @@ import {
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -38,12 +37,7 @@ function filterNavigation(items: NavItem[], isAdmin: boolean): NavItem[] {
 
 export function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
   const location = useLocation()
-  const navigate = useNavigate()
   const filteredNavigation = filterNavigation(navigationConfig, isAdmin)
-
-  const handleLogout = () => {
-    navigate('/logout')
-  }
 
   return (
     <Sidebar className='border-none shadow-2xl shadow-sidebar-primary/10'>
@@ -126,20 +120,6 @@ export function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              className='border border-sidebar-border/80 bg-sidebar-accent/70 text-sidebar-foreground hover:bg-sidebar-accent'
-              onClick={handleLogout}
-            >
-              <LogOut className='h-4 w-4' />
-              <span>Cerrar Sesión</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
 
       <SidebarRail />
     </Sidebar>

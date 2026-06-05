@@ -8,7 +8,12 @@ import {
   LoginUseCase,
   withAuditedAction,
 } from '@sigep/api'
-import { getDBConnection, connectDBClient } from '@sigep/db'
+import {
+  closeDBClient,
+  connectDBClient,
+  getDBConnection,
+  type Client,
+} from '@sigep/db'
 import { NotFoundError } from '@sigep/shared'
 import { isEmpty } from 'lodash-es'
 import { useEffect, useRef } from 'react'
@@ -21,7 +26,7 @@ import { getAccessTokenCookie } from '~/cookies/access-token.server'
 import { getAccessTokenExpiryCookie } from '~/cookies/access-token-expiry.server'
 import { getRefreshTokenCookie } from '~/cookies/refresh-token.server'
 import { notFound } from '~/helpers/notFound'
-import { logServerError } from '~/helpers/serverError'
+import { getRequestId, logServerError } from '~/helpers/serverError'
 
 type LoginActionData = {
   error: string | null
@@ -32,32 +37,91 @@ type LoginActionData = {
 export const action = async ({ context, request }: ActionFunctionArgs) => {
   if (request.method !== 'POST') return notFound('Method not found')
 
+  const requestId = getRequestId(request)
+  const startedAt = Date.now()
+  console.log('[ui] Login action started', {
+    requestId,
+    method: request.method,
+    url: request.url,
+    hasDatabaseUrl: Boolean(context.cloudflare.env.DATABASE_URL),
+  })
+
+  const databaseUrl = context.cloudflare.env.DATABASE_URL
+  const cookieSecret = context.cloudflare.env.UI_AUTH_COOKIE_SECRET
+  if (!databaseUrl || !cookieSecret) {
+    console.error('[ui] Login action missing required environment', {
+      requestId,
+      hasDatabaseUrl: Boolean(databaseUrl),
+      hasCookieSecret: Boolean(cookieSecret),
+      durationMs: Date.now() - startedAt,
+    })
+    return data<LoginActionData>(
+      {
+        error:
+          'No se pudo iniciar sesion por un error de configuracion del servidor.',
+        errorCode: 'SERVER_ERROR',
+        requestId,
+      },
+      { status: 500 },
+    )
+  }
+
   const formData = await request.formData()
   const username = formData.get('username')
   const password = formData.get('password')
+  const usernameString = username?.toString() ?? null
+
   if (!username || !password) {
+    console.log('[ui] Login action rejected missing credentials', {
+      requestId,
+      hasUsername: Boolean(username),
+      hasPassword: Boolean(password),
+      durationMs: Date.now() - startedAt,
+    })
     return data<LoginActionData>(
       { error: 'Username or password not found' },
       { status: 400 },
     )
   }
-  if (isEmpty(username) || isEmpty(password))
+  if (isEmpty(username) || isEmpty(password)) {
+    console.log('[ui] Login action rejected empty credentials', {
+      requestId,
+      username: usernameString,
+      durationMs: Date.now() - startedAt,
+    })
     return data<LoginActionData>(
       { error: 'Username or password not found' },
       { status: 400 },
     )
+  }
 
-  const { client, db } = await getDBConnection(
-    context.cloudflare.env.DATABASE_URL,
-  )
+  let client: Client | null = null
 
   try {
-    await connectDBClient(client, context.cloudflare.env.DATABASE_URL)
+    console.log('[ui] Login action creating DB client', {
+      requestId,
+      username: usernameString,
+    })
+    const connection = await getDBConnection(databaseUrl)
+    client = connection.client
+    const { db } = connection
+
+    await connectDBClient(client, databaseUrl)
+    console.log('[ui] Login action DB connected', {
+      requestId,
+      username: usernameString,
+      durationMs: Date.now() - startedAt,
+    })
 
     const userRepository = new DrizzleUserRepository(db)
     const roleRepository = new DrizzleRoleRepository(db)
     const authSessionRepository = new DrizzleAuthSessionRepository(db)
     const jwtService = await getDefaultJWTService()
+    console.log('[ui] Login action dependencies ready', {
+      requestId,
+      username: usernameString,
+      durationMs: Date.now() - startedAt,
+    })
 
     const login = withAuditedAction(
       {
@@ -79,6 +143,11 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
         }).execute(input),
     )
 
+    console.log('[ui] Login action executing use case', {
+      requestId,
+      username: usernameString,
+      durationMs: Date.now() - startedAt,
+    })
     const { accessToken, refreshToken, accessTokenExpiresAt } = await login(
       {
         username: username.toString(),
@@ -86,19 +155,21 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
       },
       { db, request },
     )
+    console.log('[ui] Login action use case succeeded', {
+      requestId,
+      username: usernameString,
+      accessTokenExpiresAt: accessTokenExpiresAt.toISOString(),
+      durationMs: Date.now() - startedAt,
+    })
 
-    const accessCookie = getAccessTokenCookie(
-      context.cloudflare.env.UI_AUTH_COOKIE_SECRET,
-    )
+    const accessCookie = getAccessTokenCookie(cookieSecret)
     const serializedAccessCookie = await accessCookie.serialize(accessToken)
     const accessExpiryCookie = getAccessTokenExpiryCookie()
     const serializedAccessExpiryCookie = await accessExpiryCookie.serialize(
       `${accessTokenExpiresAt.getTime()}`,
     )
 
-    const refreshCookie = getRefreshTokenCookie(
-      context.cloudflare.env.UI_AUTH_COOKIE_SECRET,
-    )
+    const refreshCookie = getRefreshTokenCookie(cookieSecret)
     const serializedRefreshCookie = await refreshCookie.serialize(refreshToken)
 
     const headers = new Headers()
@@ -106,6 +177,12 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
     headers.append('Set-Cookie', serializedAccessExpiryCookie)
     headers.append('Set-Cookie', serializedRefreshCookie)
 
+    console.log('[ui] Login action returning success response', {
+      requestId,
+      username: usernameString,
+      setCookieCount: 3,
+      durationMs: Date.now() - startedAt,
+    })
     return data<LoginActionData>({ error: null }, { headers })
   } catch (error) {
     if (
@@ -113,6 +190,11 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
       (error instanceof Error &&
         error.message === 'username or password incorrect')
     ) {
+      console.log('[ui] Login action invalid credentials', {
+        requestId,
+        username: usernameString,
+        durationMs: Date.now() - startedAt,
+      })
       return data<LoginActionData>(
         {
           error: 'Credenciales incorrectas',
@@ -122,16 +204,22 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
       )
     }
 
-    const requestId = logServerError(
+    logServerError(
       '[ui] Login action failed',
       request,
       error,
       {
+        requestId,
         routeName: 'login',
         username: username.toString(),
       },
     )
 
+    console.error('[ui] Login action returning server error response', {
+      requestId,
+      username: usernameString,
+      durationMs: Date.now() - startedAt,
+    })
     return data<LoginActionData>(
       {
         error:
@@ -142,7 +230,28 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
       { status: 500 },
     )
   } finally {
-    await client.end()
+    if (client) {
+      try {
+        console.log('[ui] Login action closing DB client', {
+          requestId,
+          username: usernameString,
+          durationMs: Date.now() - startedAt,
+        })
+        await closeDBClient(client, databaseUrl)
+        console.log('[ui] Login action DB client closed', {
+          requestId,
+          username: usernameString,
+          durationMs: Date.now() - startedAt,
+        })
+      } catch (error) {
+        console.error('[ui] Login action failed to close DB client', {
+          requestId,
+          username: usernameString,
+          durationMs: Date.now() - startedAt,
+          error,
+        })
+      }
+    }
   }
 }
 

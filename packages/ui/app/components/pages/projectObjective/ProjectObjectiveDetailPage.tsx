@@ -4,6 +4,7 @@ import { Alert } from '~/components/globals/Alert'
 import { Title } from '~/components/typography/Headers'
 import { Button } from '~/components/ui/button'
 import { Skeleton } from '~/components/ui/skeleton'
+import { useRegisterBreadcrumbName } from '~/context/BreadcrumbNames'
 import { useGetProjectObjective } from '~/hooks/projectObjective/useGetProjectObjective'
 import { ProjectObjectiveAlignment } from './ProjectObjectiveAlignment'
 import { ProjectObjectiveForm } from './ProjectObjectiveForm'
@@ -11,6 +12,7 @@ import { ProjectObjectiveForm } from './ProjectObjectiveForm'
 export function ProjectObjectiveDetailPage() {
   const { programUid, projectUid, uid } = useParams()
   const { objective, loading, error } = useGetProjectObjective(uid)
+  useRegisterBreadcrumbName(uid, objective?.name)
   const [mode, setMode] = useState<'edit' | 'align'>('edit')
 
   const isEditMode = mode === 'edit'

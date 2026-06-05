@@ -22,6 +22,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '~/components/ui/dialog'
+import { useRegisterBreadcrumbName } from '~/context/BreadcrumbNames'
 import { withAuth } from '~/helpers/withAuth'
 import { useGetInstitutionalObjective } from '~/hooks/institutionalObjective/useGetInstitutionalObjective'
 import { useUpdateInstitutionalObjective } from '~/hooks/institutionalObjective/useUpdateInstitutionalObjective'
@@ -45,6 +46,9 @@ function ObjectiveDetailLayout() {
     error,
     refetch,
   } = useGetInstitutionalObjective(objectiveUid)
+  useRegisterBreadcrumbName(institutionUid, objective?.institution?.name)
+  useRegisterBreadcrumbName(objectiveUid, objective?.name)
+
   const { update, loading: updating } =
     useUpdateInstitutionalObjective(institutionUid)
 

@@ -2,6 +2,7 @@ import { useNavigate, useParams } from '@remix-run/react'
 import { Alert } from '~/components/globals/Alert'
 import { Button } from '~/components/ui/button'
 import { Skeleton } from '~/components/ui/skeleton'
+import { useRegisterBreadcrumbName } from '~/context/BreadcrumbNames'
 import { useGetInstitutionalPlan } from '~/hooks/institutionalPlan/useGetInstitutionalPlan'
 import { useUpdateInstitutionalPlan } from '~/hooks/institutionalPlan/useUpdateInstitutionalPlan'
 import { InstitutionalPlanForm } from './InstitutionalPlanForm'
@@ -19,6 +20,7 @@ export const InstitutionalPlanDetailPage = () => {
   } = useUpdateInstitutionalPlan()
 
   const { error, loading, institutionalPlan } = useGetInstitutionalPlan(uid)
+  useRegisterBreadcrumbName(uid, institutionalPlan?.name)
 
   const handleDelete = () => {
     const confirmed = window.confirm(

@@ -3,15 +3,17 @@ import { Alert } from '~/components/globals/Alert'
 import { GoalForm } from '~/components/pages/goal/GoalForm'
 import { Title } from '~/components/typography/Headers'
 import { Skeleton } from '~/components/ui/skeleton'
+import { useRegisterBreadcrumbName } from '~/context/BreadcrumbNames'
 import { withAuth } from '~/helpers/withAuth'
 import { useGetGoal } from '~/hooks/goal/useGetGoal'
 import { ClientOnly } from '~/utils/ClientOnly'
 
 export const loader = withAuth()
 
-function GoalDetailInner () {
+function GoalDetailInner() {
   const { institutionUid, objectiveUid, uid } = useParams()
   const { goal, loading, error } = useGetGoal(uid)
+  useRegisterBreadcrumbName(uid, goal?.name)
 
   if (!institutionUid || !objectiveUid || !uid) {
     return (
@@ -48,6 +50,6 @@ function GoalDetailInner () {
   )
 }
 
-export default function GoalDetailRoute () {
+export default function GoalDetailRoute() {
   return <ClientOnly>{() => <GoalDetailInner />}</ClientOnly>
 }

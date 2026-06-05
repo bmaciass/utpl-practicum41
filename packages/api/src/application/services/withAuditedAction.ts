@@ -95,6 +95,16 @@ export function withAuditedAction<TAction extends AnyAuditedAction>(
     input: ActionInput<TAction>,
     context: ActionContext<TAction>,
   ): Promise<ActionResult<TAction>> => {
+    const startedAt = Date.now()
+    const requestId =
+      context.request.headers.get('x-request-id') ??
+      context.request.headers.get('cf-ray')
+    console.log('[audit] Route audited action started', {
+      action: config.action,
+      routeName: config.routeName,
+      requestId,
+    })
+
     const executor = new AuditActionExecutor({
       auditEventRepository: new DrizzleAuditEventRepository(context.db),
       userRepository: new DrizzleUserRepository(context.db),
@@ -106,15 +116,32 @@ export function withAuditedAction<TAction extends AnyAuditedAction>(
       (await config.getMetadata?.(input, context)) ?? null,
     )
 
+    console.log('[audit] Route audited action resolving context', {
+      action: config.action,
+      routeName: config.routeName,
+      requestId,
+      durationMs: Date.now() - startedAt,
+    })
+    const resourceUid = config.getInitialResourceUid
+      ? ((await config.getInitialResourceUid(input, context)) ?? null)
+      : null
+    const actorUserUid = config.getActorUserUid
+      ? ((await config.getActorUserUid(input, context)) ?? null)
+      : null
+    console.log('[audit] Route audited action context resolved', {
+      action: config.action,
+      routeName: config.routeName,
+      hasResourceUid: Boolean(resourceUid),
+      hasActorUserUid: Boolean(actorUserUid),
+      requestId,
+      durationMs: Date.now() - startedAt,
+    })
+
     return executor.execute<ActionResult<TAction>>({
       action: config.action,
       resourceType: config.resourceType,
-      resourceUid: config.getInitialResourceUid
-        ? ((await config.getInitialResourceUid(input, context)) ?? null)
-        : null,
-      actorUserUid: config.getActorUserUid
-        ? ((await config.getActorUserUid(input, context)) ?? null)
-        : null,
+      resourceUid,
+      actorUserUid,
       actorLabel: config.getActorLabel
         ? ((await config.getActorLabel(input, context)) ?? null)
         : null,

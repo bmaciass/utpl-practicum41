@@ -6,6 +6,7 @@ import { Paragraph } from '~/components/typography/Paragraph'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import { Skeleton } from '~/components/ui/skeleton'
+import { useRegisterBreadcrumbName } from '~/context/BreadcrumbNames'
 import { withAuth } from '~/helpers/withAuth'
 import { useGetGoal } from '~/hooks/goal/useGetGoal'
 import { ClientOnly } from '~/utils/ClientOnly'
@@ -21,6 +22,7 @@ function SelectedGoalPanel() {
   }
 
   const { goal, loading, error } = useGetGoal(selectedGoalUid)
+  useRegisterBreadcrumbName(selectedGoalUid, goal?.name)
 
   if (loading) return <Skeleton className='h-64 w-full' />
 

@@ -18,6 +18,7 @@ import {
 } from '~/components/ui/alert-dialog'
 import { Button } from '~/components/ui/button'
 import { Skeleton } from '~/components/ui/skeleton'
+import { useRegisterBreadcrumbName } from '~/context/BreadcrumbNames'
 import { withAuth } from '~/helpers/withAuth'
 import { useGetProgram } from '~/hooks/program/useGetProgram'
 import { useUpdateProgram } from '~/hooks/program/useUpdateProgram'
@@ -57,6 +58,8 @@ function ProgramDetailPage() {
   }
 
   const { error, loading, program } = useGetProgram(programUid)
+  useRegisterBreadcrumbName(programUid, program?.name)
+
   const { updateProgram, loading: updatingProgram } = useUpdateProgram()
 
   const handleDeactivate = async () => {
@@ -86,27 +89,36 @@ function ProgramDetailPage() {
         fields={
           program
             ? [
-                { label: 'Institución', value: capitalize(program.institution.name) },
+                {
+                  label: 'Institución',
+                  value: capitalize(program.institution.name),
+                },
                 {
                   label: 'Responsable',
                   value: `${program.responsible.person.firstName} ${program.responsible.person.lastName}`,
                 },
                 {
                   label: 'Periodo',
-                  value: formatDateRange(program.startDate, program.endDate) || '—',
+                  value:
+                    formatDateRange(program.startDate, program.endDate) || '—',
                 },
                 {
                   label: 'Inversión estimada',
-                  value: program.estimatedInversion != null
-                    ? `$${program.estimatedInversion}`
-                    : '—',
+                  value:
+                    program.estimatedInversion != null
+                      ? `$${program.estimatedInversion}`
+                      : '—',
                 },
               ]
             : []
         }
         description={program?.description}
         menuActions={[
-          { label: 'Desactivar', onClick: () => setDeactivateOpen(true), destructive: true },
+          {
+            label: 'Desactivar',
+            onClick: () => setDeactivateOpen(true),
+            destructive: true,
+          },
         ]}
         menuDisabled={updatingProgram}
       />
@@ -132,7 +144,10 @@ function ProgramDetailPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeactivate} disabled={updatingProgram}>
+            <AlertDialogAction
+              onClick={handleDeactivate}
+              disabled={updatingProgram}
+            >
               {updatingProgram ? 'Desactivando...' : 'Confirmar'}
             </AlertDialogAction>
           </AlertDialogFooter>

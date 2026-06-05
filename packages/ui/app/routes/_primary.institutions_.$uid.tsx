@@ -19,6 +19,7 @@ import {
 import { Button } from '~/components/ui/button'
 import { Skeleton } from '~/components/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs'
+import { useRegisterBreadcrumbName } from '~/context/BreadcrumbNames'
 import { withAuth } from '~/helpers/withAuth'
 import { useGetInstitution } from '~/hooks/institution/useGetInstitution'
 import { useUpdateInstitution } from '~/hooks/institution/useUpdateInstitution'
@@ -29,22 +30,45 @@ import { ClientOnly } from '~/utils/ClientOnly'
 export const loader = withAuth()
 
 const PlansSection = ({ institutionUid }: { institutionUid: string }) => {
-  const { institutionalPlans, loading, error } = useInstitutionalPlanList(institutionUid)
+  const { institutionalPlans, loading, error } =
+    useInstitutionalPlanList(institutionUid)
 
   if (loading) return <Skeleton className='h-32 w-full' />
-  if (error) return <Alert variant='error' description={`Error cargando planes: ${error.message}`} />
-  if (institutionalPlans.length === 0) return <Paragraph>No hay planes institucionales creados</Paragraph>
+  if (error)
+    return (
+      <Alert
+        variant='error'
+        description={`Error cargando planes: ${error.message}`}
+      />
+    )
+  if (institutionalPlans.length === 0)
+    return <Paragraph>No hay planes institucionales creados</Paragraph>
 
-  return <InstitutionalPlanList list={institutionalPlans} institutionUid={institutionUid} />
+  return (
+    <InstitutionalPlanList
+      list={institutionalPlans}
+      institutionUid={institutionUid}
+    />
+  )
 }
 
 const ObjectivesSection = ({ institutionUid }: { institutionUid: string }) => {
-  const { list, loading, error } = useInstitutionalObjectiveList({ institutionUid })
+  const { list, loading, error } = useInstitutionalObjectiveList({
+    institutionUid,
+  })
 
   if (loading) return <Skeleton className='h-32 w-full' />
-  if (error) return <Alert variant='error' description={`Error cargando objetivos: ${error.message}`} />
+  if (error)
+    return (
+      <Alert
+        variant='error'
+        description={`Error cargando objetivos: ${error.message}`}
+      />
+    )
 
-  return <InstitutionalObjectiveList list={list} institutionUid={institutionUid} />
+  return (
+    <InstitutionalObjectiveList list={list} institutionUid={institutionUid} />
+  )
 }
 
 const AREA_LABELS: Record<string, string> = {
@@ -65,6 +89,8 @@ function InstitutionDetailPage() {
   }
 
   const { error, loading, institution } = useGetInstitution(uid)
+  useRegisterBreadcrumbName(uid, institution?.name)
+
   const { updateInstitution, loading: updating } = useUpdateInstitution()
 
   const handleDeactivate = async () => {
@@ -77,7 +103,10 @@ function InstitutionDetailPage() {
   return (
     <div className='p-4 space-y-6'>
       {error && (
-        <Alert variant='error' description={error.cause?.message ?? error.message} />
+        <Alert
+          variant='error'
+          description={error.cause?.message ?? error.message}
+        />
       )}
 
       <DetailHero
@@ -88,13 +117,23 @@ function InstitutionDetailPage() {
         fields={
           institution
             ? [
-                { label: 'Área', value: AREA_LABELS[institution.area] ?? institution.area },
-                { label: 'Nivel', value: LEVEL_LABELS[institution.level] ?? institution.level },
+                {
+                  label: 'Área',
+                  value: AREA_LABELS[institution.area] ?? institution.area,
+                },
+                {
+                  label: 'Nivel',
+                  value: LEVEL_LABELS[institution.level] ?? institution.level,
+                },
               ]
             : []
         }
         menuActions={[
-          { label: 'Desactivar', onClick: () => setDeactivateOpen(true), destructive: true },
+          {
+            label: 'Desactivar',
+            onClick: () => setDeactivateOpen(true),
+            destructive: true,
+          },
         ]}
         menuDisabled={updating}
       />

@@ -2,6 +2,7 @@ import { useParams } from '@remix-run/react'
 import { Alert } from '~/components/globals/Alert'
 import { IndicatorForm } from '~/components/pages/indicator/IndicatorForm'
 import { Skeleton } from '~/components/ui/skeleton'
+import { useRegisterBreadcrumbName } from '~/context/BreadcrumbNames'
 import { withAuth } from '~/helpers/withAuth'
 import { useGetIndicator } from '~/hooks/indicator/useGetIndicator'
 import { ClientOnly } from '~/utils/ClientOnly'
@@ -11,6 +12,7 @@ export const loader = withAuth()
 function IndicatorDetailInner() {
   const { institutionUid, objectiveUid, goalUid, uid } = useParams()
   const { indicator, loading, error } = useGetIndicator(uid)
+  useRegisterBreadcrumbName(uid, indicator?.name)
 
   if (!institutionUid || !objectiveUid || !goalUid || !uid) {
     return (

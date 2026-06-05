@@ -11,6 +11,29 @@ type TProjectCompletionReport = {
   percentage: number
 }
 
+export function calculateProjectCompletionReport(input: {
+  totalActiveObjectives: number
+  completedObjectives: number
+  cancelledObjectives: number
+}): TProjectCompletionReport {
+  const actionableTotal = Math.max(
+    input.totalActiveObjectives - input.cancelledObjectives,
+    0,
+  )
+
+  if (actionableTotal === 0) {
+    return { completed: 0, total: 0, percentage: 0 }
+  }
+
+  const completed = Math.min(input.completedObjectives, actionableTotal)
+
+  return {
+    completed,
+    total: actionableTotal,
+    percentage: (completed / actionableTotal) * 100,
+  }
+}
+
 const ProjectCompletionReport = builder
   .objectRef<TProjectCompletionReport>('ProjectCompletionReport')
   .implement({
@@ -42,21 +65,22 @@ builder.objectField(ReportsQueries, 'projectCompletion', (t) =>
         projectId: project.id,
         active: true,
       })
-      if (total === 0) {
-        return { completed: 0, total: 0, percentage: 0 }
-      }
-
       const completed = await projectObjectiveRepository.count({
         projectId: project.id,
         active: true,
         status: 'done',
       })
+      const cancelled = await projectObjectiveRepository.count({
+        projectId: project.id,
+        active: true,
+        status: 'cancelled',
+      })
 
-      return {
-        completed,
-        total,
-        percentage: (completed / total) * 100,
-      }
+      return calculateProjectCompletionReport({
+        totalActiveObjectives: total,
+        completedObjectives: completed,
+        cancelledObjectives: cancelled,
+      })
     },
   }),
 )

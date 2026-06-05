@@ -2,6 +2,7 @@ import { useNavigate, useParams } from '@remix-run/react'
 import { Alert } from '~/components/globals/Alert'
 import { UserForm } from '~/components/pages/user/UserForm'
 import { Skeleton } from '~/components/ui/skeleton'
+import { useRegisterBreadcrumbName } from '~/context/BreadcrumbNames'
 import { useGetUser } from '~/hooks/user/useGetUser'
 import { withRole } from '~/helpers/withAuth'
 
@@ -14,6 +15,8 @@ export default function Index() {
   }
 
   const { error, loading, user } = useGetUser(id)
+  useRegisterBreadcrumbName(id, user?.name)
+
   return (
     <>
       {error && (
