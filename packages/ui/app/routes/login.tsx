@@ -39,6 +39,7 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
 
   const requestId = getRequestId(request)
   const startedAt = Date.now()
+  const environment = context.cloudflare.env.ENVIRONMENT
   console.log('[ui] Login action started', {
     requestId,
     method: request.method,
@@ -46,7 +47,7 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
     hasDatabaseUrl: Boolean(context.cloudflare.env.DATABASE_URL),
   })
 
-  const databaseUrl = context.cloudflare.env.DATABASE_URL
+  const databaseUrl = context.cloudflare.env.DATABASE_URL?.connectionString
   const cookieSecret = context.cloudflare.env.UI_AUTH_COOKIE_SECRET
   if (!databaseUrl || !cookieSecret) {
     console.error('[ui] Login action missing required environment', {
@@ -162,14 +163,25 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
       durationMs: Date.now() - startedAt,
     })
 
-    const accessCookie = getAccessTokenCookie(cookieSecret)
+    const accessCookie = getAccessTokenCookie({
+      secret: cookieSecret,
+      environment,
+      request,
+    })
     const serializedAccessCookie = await accessCookie.serialize(accessToken)
-    const accessExpiryCookie = getAccessTokenExpiryCookie()
+    const accessExpiryCookie = getAccessTokenExpiryCookie({
+      environment,
+      request,
+    })
     const serializedAccessExpiryCookie = await accessExpiryCookie.serialize(
       `${accessTokenExpiresAt.getTime()}`,
     )
 
-    const refreshCookie = getRefreshTokenCookie(cookieSecret)
+    const refreshCookie = getRefreshTokenCookie({
+      secret: cookieSecret,
+      environment,
+      request,
+    })
     const serializedRefreshCookie = await refreshCookie.serialize(refreshToken)
 
     const headers = new Headers()
@@ -204,16 +216,11 @@ export const action = async ({ context, request }: ActionFunctionArgs) => {
       )
     }
 
-    logServerError(
-      '[ui] Login action failed',
-      request,
-      error,
-      {
-        requestId,
-        routeName: 'login',
-        username: username.toString(),
-      },
-    )
+    logServerError('[ui] Login action failed', request, error, {
+      requestId,
+      routeName: 'login',
+      username: username.toString(),
+    })
 
     console.error('[ui] Login action returning server error response', {
       requestId,
@@ -284,7 +291,12 @@ function Login() {
   return (
     <div className='min-h-screen flex flex-col gap-4 items-center justify-center bg-gray-100'>
       <Card className='w-full max-w-sm p-4'>
-        <CardHeader>
+        <CardHeader className='items-center gap-4'>
+          <img
+            src='/assets/sigep-vertical.png'
+            alt='SIGEP'
+            className='h-32 w-auto object-contain'
+          />
           <CardTitle className='text-center'>Login</CardTitle>
         </CardHeader>
         <CardContent>

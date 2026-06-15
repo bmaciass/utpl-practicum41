@@ -6,6 +6,8 @@ import { Title } from '~/components/typography/Headers'
 import { Paragraph } from '~/components/typography/Paragraph'
 import { Button } from '~/components/ui/button'
 import { Skeleton } from '~/components/ui/skeleton'
+import { useRegisterBreadcrumbName } from '~/context/BreadcrumbNames'
+import { useGetInstitution } from '~/hooks/institution/useGetInstitution'
 import { useInstitutionalObjectiveList } from '~/hooks/institutionalObjective/useInstitutionalObjectiveList'
 import { InstitutionalObjectiveList } from './InstitutionalObjectiveList'
 
@@ -49,6 +51,9 @@ export const InstitutionalObjectivesPage = () => {
       <Alert variant='error' description='ID de institución no encontrado' />
     )
   }
+
+  const { institution } = useGetInstitution(institutionUid)
+  useRegisterBreadcrumbName(institutionUid, institution?.name)
 
   return (
     <div className='p-4 space-y-4'>

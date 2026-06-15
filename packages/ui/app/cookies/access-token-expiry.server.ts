@@ -1,10 +1,18 @@
 import { createCookie } from '@remix-run/cloudflare'
+import { getAuthCookieOptions } from '~/cookies/auth-cookie-options.server'
 
-export const getAccessTokenExpiryCookie = () =>
+type AccessTokenExpiryCookieArgs = {
+  environment?: string
+  request: Request
+}
+
+export const getAccessTokenExpiryCookie = ({
+  environment,
+  request,
+}: AccessTokenExpiryCookieArgs) =>
   createCookie('access-token-expiry', {
     httpOnly: false,
-    sameSite: process.env.ENVIRONMENT === 'production' ? 'none' : 'lax',
     path: '/',
-    secure: process.env.ENVIRONMENT === 'production',
     maxAge: 600,
+    ...getAuthCookieOptions({ environment, request }),
   })

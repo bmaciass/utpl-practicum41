@@ -4,6 +4,9 @@ import { Alert } from '~/components/globals/Alert'
 import { Title } from '~/components/typography/Headers'
 import { Paragraph } from '~/components/typography/Paragraph'
 import { Button } from '~/components/ui/button'
+import { useRegisterBreadcrumbName } from '~/context/BreadcrumbNames'
+import { useGetProgram } from '~/hooks/program/useGetProgram'
+import { useGetProject } from '~/hooks/project/useGetProject'
 import { ProjectObjectiveListSection } from './ProjectObjectiveListSection'
 
 export function ProjectObjectivesPage() {
@@ -14,6 +17,11 @@ export function ProjectObjectivesPage() {
   if (!programUid || !projectUid) {
     return <Alert variant='error' description='IDs invalidos' />
   }
+
+  const { program } = useGetProgram(programUid)
+  const { project } = useGetProject(projectUid)
+  useRegisterBreadcrumbName(programUid, program?.name)
+  useRegisterBreadcrumbName(projectUid, project?.name)
 
   return (
     <div className='grid grid-cols-6 gap-4'>

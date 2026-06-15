@@ -44,12 +44,16 @@ export function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
       <SidebarHeader className='border-b border-sidebar-border/80 px-4 py-5'>
         <div className='rounded-2xl border border-sidebar-border bg-gradient-to-br from-sidebar-accent to-sidebar p-4 shadow-inner shadow-black/10'>
           <div className='flex items-center gap-3'>
-            <div className='flex h-11 w-11 items-center justify-center rounded-xl bg-sidebar-primary font-semibold tracking-[0.18em] text-sidebar-primary-foreground shadow-lg shadow-sidebar-primary/20'>
-              UT
+            <div className='flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white shadow-lg shadow-sidebar-primary/20'>
+              <img
+                src='/assets/sigep-logo.png'
+                alt='SIGEP'
+                className='h-8 w-8 object-contain'
+              />
             </div>
             <div className='min-w-0'>
               <h2 className='truncate text-lg font-semibold tracking-tight text-sidebar-foreground'>
-                UTPL Practicum
+                SIGEP
               </h2>
               <p className='text-xs text-sidebar-foreground/65'>
                 Control institucional

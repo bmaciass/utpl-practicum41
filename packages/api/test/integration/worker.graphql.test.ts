@@ -29,7 +29,7 @@ async function seedAuditEvent(overrides?: {
   action?: string
   resourceUid?: string
 }) {
-  const { db, client } = await getDBConnection(testEnv.DATABASE_URL)
+  const { db, client } = await getDBConnection(testEnv.HYPERDRIVE.connectionString)
   await client.connect()
 
   try {

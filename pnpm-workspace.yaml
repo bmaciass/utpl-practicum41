@@ -5,3 +5,4 @@ packages:
   - packages/ui
   - packages/shared
   - packages/shared/seeders
+  - packages/db-test-worker

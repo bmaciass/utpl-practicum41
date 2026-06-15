@@ -5,7 +5,7 @@ import {
   getDefaultJWTService,
   withAuditedAction,
 } from '@sigep/api'
-import { connectDBClient, getDBConnection } from '@sigep/db'
+import { closeDBClient, connectDBClient, getDBConnection } from '@sigep/db'
 import { getAccessTokenExpiryCookie } from '~/cookies/access-token-expiry.server'
 import { getAccessTokenCookie } from '~/cookies/access-token.server'
 import { getRefreshTokenCookie } from '~/cookies/refresh-token.server'
@@ -16,15 +16,29 @@ export default function Index () {
 
 export const loader: LoaderFunction = async ({ context, request }) => {
   const secret = context.cloudflare.env.UI_AUTH_COOKIE_SECRET
-  const accessTokenExpiryCookie = getAccessTokenExpiryCookie()
+  if (!secret) {
+    return redirect('/')
+  }
+  const environment = context.cloudflare.env.ENVIRONMENT
+  const databaseUrl = context.cloudflare.env.DATABASE_URL.connectionString
+  const accessTokenExpiryCookie = getAccessTokenExpiryCookie({
+    environment,
+    request,
+  })
 
-  const accessTokenCookie = getAccessTokenCookie(secret)
-  const refreshTokenCookie = getRefreshTokenCookie(secret)
+  const accessTokenCookie = getAccessTokenCookie({
+    secret,
+    environment,
+    request,
+  })
+  const refreshTokenCookie = getRefreshTokenCookie({
+    secret,
+    environment,
+    request,
+  })
 
-  const { client, db } = await getDBConnection(
-    context.cloudflare.env.DATABASE_URL,
-  )
-  await connectDBClient(client, context.cloudflare.env.DATABASE_URL)
+  const { client, db } = await getDBConnection(databaseUrl)
+  await connectDBClient(client, databaseUrl)
   const authSessionRepository = new DrizzleAuthSessionRepository(db)
   const jwtService = await getDefaultJWTService()
 
@@ -64,7 +78,7 @@ export const loader: LoaderFunction = async ({ context, request }) => {
       }
     }
   } finally {
-    await client.end()
+    await closeDBClient(client, databaseUrl)
   }
 
   const clearAccessCookie = await accessTokenCookie.serialize('', {

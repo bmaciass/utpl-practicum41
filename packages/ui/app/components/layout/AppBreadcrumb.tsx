@@ -8,19 +8,6 @@ type BreadcrumbItem = {
   label: string
 }
 
-type ResourceKind =
-  | 'audit'
-  | 'goal'
-  | 'indicator'
-  | 'institution'
-  | 'institutionalObjective'
-  | 'institutionalPlan'
-  | 'pndObjective'
-  | 'program'
-  | 'project'
-  | 'projectObjective'
-  | 'user'
-
 const STATIC_SEGMENT_LABELS: Record<string, string> = {
   audit: 'Auditoria',
   edit: 'Editar',
@@ -38,20 +25,6 @@ const STATIC_SEGMENT_LABELS: Record<string, string> = {
   projects: 'Proyectos',
   reports: 'Reportes',
   users: 'Usuarios',
-}
-
-const RESOURCE_KIND_LABELS: Record<ResourceKind, string> = {
-  audit: 'Auditoria',
-  goal: 'Meta',
-  indicator: 'Indicador',
-  institution: 'Institucion',
-  institutionalObjective: 'Objetivo',
-  institutionalPlan: 'Plan',
-  pndObjective: 'Objetivo',
-  program: 'Programa',
-  project: 'Proyecto',
-  projectObjective: 'Objetivo',
-  user: 'Usuario',
 }
 
 function normalizePathname(pathname: string) {
@@ -82,57 +55,6 @@ function getSelectedGoalPath(segments: string[]) {
   }
 
   return undefined
-}
-
-function inferResourceKind(
-  segments: string[],
-  index: number,
-): ResourceKind | undefined {
-  const previousSegment = segments[index - 1]
-
-  if (!previousSegment) {
-    return undefined
-  }
-
-  switch (previousSegment) {
-    case 'audit':
-      return 'audit'
-    case 'goal':
-    case 'goals':
-      return 'goal'
-    case 'indicator':
-      return 'indicator'
-    case 'institutions':
-      return 'institution'
-    case 'objectives':
-      return segments.includes('projects')
-        ? 'projectObjective'
-        : 'institutionalObjective'
-    case 'plans':
-      return 'institutionalPlan'
-    case 'pnd':
-      return 'pndObjective'
-    case 'programs':
-      return 'program'
-    case 'projects':
-      return 'project'
-    case 'users':
-      return 'user'
-    default:
-      return undefined
-  }
-}
-
-function humanizeSegment(segment: string) {
-  return segment
-    .split(/[-_]/)
-    .filter(Boolean)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(' ')
-}
-
-function isLikelyIdentifier(segment: string) {
-  return /[0-9]/.test(segment) || segment.includes('-')
 }
 
 function resolveBreadcrumbHref(
@@ -194,21 +116,7 @@ export function AppBreadcrumb() {
         return
       }
 
-      const resourceKind = inferResourceKind(segments, index)
-      if (resourceKind) {
-        items.push({
-          href: breadcrumbHref,
-          label: RESOURCE_KIND_LABELS[resourceKind],
-        })
-        return
-      }
-
-      items.push({
-        href: breadcrumbHref,
-        label: isLikelyIdentifier(segment)
-          ? 'Detalle'
-          : humanizeSegment(segment),
-      })
+      items.push({ href: breadcrumbHref, label: 'Cargando...' })
     })
 
     return items

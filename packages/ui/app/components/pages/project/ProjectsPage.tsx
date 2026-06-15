@@ -6,6 +6,8 @@ import { Title } from '~/components/typography/Headers'
 import { Paragraph } from '~/components/typography/Paragraph'
 import { Button } from '~/components/ui/button'
 import { Skeleton } from '~/components/ui/skeleton'
+import { useRegisterBreadcrumbName } from '~/context/BreadcrumbNames'
+import { useGetProgram } from '~/hooks/program/useGetProgram'
 import { useProjectList } from '~/hooks/project/useProjectList'
 import { ProjectList } from './ProjectList'
 
@@ -45,6 +47,9 @@ export const ProjectsPage = () => {
     return <Alert variant='error' description='ID de programa no encontrado' />
   }
 
+  const { program } = useGetProgram(programUid)
+  useRegisterBreadcrumbName(programUid, program?.name)
+
   return (
     <div className='p-4 space-y-4'>
       {deleteStatus === 'success' && (
@@ -61,7 +66,9 @@ export const ProjectsPage = () => {
             <ArrowLeft className='h-4 w-4' />
           </Button>
         </Link>
-        <div className='grow'><Title variant='h4'>Proyectos</Title></div>
+        <div className='grow'>
+          <Title variant='h4'>Proyectos</Title>
+        </div>
         <Link to={`/programs/${programUid}/projects/new`}>
           <Button>Nuevo</Button>
         </Link>

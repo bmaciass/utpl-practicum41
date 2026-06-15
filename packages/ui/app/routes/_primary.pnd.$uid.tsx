@@ -6,6 +6,7 @@ import { Title } from '~/components/typography/Headers'
 import { Button } from '~/components/ui/button'
 import { PNDForm } from '~/components/pages/pnd/PNDForm'
 import { PNDAlignment } from '~/components/pages/pnd/PNDAlignment'
+import { useRegisterBreadcrumbName } from '~/context/BreadcrumbNames'
 import { usePNDOne } from '~/hooks/pnd/usePNDOne'
 
 export default function PNDDetailRoute() {
@@ -13,6 +14,7 @@ export default function PNDDetailRoute() {
   const navigate = useNavigate()
   const { objective, loading, error, refetch } = usePNDOne(uid)
   const [alignmentMode, setAlignmentMode] = useState(false)
+  useRegisterBreadcrumbName(uid, objective?.name)
 
   if (!uid) {
     return (

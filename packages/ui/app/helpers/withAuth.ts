@@ -34,8 +34,20 @@ async function getAuthPayloadResult(
   }
 
   const secret = context.cloudflare.env.UI_AUTH_COOKIE_SECRET
-  const accessCookie = getAccessTokenCookie(secret)
-  const refreshCookie = getRefreshTokenCookie(secret)
+  if (!secret) {
+    return redirect('/login')
+  }
+  const environment = context.cloudflare.env.ENVIRONMENT
+  const accessCookie = getAccessTokenCookie({
+    secret,
+    environment,
+    request,
+  })
+  const refreshCookie = getRefreshTokenCookie({
+    secret,
+    environment,
+    request,
+  })
 
   // Parse access token from cookie
   const token = await accessCookie.parse(cookieString)

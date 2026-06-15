@@ -17,18 +17,37 @@
     "directory": "./build/client"
   },
   "workers_dev": false,
+  "hyperdrive": [
+    {
+      "binding": "DATABASE_URL",
+      "id": "f580a3d6a8e145ac99fa8c5d12e94ae8",
+      "localConnectionString": "postgresql://root:root@127.0.0.1:6000/utpl_practicum"
+    }
+  ],
   "env": {
     "development": {
+      "hyperdrive": [
+        {
+          "binding": "DATABASE_URL",
+          "id": "f580a3d6a8e145ac99fa8c5d12e94ae8",
+          "localConnectionString": "postgresql://root:root@127.0.0.1:6000/utpl_practicum"
+        }
+      ],
       "vars": {
         "ENVIRONMENT": "development",
         "API_GRAPHQL_URL": "http://localhost:6002/graphql",
-        "DATABASE_URL": "postgresql://root:root@127.0.0.1:6000/utpl_practicum",
         "UI_AUTH_COOKIE_SECRET": "cookie-secret",
         "PRIVATE_JWK": "{\"key_ops\":[\"sign\"],\"ext\":true,\"crv\":\"Ed25519\",\"d\":\"c1gkkvWRMaDKPKG8C7Zwp--Zvov1O3qj05cbdr5BEUo\",\"x\":\"d0giNKtlIrSFkNsDmF4lZiynvxKlJVxGmPXaeW5rqgc\",\"kty\":\"OKP\"}",
         "PUBLIC_JWK": "{\"key_ops\":[\"verify\"],\"ext\":true,\"crv\":\"Ed25519\",\"x\":\"d0giNKtlIrSFkNsDmF4lZiynvxKlJVxGmPXaeW5rqgc\",\"kty\":\"OKP\"}"
       }
     },
     "production": {
+      "hyperdrive": [
+        {
+          "binding": "DATABASE_URL",
+          "id": "f580a3d6a8e145ac99fa8c5d12e94ae8"
+        }
+      ],
       "routes": [
         {
           "custom_domain": true,
@@ -37,7 +56,6 @@
       ],
       "secrets": {
         "required": [
-          "DATABASE_URL",
           "UI_AUTH_COOKIE_SECRET",
           "PRIVATE_JWK",
         ]

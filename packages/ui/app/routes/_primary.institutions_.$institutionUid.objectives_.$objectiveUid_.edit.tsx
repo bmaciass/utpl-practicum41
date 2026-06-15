@@ -5,6 +5,7 @@ import { InstitutionalObjectiveForm } from '~/components/pages/institutionalObje
 import { Title } from '~/components/typography/Headers'
 import { Button } from '~/components/ui/button'
 import { Skeleton } from '~/components/ui/skeleton'
+import { useRegisterBreadcrumbName } from '~/context/BreadcrumbNames'
 import { withAuth } from '~/helpers/withAuth'
 import { useGetInstitutionalObjective } from '~/hooks/institutionalObjective/useGetInstitutionalObjective'
 import { ClientOnly } from '~/utils/ClientOnly'
@@ -20,13 +21,16 @@ function ObjectiveEdit() {
 
   const { institutionalObjective, loading, error } =
     useGetInstitutionalObjective(objectiveUid)
+  useRegisterBreadcrumbName(
+    institutionUid,
+    institutionalObjective?.institution?.name,
+  )
+  useRegisterBreadcrumbName(objectiveUid, institutionalObjective?.name)
 
   return (
     <div className='p-4 space-y-4'>
       <div className='flex items-center gap-2'>
-        <Link
-          to={`/institutions/${institutionUid}/objectives/${objectiveUid}`}
-        >
+        <Link to={`/institutions/${institutionUid}/objectives/${objectiveUid}`}>
           <Button variant='ghost' size='icon'>
             <ArrowLeft className='h-4 w-4' />
           </Button>

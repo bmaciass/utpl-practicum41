@@ -7,6 +7,7 @@ import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { Skeleton } from '~/components/ui/skeleton'
+import { useRegisterBreadcrumbName } from '~/context/BreadcrumbNames'
 import { AuditEventStatus } from '~/gql/graphql'
 import { useGetAudit } from '~/hooks/audit/useGetAudit'
 import {
@@ -78,6 +79,7 @@ export function AuditDetailPage() {
   }
 
   const { auditEvent, error, loading } = useGetAudit(uid)
+  useRegisterBreadcrumbName(uid, auditEvent?.action)
 
   if (loading) {
     return <Skeleton className='h-[40rem] w-full' />

@@ -1,7 +1,6 @@
 import { createCookie } from '@remix-run/cloudflare'
 import { connectDBClient, getDBConnection } from '@sigep/db'
 import { useCookies } from '@whatwg-node/server-plugin-cookies'
-import { env } from 'cloudflare:workers'
 import { createYoga } from 'graphql-yoga'
 import { getDefaultJWTService } from '~/infrastructure/services/JWTService'
 import { createIndicatorsByGoalLoader } from '~/presentation/graphql/dataloaders/indicatorsByGoalLoader'
@@ -17,12 +16,12 @@ import { createUserLoader } from '~/presentation/graphql/dataloaders/userLoader'
 import { useResponse } from '~/presentation/graphql/plugins/onResponse'
 import schema from '~/presentation/graphql/schema'
 import type {
-  AuthFailureReason,
   AppContext,
   AppDataloaders,
+  AuthFailureReason,
 } from '~/presentation/graphql/schema/context'
 
-export const getAccessTokenCookie = (secret: string) =>
+export const getAccessTokenCookie = (secret: string, env: Env) =>
   createCookie('access-token-cookie', {
     httpOnly: true,
     sameSite: env.ENVIRONMENT === 'production' ? 'none' : 'lax',
@@ -74,6 +73,7 @@ function logAuthFailure(
 
 async function authenticateRequest(
   request: Request,
+  env: Env,
 ): Promise<AuthenticationResult> {
   const cookieHeader = request.headers.get('cookie')
   if (!cookieHeader) {
@@ -81,7 +81,14 @@ async function authenticateRequest(
     return { payload: null, failureReason: 'missing_access_cookie' }
   }
 
-  const accessCookie = getAccessTokenCookie('cookie-secret')
+  const cookieSecret = env.UI_AUTH_COOKIE_SECRET
+  if (!cookieSecret) {
+    console.error('GraphQL authentication failed: UI_AUTH_COOKIE_SECRET is not configured')
+    logAuthFailure(request, 'invalid_access_cookie')
+    return { payload: null, failureReason: 'invalid_access_cookie' }
+  }
+
+  const accessCookie = getAccessTokenCookie(cookieSecret, env)
   const tokenString = await accessCookie.parse(cookieHeader)
 
   if (!tokenString) {
@@ -106,8 +113,9 @@ async function createContext(
   request: Request,
 ): Promise<AppContext> {
   // Connect to database
-  const { db, client } = await getDBConnection(env.DATABASE_URL)
-  await connectDBClient(client, env.DATABASE_URL)
+  const databaseUrl = env.DATABASE_URL.connectionString
+  const { db, client } = await getDBConnection(databaseUrl)
+  await connectDBClient(client, databaseUrl)
 
   const payload = auth.payload
   const token = {
@@ -149,8 +157,7 @@ async function createContext(
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    const auth = await authenticateRequest(request)
-
+    const auth = await authenticateRequest(request, env)
     const yoga = createYoga({
       schema,
       context: () => {

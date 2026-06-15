@@ -2,6 +2,7 @@ import { useParams } from '@remix-run/react'
 import { Alert } from '~/components/globals/Alert'
 import { Skeleton } from '~/components/ui/skeleton'
 import { useRegisterBreadcrumbName } from '~/context/BreadcrumbNames'
+import { useGetProgram } from '~/hooks/program/useGetProgram'
 import { useGetProject } from '~/hooks/project/useGetProject'
 import { ProjectCompletionMetric } from './ProjectCompletionMetric'
 import { ProjectDetailsSection } from './ProjectDetailsSection'
@@ -16,6 +17,8 @@ export const ProjectDetailPage = () => {
   }
 
   const { error, loading, project } = useGetProject(projectUid)
+  const { program } = useGetProgram(programUid)
+  useRegisterBreadcrumbName(programUid, program?.name)
   useRegisterBreadcrumbName(projectUid, project?.name)
 
   if (loading) return <Skeleton className='w-full h-96' />

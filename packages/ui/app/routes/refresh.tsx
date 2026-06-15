@@ -7,7 +7,7 @@ import {
   getDefaultJWTService,
   withAuditedAction,
 } from '@sigep/api'
-import { connectDBClient, getDBConnection } from '@sigep/db'
+import { closeDBClient, connectDBClient, getDBConnection } from '@sigep/db'
 import { getAccessTokenExpiryCookie } from '~/cookies/access-token-expiry.server'
 import { getAccessTokenCookie } from '~/cookies/access-token.server'
 import { getRefreshTokenCookie } from '~/cookies/refresh-token.server'
@@ -21,10 +21,25 @@ function wantsJsonResponse (request: Request) {
   )
 }
 
-async function clearAuthCookies (secret: string) {
-  const accessCookie = getAccessTokenCookie(secret)
-  const accessExpiryCookie = getAccessTokenExpiryCookie()
-  const refreshCookie = getRefreshTokenCookie(secret)
+async function clearAuthCookies (
+  secret: string,
+  environment: string | undefined,
+  request: Request,
+) {
+  const accessCookie = getAccessTokenCookie({
+    secret,
+    environment,
+    request,
+  })
+  const accessExpiryCookie = getAccessTokenExpiryCookie({
+    environment,
+    request,
+  })
+  const refreshCookie = getRefreshTokenCookie({
+    secret,
+    environment,
+    request,
+  })
 
   const headers = new Headers()
   headers.append(
@@ -45,13 +60,25 @@ async function clearAuthCookies (secret: string) {
 
 export const loader = async ({ context, request }: LoaderFunctionArgs) => {
   const secret = context.cloudflare.env.UI_AUTH_COOKIE_SECRET
-  const refreshCookie = getRefreshTokenCookie(secret)
+  if (!secret) {
+    if (wantsJsonResponse(request)) {
+      return new Response(null, { status: 500 })
+    }
+    return redirect('/login')
+  }
+  const environment = context.cloudflare.env.ENVIRONMENT
+  const databaseUrl = context.cloudflare.env.DATABASE_URL.connectionString
+  const refreshCookie = getRefreshTokenCookie({
+    secret,
+    environment,
+    request,
+  })
   const shouldReturnJson = wantsJsonResponse(request)
 
   // Read refresh token from HTTP-only cookie
   const cookieHeader = request.headers.get('Cookie')
   if (!cookieHeader) {
-    const headers = await clearAuthCookies(secret)
+    const headers = await clearAuthCookies(secret, environment, request)
     if (shouldReturnJson) {
       return new Response(null, { status: 401, headers })
     }
@@ -60,19 +87,17 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
 
   const refreshToken = await refreshCookie.parse(cookieHeader)
   if (!refreshToken) {
-    const headers = await clearAuthCookies(secret)
+    const headers = await clearAuthCookies(secret, environment, request)
     if (shouldReturnJson) {
       return new Response(null, { status: 401, headers })
     }
     return redirect('/login', { headers })
   }
 
-  const { client, db } = await getDBConnection(
-    context.cloudflare.env.DATABASE_URL,
-  )
+  const { client, db } = await getDBConnection(databaseUrl)
 
   try {
-    await connectDBClient(client, context.cloudflare.env.DATABASE_URL)
+    await connectDBClient(client, databaseUrl)
     const authSessionRepository = new DrizzleAuthSessionRepository(db)
     const userRepository = new DrizzleUserRepository(db)
     const roleRepository = new DrizzleRoleRepository(db)
@@ -116,8 +141,15 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
     )
 
     // Set BOTH new cookies (old tokens invalidated)
-    const accessCookie = getAccessTokenCookie(secret)
-    const accessExpiryCookie = getAccessTokenExpiryCookie()
+    const accessCookie = getAccessTokenCookie({
+      secret,
+      environment,
+      request,
+    })
+    const accessExpiryCookie = getAccessTokenExpiryCookie({
+      environment,
+      request,
+    })
     const serializedAccess = await accessCookie.serialize(newAccessToken)
     const serializedAccessExpiry = await accessExpiryCookie.serialize(
       `${accessTokenExpiresAt.getTime()}`,
@@ -138,13 +170,13 @@ export const loader = async ({ context, request }: LoaderFunctionArgs) => {
     return redirect(redirectTo, { headers })
   } catch (error) {
     console.error('[refresh] token refresh failed:', error)
-    const headers = await clearAuthCookies(secret)
+    const headers = await clearAuthCookies(secret, environment, request)
     if (shouldReturnJson) {
       return new Response(null, { status: 401, headers })
     }
     return redirect('/login', { headers })
   } finally {
-    await client.end()
+    await closeDBClient(client, databaseUrl)
   }
 }
 
