@@ -1,9 +1,12 @@
+import type { MutationFunctionOptions } from '@apollo/client'
 import { useMutation } from '@apollo/client/react/index.js'
+import { useCallback } from 'react'
 import { graphql } from '~/gql'
 import type {
   ProjectTask_UseProjectTaskListQuery,
   ProjectTask_UseUpdateProjectTaskMutation,
   ProjectTask_UseUpdateProjectTaskMutationVariables,
+  ProjectTaskStatus,
 } from '~/gql/graphql'
 import { query } from './useProjectTaskList'
 
@@ -61,7 +64,7 @@ function updateProjectTaskListCache(
 }
 
 export const useUpdateProjectTask = (projectUid: string) => {
-  const [fn, { called, loading, error, data }] = useMutation<
+  const [mutate, { called, loading, error, data }] = useMutation<
     ProjectTask_UseUpdateProjectTaskMutation,
     ProjectTask_UseUpdateProjectTaskMutationVariables
   >(updateMutation, {
@@ -81,7 +84,53 @@ export const useUpdateProjectTask = (projectUid: string) => {
     },
   })
 
+  const updateProjectTask = useCallback(
+    (
+      options?: MutationFunctionOptions<
+        ProjectTask_UseUpdateProjectTaskMutation,
+        ProjectTask_UseUpdateProjectTaskMutationVariables
+      >,
+    ) => mutate(options),
+    [mutate],
+  )
+
+  const changeProjectTaskStatus = useCallback(
+    ({
+      taskUid,
+      status,
+      onCompleted,
+      onError,
+    }: {
+      taskUid: string
+      status: ProjectTaskStatus
+      onCompleted?: MutationFunctionOptions<
+        ProjectTask_UseUpdateProjectTaskMutation,
+        ProjectTask_UseUpdateProjectTaskMutationVariables
+      >['onCompleted']
+      onError?: MutationFunctionOptions<
+        ProjectTask_UseUpdateProjectTaskMutation,
+        ProjectTask_UseUpdateProjectTaskMutationVariables
+      >['onError']
+    }) =>
+      updateProjectTask({
+        variables: {
+          data: { status },
+          where: { uid: taskUid },
+        },
+        onCompleted,
+        onError,
+      }),
+    [updateProjectTask],
+  )
+
   const projectTask = data?.projectTask.update
 
-  return { called, loading, error, projectTask, updateProjectTask: fn }
+  return {
+    called,
+    loading,
+    error,
+    projectTask,
+    updateProjectTask,
+    changeProjectTaskStatus,
+  }
 }

@@ -24,8 +24,11 @@ import {
 
 export const ProjectTasksSection = ({ projectUid }: { projectUid: string }) => {
   const { projectTasks, loading, error } = useProjectTaskList(projectUid)
-  const { error: updateError, updateProjectTask } =
-    useUpdateProjectTask(projectUid)
+  const {
+    changeProjectTaskStatus,
+    error: updateError,
+    updateProjectTask,
+  } = useUpdateProjectTask(projectUid)
   const [tasks, setTasks] = useState<ProjectTaskRecord[]>([])
   const [selectedTask, setSelectedTask] = useState<
     | ProjectTask_UseProjectTaskListQuery['projectTask']['list']['records'][number]
@@ -90,11 +93,16 @@ export const ProjectTasksSection = ({ projectUid }: { projectUid: string }) => {
 
   const handleDragEnd = (event: DragEndEvent) => {
     const taskUid = event.operation.source?.id
-    const nextStatus = event.operation.target?.id
+    const targetId = event.operation.target?.id
+    const nextStatus =
+      dropTargetStatus ??
+      (typeof targetId === 'string' && isProjectTaskStatus(targetId)
+        ? targetId
+        : null)
 
     resetDragState()
 
-    if (typeof taskUid !== 'string' || !isProjectTaskStatus(nextStatus)) {
+    if (typeof taskUid !== 'string' || !nextStatus) {
       return
     }
 
@@ -108,11 +116,9 @@ export const ProjectTasksSection = ({ projectUid }: { projectUid: string }) => {
       moveTaskToStatus(currentTasks, taskUid, nextStatus),
     )
 
-    updateProjectTask({
-      variables: {
-        data: { status: nextStatus },
-        where: { uid: taskUid },
-      },
+    changeProjectTaskStatus({
+      status: nextStatus,
+      taskUid,
       onError: () => setTasks(previousTasks),
     })
   }

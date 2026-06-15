@@ -43,7 +43,26 @@ const formSchema = z.object({
   }),
 })
 
-export function ProjectTaskForm({
+function getTaskFormValues (
+  task: NonNullable<
+    ProjectTask_UseProjectTaskListQuery['projectTask']['list']['records'][number]
+  >,
+) {
+  return {
+    name: task.name,
+    description: task.description || '',
+    status: task.status,
+    startDate: task.startDate
+      ? new Date(task.startDate).toISOString().split('T')[0]
+      : '',
+    endDate: task.endDate
+      ? new Date(task.endDate).toISOString().split('T')[0]
+      : '',
+    responsibleUid: task.responsible?.uid || '',
+  }
+}
+
+export function ProjectTaskForm ({
   projectUid,
   task,
   onSuccess,
@@ -51,8 +70,8 @@ export function ProjectTaskForm({
 }: {
   projectUid: string
   task?:
-    | ProjectTask_UseProjectTaskListQuery['projectTask']['list']['records'][number]
-    | null
+  | ProjectTask_UseProjectTaskListQuery['projectTask']['list']['records'][number]
+  | null
   onSuccess: () => void
   onCancel: () => void
 }) {
@@ -64,6 +83,7 @@ export function ProjectTaskForm({
     error: createError,
   } = useCreateProjectTask(projectUid)
   const {
+    changeProjectTaskStatus,
     updateProjectTask,
     loading: updateLoading,
     error: updateError,
@@ -90,18 +110,7 @@ export function ProjectTaskForm({
 
   useEffect(() => {
     if (task) {
-      form.reset({
-        name: task.name,
-        description: task.description || '',
-        status: task.status,
-        startDate: task.startDate
-          ? new Date(task.startDate).toISOString().split('T')[0]
-          : '',
-        endDate: task.endDate
-          ? new Date(task.endDate).toISOString().split('T')[0]
-          : '',
-        responsibleUid: task.responsible?.uid || '',
-      })
+      form.reset(getTaskFormValues(task))
     }
   }, [form, task])
 
@@ -122,7 +131,7 @@ export function ProjectTaskForm({
     }
   }
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit (values: z.infer<typeof formSchema>) {
     const data = {
       ...values,
       startDate: values.startDate || null,
@@ -130,6 +139,24 @@ export function ProjectTaskForm({
     }
 
     if (isEditMode && task) {
+      const initialValues = getTaskFormValues(task)
+      const changedFields = (
+        Object.keys(initialValues) as Array<keyof typeof initialValues>
+      ).filter((key) => initialValues[key] !== values[key])
+
+      const isChangingStatus = changedFields.length === 1 &&
+        changedFields[0] === 'status' &&
+        values.status !== task.status
+
+      if (isChangingStatus) {
+        changeProjectTaskStatus({
+          taskUid: task.uid,
+          status: values.status,
+          onCompleted: onSuccess,
+        })
+        return
+      }
+
       updateProjectTask({
         variables: {
           data,
