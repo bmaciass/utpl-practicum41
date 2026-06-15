@@ -10,6 +10,7 @@
     "check": "tsc --noEmit",
     "codegen": "./scripts/generate",
     "deploy": "wrangler deploy --env production",
+    "deploy:staging": "wrangler deploy --env staging",
     "dev": "wrangler dev --env development",
     "start": "wrangler dev --env development",
     "test": "vitest",

@@ -3,96 +3,120 @@
  * https://developers.cloudflare.com/workers/wrangler/configuration/
  */
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "sigep-api",
-  "main": "src/app/worker.ts",
-  "compatibility_date": "2025-06-20",
-  "compatibility_flags": [
-    "nodejs_compat"
-  ],
-  "observability": {
-    "enabled": true
-  },
-  "workers_dev": false,
-  "dev": {
-    "port": 6002
-  },
-  "hyperdrive": [
-    {
-      "binding": "DATABASE_URL",
-      "id": "f580a3d6a8e145ac99fa8c5d12e94ae8",
-      "localConnectionString": "postgresql://root:root@127.0.0.1:6000/utpl_practicum"
-    }
-  ],
-  "env": {
-    "development": {
-      "hyperdrive": [
-        {
-          "binding": "DATABASE_URL",
-          "id": "f580a3d6a8e145ac99fa8c5d12e94ae8",
-          "localConnectionString": "postgresql://root:root@127.0.0.1:6000/utpl_practicum"
-        }
-      ],
-      "vars": {
-        "ENVIRONMENT": "development",
-        "UI_AUTH_COOKIE_SECRET": "cookie-secret",
-        "PRIVATE_JWK": "{\"key_ops\":[\"sign\"],\"ext\":true,\"crv\":\"Ed25519\",\"d\":\"c1gkkvWRMaDKPKG8C7Zwp--Zvov1O3qj05cbdr5BEUo\",\"x\":\"d0giNKtlIrSFkNsDmF4lZiynvxKlJVxGmPXaeW5rqgc\",\"kty\":\"OKP\"}",
-        "PUBLIC_JWK": "{\"key_ops\":[\"verify\"],\"ext\":true,\"crv\":\"Ed25519\",\"x\":\"d0giNKtlIrSFkNsDmF4lZiynvxKlJVxGmPXaeW5rqgc\",\"kty\":\"OKP\"}"
-      }
-    },
-    "production": {
-      "hyperdrive": [
-        {
-          "binding": "DATABASE_URL",
-          "id": "f580a3d6a8e145ac99fa8c5d12e94ae8"
-        }
-      ],
-      "routes": [
-        {
-          "custom_domain": true,
-          "pattern": "api.utpl-practicum.bmacias.dev"
-        }
-      ],
-      "secrets": {
-        "required": [
-          "UI_AUTH_COOKIE_SECRET",
-          "PRIVATE_JWK",
-        ]
-      },
-      "vars": {
-        "ENVIRONMENT": "production",
-        "PUBLIC_JWK": "{\"key_ops\":[\"verify\"],\"ext\":true,\"crv\":\"Ed25519\",\"x\":\"h5AQut-33ZXIznMRP3204tb6X75nVl6qLbMv3Q6ZPqY\",\"kty\":\"OKP\"}"
-      }
-    }
-  },
-  /**
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "sigep-api",
+	"main": "src/app/worker.ts",
+	"compatibility_date": "2025-06-20",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"observability": {
+		"enabled": true
+	},
+	"workers_dev": false,
+	"dev": {
+		"port": 6002
+	},
+	"hyperdrive": [
+		{
+			"binding": "DATABASE_URL",
+			"id": "e6b685e6a5334517830e867bbfa507f9",
+			"localConnectionString": "postgresql://root:root@127.0.0.1:6000/utpl_practicum"
+		}
+	],
+	"env": {
+		"development": {
+			"hyperdrive": [
+				{
+					"binding": "DATABASE_URL",
+					"id": "e6b685e6a5334517830e867bbfa507f9",
+					"localConnectionString": "postgresql://root:root@127.0.0.1:6000/utpl_practicum"
+				}
+			],
+			"vars": {
+				"ENVIRONMENT": "development",
+				"UI_AUTH_COOKIE_SECRET": "cookie-secret",
+				"PRIVATE_JWK": "{\"key_ops\":[\"sign\"],\"ext\":true,\"crv\":\"Ed25519\",\"d\":\"c1gkkvWRMaDKPKG8C7Zwp--Zvov1O3qj05cbdr5BEUo\",\"x\":\"d0giNKtlIrSFkNsDmF4lZiynvxKlJVxGmPXaeW5rqgc\",\"kty\":\"OKP\"}",
+				"PUBLIC_JWK": "{\"key_ops\":[\"verify\"],\"ext\":true,\"crv\":\"Ed25519\",\"x\":\"d0giNKtlIrSFkNsDmF4lZiynvxKlJVxGmPXaeW5rqgc\",\"kty\":\"OKP\"}"
+			}
+		},
+		"staging": {
+			"hyperdrive": [
+				{
+					"binding": "DATABASE_URL",
+					"id": "e6b685e6a5334517830e867bbfa507f9"
+				}
+			],
+			"routes": [
+				{
+					"custom_domain": true,
+					"pattern": "staging.api.utpl-practicum.bmacias.dev"
+				}
+			],
+			"secrets": {
+				"required": [
+					"UI_AUTH_COOKIE_SECRET",
+					"PRIVATE_JWK"
+				]
+			},
+			"vars": {
+				"ENVIRONMENT": "staging",
+				"PUBLIC_JWK": "{\"key_ops\":[\"verify\"],\"ext\":true,\"crv\":\"Ed25519\",\"x\":\"h5AQut-33ZXIznMRP3204tb6X75nVl6qLbMv3Q6ZPqY\",\"kty\":\"OKP\"}"
+			}
+		},
+		"production": {
+			"hyperdrive": [
+				{
+					"binding": "DATABASE_URL",
+					"id": "f580a3d6a8e145ac99fa8c5d12e94ae8"
+				}
+			],
+			"routes": [
+				{
+					"custom_domain": true,
+					"pattern": "api.utpl-practicum.bmacias.dev"
+				}
+			],
+			"secrets": {
+				"required": [
+					"UI_AUTH_COOKIE_SECRET",
+					"PRIVATE_JWK"
+				]
+			},
+			"vars": {
+				"ENVIRONMENT": "production",
+				"PUBLIC_JWK": "{\"key_ops\":[\"verify\"],\"ext\":true,\"crv\":\"Ed25519\",\"x\":\"h5AQut-33ZXIznMRP3204tb6X75nVl6qLbMv3Q6ZPqY\",\"kty\":\"OKP\"}"
+			}
+		}
+	}
+	/**
    * Smart Placement
    * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
    */
-  // "placement": { "mode": "smart" },
-  /**
+	// "placement": { "mode": "smart" },
+	/**
    * Bindings
    * Bindings allow your Worker to interact with resources on the Cloudflare Developer Platform, including
    * databases, object storage, AI inference, real-time communication and more.
    * https://developers.cloudflare.com/workers/runtime-apis/bindings/
    */
-  /**
+	/**
    * Environment Variables
    * https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables
    */
-  // "vars": { "MY_VARIABLE": "production_value" },
-  /**
+	// "vars": { "MY_VARIABLE": "production_value" },
+	/**
    * Note: Use secrets to store sensitive data.
    * https://developers.cloudflare.com/workers/configuration/secrets/
    */
-  /**
+	/**
    * Static Assets
    * https://developers.cloudflare.com/workers/static-assets/binding/
    */
-  // "assets": { "directory": "./public/", "binding": "ASSETS" },
-  /**
+	// "assets": { "directory": "./public/", "binding": "ASSETS" },
+	/**
    * Service Bindings (communicate between multiple Workers)
    * https://developers.cloudflare.com/workers/wrangler/configuration/#service-bindings
    */
-  // "services": [{ "binding": "MY_SERVICE", "service": "my-service" }]
+	// "services": [{ "binding": "MY_SERVICE", "service": "my-service" }]
 }

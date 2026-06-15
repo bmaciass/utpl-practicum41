@@ -9,6 +9,7 @@
     "check": "tsc --noEmit",
     "codegen": "gql-gen --config codegen.ts",
     "deploy": "pnpm codegen && pnpm build && wrangler deploy --env production",
+    "deploy:staging": "pnpm codegen && pnpm build && wrangler deploy --env staging",
     "dev": "remix vite:dev",
     "format": "biome format --write .",
     "start": "pnpm codegen && pnpm build && wrangler dev --env development",
