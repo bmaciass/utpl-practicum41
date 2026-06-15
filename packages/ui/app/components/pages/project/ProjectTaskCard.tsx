@@ -1,3 +1,4 @@
+import { useDraggable } from '@dnd-kit/react'
 import { MoreVertical } from 'lucide-react'
 import { Button } from '~/components/ui/button'
 import { Card, CardHeader } from '~/components/ui/card'
@@ -7,20 +8,34 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
-import type { ProjectTask_UseProjectTaskListQuery } from '~/gql/graphql'
 import { formatDateRange } from '~/lib/dateUtils'
+import { cn } from '~/lib/utils'
+import {
+  PROJECT_TASK_DRAG_TYPE,
+  type ProjectTaskRecord,
+} from './projectTaskBoard'
 
 export const ProjectTaskCard = ({
   task,
   onView,
   onDelete,
+  isDragDisabled = false,
 }: {
-  task: ProjectTask_UseProjectTaskListQuery['projectTask']['list']['records'][number]
-  onView: (
-    task: ProjectTask_UseProjectTaskListQuery['projectTask']['list']['records'][number],
-  ) => void
+  task: ProjectTaskRecord
+  onView: (task: ProjectTaskRecord) => void
   onDelete: (taskUid: string) => void
+  isDragDisabled?: boolean
 }) => {
+  const { ref, isDragging } = useDraggable({
+    id: task.uid,
+    type: PROJECT_TASK_DRAG_TYPE,
+    data: {
+      taskUid: task.uid,
+      status: task.status,
+    },
+    disabled: isDragDisabled,
+  })
+
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation()
     const confirmed = window.confirm(
@@ -33,7 +48,11 @@ export const ProjectTaskCard = ({
 
   return (
     <Card
-      className='cursor-pointer transition-colors hover:bg-accent/35'
+      ref={ref}
+      className={cn(
+        'cursor-pointer transition-all hover:bg-accent/35',
+        isDragging && 'opacity-60 ring-2 ring-primary/30 shadow-lg',
+      )}
       onClick={() => onView(task)}
     >
       <CardHeader className='p-3'>

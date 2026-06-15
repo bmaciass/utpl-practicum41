@@ -44,12 +44,12 @@ const formSchema = z.object({
 })
 
 export function ProjectTaskForm({
-  projectId,
+  projectUid,
   task,
   onSuccess,
   onCancel,
 }: {
-  projectId: string
+  projectUid: string
   task?:
     | ProjectTask_UseProjectTaskListQuery['projectTask']['list']['records'][number]
     | null
@@ -62,12 +62,12 @@ export function ProjectTaskForm({
     createProjectTask,
     loading: createLoading,
     error: createError,
-  } = useCreateProjectTask(projectId)
+  } = useCreateProjectTask(projectUid)
   const {
     updateProjectTask,
     loading: updateLoading,
     error: updateError,
-  } = useUpdateProjectTask(projectId)
+  } = useUpdateProjectTask(projectUid)
 
   const loading = createLoading || updateLoading
   const error = createError || updateError
@@ -142,7 +142,7 @@ export function ProjectTaskForm({
         variables: {
           data: {
             ...data,
-            projectId,
+            projectUid,
           },
         },
         onCompleted: onSuccess,

@@ -8,12 +8,12 @@ import type { ProjectTask_UseProjectTaskListQuery } from '~/gql/graphql'
 import { ProjectTaskForm } from './ProjectTaskForm'
 
 export const ProjectTaskDetailDialog = ({
-  projectId,
+  projectUid,
   task,
   open,
   onOpenChange,
 }: {
-  projectId: string
+  projectUid: string
   task:
     | ProjectTask_UseProjectTaskListQuery['projectTask']['list']['records'][number]
     | null
@@ -27,7 +27,7 @@ export const ProjectTaskDetailDialog = ({
           <DialogTitle>{task ? task.name : 'Nueva Tarea'}</DialogTitle>
         </DialogHeader>
         <ProjectTaskForm
-          projectId={projectId}
+          projectUid={projectUid}
           task={task}
           onSuccess={() => onOpenChange(false)}
           onCancel={() => onOpenChange(false)}
